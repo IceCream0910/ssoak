@@ -25,6 +25,11 @@ export default function Upload() {
     const [completedCount, setCompletedCount] = useState(0);
     const [stopAnalysis, setStopAnalysis] = useState(false);
     const [hasQuestions, setHasQuestions] = useState(false);
+    const [addQuestioMmodalOpen, setAddQuestionModalOpen] = useState(false);
+    const [addQuestionText, setAddQuestionText] = useState('');
+    const [modalGrade, setModalGrade] = useState(null);
+    const [modalCategory, setModalCategory] = useState(null);
+    const [modalIndex, setModalIndex] = useState(null);
 
     const db = firestore;
 
@@ -34,6 +39,10 @@ export default function Upload() {
             const docRef = doc(db, "users", session.user?.id);
             getDoc(docRef).then((doc) => {
                 if (doc.exists()) {
+                    if (!doc.data().sanggibu_과세특) {
+                        alert('생기부를 먼저 업로드해주세요.');
+                        router.replace('/my');
+                    }
                     setName(doc.data().sanggibu_name);
                     set자동진JSON(doc.data().sanggibu_자동진);
                     set과세특JSON(doc.data().sanggibu_과세특);
@@ -379,6 +388,63 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
         setModalOpen(false);
     }
 
+    function openAddQuestionModalByIndex(index) {
+        setModalGrade(null);
+        setModalCategory(null);
+        setModalIndex(index);
+        setAddQuestionText('');
+        setAddQuestionModalOpen(true);
+    }
+
+    function openAddQuestionModalByMultiple(grade, category, index) {
+        setModalGrade(grade);
+        setModalCategory(category);
+        setModalIndex(index);
+        setAddQuestionModalOpen(true);
+    }
+
+    function addQuestion() {
+        setAddQuestionModalOpen(false);
+        if (addQuestionText && modalIndex != null) {
+            if (modalGrade == null && modalCategory == null) {
+                set자동진JSON((prev) => {
+                    const updatedData = [...prev];
+                    updatedData[modalIndex].question += addQuestionText + '[end]';
+                    return updatedData;
+                });
+            } else {
+                set과세특JSON((prev) => {
+                    const updatedData = { ...prev };
+                    updatedData[modalGrade][modalCategory][modalIndex].question += addQuestionText + '[end]';
+                    return updatedData;
+                });
+            }
+        } else {
+            toast('질문을 입력해주세요.');
+        }
+    }
+
+    function deleteQuestionByIndex(index, question) {
+        if (confirm('정말로 삭제하시겠습니까?')) {
+            set자동진JSON((prev) => {
+                const updatedData = [...prev];
+                updatedData[index].question = updatedData[index].question.replace(question + '[end]', '');
+                console.log(updatedData[index].question)
+                return updatedData;
+            });
+        }
+    }
+
+    function deleteQuestionByMultiple(grade, category, index, question) {
+        if (confirm('정말로 삭제하시겠습니까?')) {
+            set과세특JSON((prev) => {
+                const updatedData = { ...prev };
+                updatedData[grade][category][index].question = updatedData[grade][category][index].question.replace(question + '[end]', '');
+                return updatedData;
+            });
+        }
+    }
+
     return (
         <>
             <Toaster />
@@ -420,15 +486,17 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
                                     </div>
                                     <div className="analysis-right">
-                                        {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index) => {
-                                            if (index >= 3) return null;
+                                        {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
+                                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
                                             return (
-                                                <div key={index} className="question-card">
+                                                <div key={index2} className="question-card">
                                                     <h4>{question}</h4>
+                                                    <button onClick={() => deleteQuestionByIndex(index, question)}><IonIcon name='close' /></button>
                                                 </div>
                                             );
                                         })
                                         }
+                                        <button className="transparent" onClick={() => openAddQuestionModalByIndex(index)}>질문 추가&nbsp;&nbsp;<IonIcon name="add-outline" /></button>
                                     </div>
 
                                 </div>
@@ -465,15 +533,18 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                                                 </div>
                                                             </div>
                                                             <div className="analysis-right">
-                                                                {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index) => {
-                                                                    if (index >= 3) return null;
+                                                                {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
+                                                                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
                                                                     return (
-                                                                        <div key={index} className="question-card">
+                                                                        <div key={index2} className="question-card">
                                                                             <h4>{question}</h4>
+                                                                            <button onClick={() => deleteQuestionByMultiple(grade, category, index, question)}><IonIcon name='close' /></button>
                                                                         </div>
                                                                     );
                                                                 })
                                                                 }
+                                                                <button className="transparent" onClick={() => openAddQuestionModalByMultiple(grade, category, index)}>질문 추가&nbsp;&nbsp;<IonIcon name="add-outline" /></button>
+
                                                             </div>
                                                         </div>
                                                     );
@@ -503,6 +574,14 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         </div>
                         <br></br>
                         <button onClick={() => stopAnalysisFunc()}>중지하고 저장</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={addQuestioMmodalOpen} expandOnContentDrag={true} onDismiss={() => setAddQuestionModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <h3>질문 추가</h3>
+                        <input placeholder="질문을 입력하세요" value={addQuestionText} onChange={(e) => setAddQuestionText(e.target.value)}></input>
+                        <button onClick={() => addQuestion()}>추가</button>
                     </div>
                 </BottomSheet>
             </main >

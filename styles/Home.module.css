@@ -2,3 +2,10 @@
   padding: 20px;
   min-height: 100dvh;
 }
+
+@media screen and (max-width: 768px) {
+  .main {
+    padding-top: 20px;
+    padding: 10px;
+  }
+}

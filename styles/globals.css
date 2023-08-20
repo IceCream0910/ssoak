@@ -26,6 +26,7 @@ header {
     width: 100%;
     background-color: #f1f5ff;
     padding: 10px 30px;
+    z-index: 1;
 }
 
 header .header-left {
@@ -319,4 +320,87 @@ input {
     .analysis-container #practice-container {
         flex-direction: column;
     }
+}
+
+.scroll-top-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.scroll-top-btn.invisible {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.question-card {
+    position: relative;
+}
+
+.question-card button {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.question-card:hover button {
+    visibility: visible;
+    opacity: 1;
+}
+
+.main-step-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-step-container .main-step-item {
+    border-right: 1px solid #bfc9e9;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+.main-step-item .icon {
+    color: #5272ff;
+    font-size: 5em;
+    float: right;
+    margin-right: 20px;
+}
+
+@media screen and (max-width: 768px) {
+    .main-step-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .main-step-container .main-step-item {
+        border-right: none;
+        border-bottom: 1px solid #d2daf3;
+    }
+}
+
+span.badge {
+    position: relative;
+    top: -2px;
+    background-color: #5272ff;
+    border-radius: 30px;
+    padding: 3px 9px;
+    color: white;
+    font-size: 12px;
 }

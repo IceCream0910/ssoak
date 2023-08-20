@@ -11,11 +11,12 @@ export default function Auth() {
     const { data: session } = useSession();
 
     if (session) {
+        console.log(session)
         const db = firestore;
         const userRef = doc(db, "users", session.user?.id);
         const userData = {
-            name: session.user?.name,
-            email: session.user?.email,
+            name: session.user?.name || session.user?.email.split('@')[0],
+            email: session.user?.email || '',
             lastSession: Timestamp.fromDate(new Date()),
         };
 
