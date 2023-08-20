@@ -115,13 +115,6 @@ input {
 }
 
 
-input[type=file] {
-    display: none;
-    height: 0;
-    overflow: hidden;
-    width: 0;
-}
-
 [type=file]+label {
     border: none;
     border-radius: 10px;
