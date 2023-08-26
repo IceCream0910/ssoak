@@ -115,6 +115,13 @@ input {
 }
 
 
+input[type=file] {
+    display: none;
+    height: 0;
+    overflow: hidden;
+    width: 0;
+}
+
 [type=file]+label {
     border: none;
     border-radius: 10px;
@@ -274,6 +281,27 @@ input {
     border: 5px solid #5272ff;
     border-top: 5px solid #becfff;
     animation: spin 1s linear infinite;
+}
+
+.loading-full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-full .loading-circle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 @keyframes spin {
