@@ -30,6 +30,7 @@ export default function Upload() {
     const [modalGrade, setModalGrade] = useState(null);
     const [modalCategory, setModalCategory] = useState(null);
     const [modalIndex, setModalIndex] = useState(null);
+    const [isProcessingSpecific, setIsProsessingSpecific] = useState(false);
 
     const db = firestore;
 
@@ -183,11 +184,11 @@ export default function Upload() {
 
     function analysisByIndex(index) {
         console.log(index, 'start');
-        fetch("https://free.churchless.tech/v1/chat/completions", {
+        fetch("https://ai.fakeopen.com/v1/chat/completions", {
             //GPT3.5
             method: "POST",
             headers: {
-                Authorization: "Bearer BetterChatGPT",
+                Authorization: "Bearer pk-this-is-a-real-free-pool-token-for-everyone",
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -257,6 +258,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     setCompletedCount((prev) => prev + 1);
                     setTimeout(() => {
                         set자동진JSON([...자동진JSON]);
+                        setIsProsessingSpecific(false);
                     }, 1000);
                 }
 
@@ -269,11 +271,11 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
     function analysisByArr(grade, category, index) {
         console.log(grade, category, index, 'start');
-        fetch("https://free.churchless.tech/v1/chat/completions", {
+        fetch("https://ai.fakeopen.com/v1/chat/completions", {
             //GPT3.5
             method: "POST",
             headers: {
-                Authorization: "Bearer BetterChatGPT",
+                Authorization: "Bearer pk-this-is-a-real-free-pool-token-for-everyone",
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -340,6 +342,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     console.log(index, "done", resultMsg);
                     과세특JSON[grade][category][index].question = resultMsg;
                     setCompletedCount((prev) => prev + 1);
+                    setIsProsessingSpecific(false);
                 }
                 readChunks();
             })
@@ -461,7 +464,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">예상 질문 생성</h3>
                     </div>
                     <div className="header-right">
-                        <button onClick={() => startAnalysis()}>질문 생성</button>
+                        <button onClick={() => startAnalysis()}>질문 일괄 생성</button>
                     </div>
                 </header>
 
@@ -496,7 +499,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                             );
                                         })
                                         }
-                                        <button className="transparent" onClick={() => openAddQuestionModalByIndex(index)}>질문 추가&nbsp;&nbsp;<IonIcon name="add-outline" /></button>
+                                        <button className="transparent" onClick={() => openAddQuestionModalByIndex(index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
+                                        <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByIndex(index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
                                     </div>
 
                                 </div>
@@ -543,7 +547,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                                                     );
                                                                 })
                                                                 }
-                                                                <button className="transparent" onClick={() => openAddQuestionModalByMultiple(grade, category, index)}>질문 추가&nbsp;&nbsp;<IonIcon name="add-outline" /></button>
+                                                                <button className="transparent" onClick={() => openAddQuestionModalByMultiple(grade, category, index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
+                                                                <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByArr(grade, category, index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
 
                                                             </div>
                                                         </div>
@@ -582,6 +587,24 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         <h3>질문 추가</h3>
                         <input placeholder="질문을 입력하세요" value={addQuestionText} onChange={(e) => setAddQuestionText(e.target.value)}></input>
                         <button onClick={() => addQuestion()}>추가</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={isProcessingSpecific}>
+                    <div className="bottom-sheet">
+                        <div style={{ display: 'flex', alignItems: "center", gap: '20px' }}>
+                            <div>
+                                <div className="loading-circle">
+                                    <div className="spinner"></div>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                                <h3>질문을 생성하고 있어요.</h3>
+                                <span>완료될 때까지 창을 닫지 말고 기다려주세요.</span>
+                            </div>
+                        </div>
+                        <br></br>
+                        <button onClick={() => stopAnalysisFunc()}>중지</button>
                     </div>
                 </BottomSheet>
             </main >

@@ -142,11 +142,11 @@ export default function Upload() {
 
 
     function chatGPT() {
-        fetch("https://free.churchless.tech/v1/chat/completions", {
+        fetch("https://ai.fakeopen.com/v1/chat/completions", {
             //GPT3.5
             method: "POST",
             headers: {
-                Authorization: "Bearer BetterChatGPT",
+                Authorization: "Bearer pk-this-is-a-real-free-pool-token-for-everyone",
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -364,6 +364,89 @@ export default function Upload() {
         toast.success('PDF 파일을 저장했어요');
     }
 
+    function feedback(index) {
+        const q = questions[index].question;
+        const a = questions[index].answer;
+
+        if (!q || !a) {
+            toast.error('답변을 입력해주세요.');
+            return null;
+        }
+        toast('메모란에 피드백을 작성해줄게요.')
+        fetch("https://ai.fakeopen.com/v1/chat/completions", {
+            //GPT3.5
+            method: "POST",
+            headers: {
+                Authorization: "Bearer pk-this-is-a-real-free-pool-token-for-everyone",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                messages: [{
+                    role: "user", content: `너는 대학 입시 면접관이야. 질문과 그에 대한 면접자의 답변을 보내면 피드백을 작성해줘.
+                    답변에서 잘한 점, 답변에서 개선할 점, 개선된 답변을 알려줘. 개선된 답변의 길이는 30초 내외로 말할 수 있는 분량이어야 해.
+                    답변은 두괄식 답변이 좋고, 내용이 복잡한 경우 '즉', '요컨대'와 같은 말로 요약 정리하는 것도 방법 중 하나야. 마크다운 형식으로 대답하지마.
+                    ---
+                    질문 : ${q}\n
+                    답변 : ${a}`
+                }],
+                model: "gpt-3.5-turbo",
+                max_tokens: 4096,
+                temperature: 0.7,
+                presence_penalty: 1,
+                top_p: 1,
+                frequency_penalty: 1,
+                stream: true,
+            }),
+        })
+            .then((response) => {
+                if (!response.body) {
+                    throw new Error("Response body is null");
+                }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                async function readChunks() {
+                    let result = await reader.read();
+                    var resultMsg = "";
+                    while (!result.done) {
+                        const data = decoder.decode(result.value, {
+                            stream: true,
+                        });
+                        const parsedData = data
+                            .replaceAll("data: ", "")
+                            .trim()
+                            .split("\n");
+                        parsedData.forEach((item) => {
+                            if (data && isJson(item)) {
+                                if (
+                                    JSON.parse(item).choices &&
+                                    JSON.parse(item).choices[0].delta &&
+                                    JSON.parse(item).choices[0].delta.content
+                                ) {
+                                    resultMsg +=
+                                        JSON.parse(item).choices[0].delta.content;
+
+                                    let newQuestions = [...questions];
+                                    newQuestions[index].memo = resultMsg;
+                                    setQuestions(newQuestions);
+                                }
+                            }
+                        });
+                        result = await reader.read();
+                    }
+                    console.log(index, "done", resultMsg);
+
+                    let newQuestions = [...questions];
+                    newQuestions[index].memo = resultMsg;
+                    setQuestions(newQuestions);
+                }
+                readChunks();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
     return (
         <>
             <Toaster />
@@ -377,7 +460,7 @@ export default function Upload() {
 
                 <header>
                     <div className="header-left">
-                        <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">면접 대비</h3>
+                        <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">면접 연습</h3>
                     </div>
                     <div className="header-right">
                         <button onClick={() => generatePDF()}>PDF로 저장</button>
@@ -391,7 +474,7 @@ export default function Upload() {
                     <h2 style={{ marginLeft: '10px' }}>{questions.length}개의 질문이 있어요.</h2>
                     <p style={{ marginLeft: '10px' }}>
                         생성된 질문에 답변을 생각해 작성해보세요.<br></br>
-                        전공과 무관하거나 불필요하다고 생각하는 질문은 답변을 입력하지 않아도 좋아요.<br></br>
+                        입력 후 반드시 저장 버튼을 눌러주세요.<br></br>
                         답변이 바로 생각나지 않았거나 기억해야 할 내용이 있다면 메모를 추가해보세요.
                     </p>
 
@@ -431,7 +514,9 @@ export default function Upload() {
                                 </div>
 
                                 <div>
-                                    <button className="transparent" style={{ float: 'right' }} onClick={() => save()}>저장&nbsp;&nbsp;<IonIcon name="checkmark-done-outline" /></button>
+                                    <button className="transparent" onClick={() => feedback(index)}><IonIcon name="pulse-outline" />&nbsp;&nbsp;AI 피드백&nbsp;<span style={{ fontSize: 10, marginTop: '-5px' }}>beta</span></button>
+
+                                    <button className="transparent" style={{ float: 'right' }} onClick={() => save()}><IonIcon name="checkmark-done-outline" />&nbsp;&nbsp;저장</button>
                                 </div>
                             </div>
                         )

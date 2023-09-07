@@ -31,6 +31,7 @@ export default function Home() {
             <h3>유니터뷰 <span className="badge">beta</span></h3>
           </div>
           <div className="header-right">
+            <button onClick={() => window.open("https://slashpage.com/uniterview", '_blank')}>공지</button>
             {session ?
               <><button onClick={() => [signOut()]}>로그아웃</button></>
               :
@@ -54,9 +55,9 @@ export default function Home() {
                 <h2>예상 질문 생성 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='chatbubble-ellipses' /></div>
               </div>
-              <div className="main-step-item" onClick={() => route.push('/practice')}>
+              <div className="main-step-item" onClick={() => route.push('/practice')} style={{ border: 'none' }}>
                 <h4>STEP 3.</h4>
-                <h2>면접 대비 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
+                <h2>면접 연습 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='sparkles' /></div>
               </div>
             </div>
@@ -65,7 +66,22 @@ export default function Home() {
 
         {!session && <>
           <h2>환영합니다!<br></br>로그인하고 시작해보세요.</h2>
+          <button onClick={() => setModalOpen(true)}>로그인</button>
         </>}
+
+        <br></br><br></br><br></br><br></br><br></br><br></br>
+
+        <footer>
+          © 2023. All rights reserved Yun Tae In.<br></br><br></br>
+          <div style={{ display: 'flex', alignContent: 'center', opacity: '0.8' }}>
+            <a href="https://slashpage.com/uniterview/forum" target="_blank">공지사항</a>&nbsp;|&nbsp;<a href="https://slashpage.com/uniterview/j4z7pvx2k5g652ek8653" target="_blank">오류 제보</a>&nbsp;|&nbsp;<a href="https://slashpage.com/uniterview/j4z7pvx2k54gq2ek8653" target="_blank">사용 가이드</a>
+          </div>
+          <br></br>
+          <div style={{ display: 'flex', alignContent: 'center', opacity: '0.5', float: 'right', fontSize: 13 }}>
+            <p>Powered by OpenAI</p>&nbsp;&nbsp;&nbsp;<Image src="/openai-white-logomark.png" width={30} height={30} alt="openai" style={{ marginTop: '5px' }} />
+
+          </div>
+        </footer>
 
 
       </main>
@@ -75,7 +91,7 @@ export default function Home() {
             <h3>로그인하고 시작하세요</h3>
             <div style={{ display: 'flex', alignItems: "center", gap: '10px' }}>
               <Image onClick={() => signIn("kakao", { callbackUrl: "/login" })} src="/kakao_login.png" alt="kakao" width={45} height={45} />
-              <Image onClick={() => [toast('네이버의 승인이 완료되면 지원될 예정입니다')]} src="/naver_login.png" alt="naver" width={50} height={50} />
+              <Image onClick={() => signIn("naver", { callbackUrl: "/login" })} src="/naver_login.png" alt="naver" width={50} height={50} />
             </div>
             <br></br>
           </div>

@@ -316,9 +316,11 @@ export default function Upload() {
 
 
                 <br></br><br></br><br></br>
-                <div className="sanggibu-card" style={{ padding: "15px 20px", textAlign: 'left' }}>
-                    {!(name && 자동진JSON && 과세특JSON) && <><p>- 오른쪽 위의 "생기부 업로드" 버튼을 눌러 NEIS+에서 다운로드한 html 또는 htm 파일을 업로드해주세요.</p>
-                        <a target="_blank" href="https://slashpage.com/uniterview/7xjqy1g2v8kxn26vd54z">생기부 업로드 가이드를 반드시 확인해주세요</a>
+                <div className="sanggibu-card" style={{ padding: "15px 20px", textAlign: 'center', }}>
+                    {!(name && 자동진JSON && 과세특JSON) && <>
+                        <Image src='/document-upload.svg' width={0} height={0} sizes="100vw" className="big-image" alt="upload"></Image>
+                        <p>- 오른쪽 위의 "생기부 업로드" 버튼을 눌러 NEIS+에서 다운로드한 html 또는 htm 파일을 업로드해주세요.</p>
+                        <a target="_blank" href="https://slashpage.com/uniterview/7xjqy1g2v8kxn26vd54z"><button>[필독] 생기부 업로드 가이드 <IonIcon name="chevron-forward-outline" /></button></a>
                     </>}
                     {(name && 자동진JSON && 과세특JSON) && <>
                         <p>⚠️ 반드시 저장을 눌러주세요.</p>
