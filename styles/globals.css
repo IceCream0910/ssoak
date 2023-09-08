@@ -458,3 +458,9 @@ span.badge {
         width: 90%;
     }
 }
+
+.bottom-sheet a {
+    text-decoration:none;
+    color: inherit;
+    margin-bottom: 5px;
+}

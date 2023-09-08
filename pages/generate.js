@@ -32,6 +32,9 @@ export default function Upload() {
     const [modalIndex, setModalIndex] = useState(null);
     const [isProcessingSpecific, setIsProsessingSpecific] = useState(false);
 
+    const [indexModalOpen, setIndexModalOpen] = useState(false);
+    const [indexArr, setIndexArr] = useState(null)
+
     const db = firestore;
 
     useEffect(() => {
@@ -448,6 +451,39 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
         }
     }
 
+    const openIndexModal = () => {
+        setIndexModalOpen(true);
+        save();
+        var newArr = ['1학년_자율활동', '1학년_동아리활동', '1학년_진로활동', '2학년_자율활동', '2학년_동아리활동', '2학년_진로활동', '3학년_자율활동', '3학년_동아리활동', '3학년_진로활동']
+        if(!과세특JSON) return null;
+        Object.keys(과세특JSON).map((grade) => {
+            return (
+                <div key={grade}>
+                    <br></br>
+                    <h3>{grade}학년&nbsp;&nbsp;&nbsp;&nbsp;<button onClick={() => openAddModal(grade)}>항목 추가</button></h3>
+
+                    {Object.keys(과세특JSON[grade]).map((category) => {
+                        return (
+                            <div key={category}>
+                                {과세특JSON[grade][category].map((item, index) => {
+                                    if(!item.content) {
+                                        return null;
+                                    }
+                                    if ((index === 과세특JSON[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.'))) {
+                                        return null;
+                                    }
+                                    newArr.push(`${grade}학년_${item.content.replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0]}`)
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        })
+
+        setIndexArr(newArr);
+    }
+
     return (
         <>
             <Toaster />
@@ -457,6 +493,9 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+            <button onClick={openIndexModal} className={`scroll-top-btn`} style={{bottom: '75px'}}>
+            <IonIcon name="list-outline" size="large" />
+        </button>
             <main className={`${styles.main}`}>
 
                 <header>
@@ -480,7 +519,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     {자동진JSON &&
                         자동진JSON.map((item, index) => {
                             return (
-                                <div key={index} className="analysis-container">
+                                <div key={index} className="analysis-container" id={`${item.grade}학년_${item.title}`}>
                                     <div className="analysis-left">
                                         <div className="analysis-card">
                                             <h4>{item.grade}학년 {item.title}</h4>
@@ -529,7 +568,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                                         );
                                                     }
                                                     return (
-                                                        <div key={index} className="analysis-container">
+                                                        <div key={index} className="analysis-container" id={item.content && `${grade}학년_${item.content.replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0]}`}>
                                                             <div className="analysis-left">
                                                                 <div className="analysis-card">
                                                                     <h4></h4>
@@ -605,6 +644,20 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         </div>
                         <br></br>
                         <button onClick={() => stopAnalysisFunc()}>중지</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={indexModalOpen} expandOnContentDrag={true} onDismiss={() => setIndexModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <h2>빠른 탐색</h2>
+                        <div style={{height: '70dvh', overflowY: 'auto'}}>
+                        {indexArr && indexArr.map((item, key) => {
+                            return (<>
+                            <a key={key} href={`#${item}`} onClick={() => setIndexModalOpen(false)}>{item}<IonIcon name="chevron-forward-outline" /></a><br></br><br></br>
+                            </>)
+                        })}
+                        </div>
+                        <button onClick={() => setIndexModalOpen(false)}>닫기</button>
                     </div>
                 </BottomSheet>
             </main >
