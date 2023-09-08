@@ -453,9 +453,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
     const openIndexModal = () => {
         setIndexModalOpen(true);
-        save();
         var newArr = ['1학년_자율활동', '1학년_동아리활동', '1학년_진로활동', '2학년_자율활동', '2학년_동아리활동', '2학년_진로활동', '3학년_자율활동', '3학년_동아리활동', '3학년_진로활동']
-        if(!과세특JSON) return null;
+        if (!과세특JSON) return null;
         Object.keys(과세특JSON).map((grade) => {
             return (
                 <div key={grade}>
@@ -466,7 +465,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         return (
                             <div key={category}>
                                 {과세특JSON[grade][category].map((item, index) => {
-                                    if(!item.content) {
+                                    if (!item.content) {
                                         return null;
                                     }
                                     if ((index === 과세특JSON[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.'))) {
@@ -493,14 +492,14 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <button onClick={openIndexModal} className={`scroll-top-btn`} style={{bottom: '75px'}}>
-            <IonIcon name="list-outline" size="large" />
-        </button>
+            <button onClick={openIndexModal} className={`scroll-top-btn`} style={{ bottom: '75px' }}>
+                <IonIcon name="list-outline" size="large" />
+            </button>
             <main className={`${styles.main}`}>
 
                 <header>
                     <div className="header-left">
-                        <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">예상 질문 생성</h3>
+                        <IonIcon name='chevron-back-outline' onClick={() => router.replace('/')} /><h3 className="header-title">예상 질문 생성</h3>
                     </div>
                     <div className="header-right">
                         <button onClick={() => startAnalysis()}>질문 일괄 생성</button>
@@ -647,15 +646,15 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     </div>
                 </BottomSheet>
 
-                <BottomSheet open={indexModalOpen} expandOnContentDrag={true} onDismiss={() => setIndexModalOpen(false)}>
+                <BottomSheet open={indexModalOpen} expandOnContentDrag={false} onDismiss={() => setIndexModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h2>빠른 탐색</h2>
-                        <div style={{height: '70dvh', overflowY: 'auto'}}>
-                        {indexArr && indexArr.map((item, key) => {
-                            return (<>
-                            <a key={key} href={`#${item}`} onClick={() => setIndexModalOpen(false)}>{item}<IonIcon name="chevron-forward-outline" /></a><br></br><br></br>
-                            </>)
-                        })}
+                        <div style={{ height: '70dvh', overflowY: 'auto' }}>
+                            {indexArr && indexArr.map((item, key) => {
+                                return (<>
+                                    <a key={key} href={`#${item}`} onClick={() => setIndexModalOpen(false)}>{item}<IonIcon name="chevron-forward-outline" /></a><br></br><br></br>
+                                </>)
+                            })}
                         </div>
                         <button onClick={() => setIndexModalOpen(false)}>닫기</button>
                     </div>

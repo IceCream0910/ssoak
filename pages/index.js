@@ -31,7 +31,7 @@ export default function Home() {
             <h3>유니터뷰 <span className="badge">beta</span></h3>
           </div>
           <div className="header-right">
-            <button onClick={() => window.open("https://slashpage.com/uniterview", '_blank')}>공지</button>
+            <button className="transparent" onClick={() => window.open("https://slashpage.com/uniterview", '_blank')}><IonIcon name='notifications' style={{ fontSize: '18px' }} /></button>
             {session ?
               <><button onClick={() => [signOut()]}>로그아웃</button></>
               :
@@ -57,7 +57,7 @@ export default function Home() {
               </div>
               <div className="main-step-item" onClick={() => route.push('/practice')} style={{ border: 'none' }}>
                 <h4>STEP 3.</h4>
-                <h2>면접 연습 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
+                <h2>답변 작성 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='sparkles' /></div>
               </div>
             </div>
@@ -78,11 +78,10 @@ export default function Home() {
           </div>
           <br></br>
           <div style={{ display: 'flex', alignContent: 'center', opacity: '0.5', float: 'right', fontSize: 13 }}>
-            <p>Powered by OpenAI</p>&nbsp;&nbsp;&nbsp;<Image src="/openai-white-logomark.png" width={30} height={30} alt="openai" style={{ marginTop: '5px' }} />
-
+            <p>AI Powered by OpenAI</p>&nbsp;&nbsp;&nbsp;<Image src="/openai-white-logomark.png" width={30} height={30} alt="openai" style={{ marginTop: '5px' }} />
+            <br></br> <br></br> <br></br> <br></br> <br></br>
           </div>
         </footer>
-
 
       </main>
       <BottomSheet open={modalOpen} expandOnContentDrag={true} onDismiss={() => setModalOpen(false)}>

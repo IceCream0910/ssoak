@@ -140,67 +140,6 @@ export default function Upload() {
         setQuestions(updatedQuestions);
     }
 
-
-    function chatGPT() {
-        fetch("https://ai.fakeopen.com/v1/chat/completions", {
-            //GPT3.5
-            method: "POST",
-            headers: {
-                Authorization: "Bearer pk-this-is-a-real-free-pool-token-for-everyone",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                messages: [{ role: "user", content: `` }],
-                model: "gpt-3.5-turbo",
-                max_tokens: 4096,
-                temperature: 0.3,
-                presence_penalty: 2,
-                top_p: 1,
-                frequency_penalty: 1,
-                stream: true,
-            }),
-        })
-            .then((response) => {
-                if (!response.body) {
-                    throw new Error("Response body is null");
-                }
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-
-                async function readChunks() {
-                    let result = await reader.read();
-                    var resultMsg = "";
-                    while (!result.done) {
-                        const data = decoder.decode(result.value, {
-                            stream: true,
-                        });
-                        const parsedData = data
-                            .replaceAll("data: ", "")
-                            .trim()
-                            .split("\n");
-                        parsedData.forEach((item) => {
-                            if (data && isJson(item)) {
-                                if (
-                                    JSON.parse(item).choices &&
-                                    JSON.parse(item).choices[0].delta &&
-                                    JSON.parse(item).choices[0].delta.content
-                                ) {
-                                    resultMsg +=
-                                        JSON.parse(item).choices[0].delta.content;
-                                }
-                            }
-                        });
-                        result = await reader.read();
-                    }
-                    console.log(index, "done", resultMsg);
-                }
-                readChunks();
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
-
     function isJson(str) {
         try {
             JSON.parse(str);
@@ -451,7 +390,7 @@ export default function Upload() {
         <>
             <Toaster />
             <Head>
-                <title>유니터뷰 - 면접 대비</title>
+                <title>유니터뷰 - 답변 작성</title>
                 <meta name="description" content="생기부 기반 면접 대비, AI와 함께해보세요." />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
@@ -460,7 +399,7 @@ export default function Upload() {
 
                 <header>
                     <div className="header-left">
-                        <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">면접 연습</h3>
+                        <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">답변 작성</h3>
                     </div>
                     <div className="header-right">
                         <button onClick={() => generatePDF()}>PDF로 저장</button>
