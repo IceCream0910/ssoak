@@ -336,6 +336,10 @@ export default function Upload() {
             <button onClick={openIndexModal} className={`scroll-top-btn`} style={{ bottom: '75px' }}>
                 <IonIcon name="list-outline" size="large" />
             </button>
+
+            <button onClick={() => window.open('/ocr')} className={`scroll-top-btn`} style={{ bottom: '130px' }}>
+                <IonIcon name="camera-outline" size="large" />
+            </button>
             <main className={`${styles.main}`}>
 
                 <header>
@@ -345,7 +349,7 @@ export default function Upload() {
                     <div className="header-right">
                         {lastSaveTime && <p className="subText">{lastSaveTime}에 저장됨</p>}
                         {isChanged && <p className="subText">변경사항 있음</p>}
-                        <input type="file" id="file" onChange={handleUpload} />
+                        <input type="file" id="file" accept=".html, .htm" onChange={handleUpload} />
                         <label for="file">{(name && 자동진JSON && 과세특JSON) ? "새로운 생기부 업로드" : "생기부 업로드"}</label>
                         {(name && 자동진JSON && 과세특JSON) && <button onClick={() => save()}>저장</button>}
                     </div>

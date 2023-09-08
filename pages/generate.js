@@ -257,7 +257,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         result = await reader.read();
                     }
                     console.log(index, "done", resultMsg);
-                    자동진JSON[index].question = resultMsg;
+                    자동진JSON[index].question += "[end]" + resultMsg;
+                    자동진JSON[index].question = 자동진JSON[index].question.replaceAll('[end][end]', '[end]');
                     setCompletedCount((prev) => prev + 1);
                     setTimeout(() => {
                         set자동진JSON([...자동진JSON]);
@@ -343,7 +344,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         result = await reader.read();
                     }
                     console.log(index, "done", resultMsg);
-                    과세특JSON[grade][category][index].question = resultMsg;
+                    과세특JSON[grade][category][index].question += "[end]" + resultMsg;
+                    과세특JSON[grade][category][index].question = 과세특JSON[grade][category][index].question.replaceAll('[end][end]', '[end]');
                     setCompletedCount((prev) => prev + 1);
                     setIsProsessingSpecific(false);
                 }
@@ -416,12 +418,14 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                 set자동진JSON((prev) => {
                     const updatedData = [...prev];
                     updatedData[modalIndex].question += addQuestionText + '[end]';
+                    updatedData[modalIndex].question.replaceAll('[end][end]', '[end]');
                     return updatedData;
                 });
             } else {
                 set과세특JSON((prev) => {
                     const updatedData = { ...prev };
                     updatedData[modalGrade][modalCategory][modalIndex].question += addQuestionText + '[end]';
+                    updatedData[modalGrade][modalCategory][modalIndex].question.replaceAll('[end][end]', '[end]');
                     return updatedData;
                 });
             }
@@ -431,10 +435,11 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
     }
 
     function deleteQuestionByIndex(index, question) {
+        question = question.trim();
         if (confirm('정말로 삭제하시겠습니까?')) {
             set자동진JSON((prev) => {
                 const updatedData = [...prev];
-                updatedData[index].question = updatedData[index].question.replace(question + '[end]', '');
+                updatedData[index].question = updatedData[index].question.replace(question + '[end]', '').replace(question + ' [end]', '');
                 console.log(updatedData[index].question)
                 return updatedData;
             });
@@ -442,10 +447,11 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
     }
 
     function deleteQuestionByMultiple(grade, category, index, question) {
+        question = question.trim();
         if (confirm('정말로 삭제하시겠습니까?')) {
             set과세특JSON((prev) => {
                 const updatedData = { ...prev };
-                updatedData[grade][category][index].question = updatedData[grade][category][index].question.replace(question + '[end]', '');
+                updatedData[grade][category][index].question = updatedData[grade][category][index].question.replace(question + '[end]', '').replace(question + ' [end]', '');
                 return updatedData;
             });
         }
@@ -527,8 +533,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
                                     </div>
                                     <div className="analysis-right">
-                                        {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
-                                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
+                                        {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').map((question, index2) => {
+                                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').length - 1) return null;
                                             return (
                                                 <div key={index2} className="question-card">
                                                     <h4>{question}</h4>
@@ -575,8 +581,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                                                 </div>
                                                             </div>
                                                             <div className="analysis-right">
-                                                                {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
-                                                                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
+                                                                {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').map((question, index2) => {
+                                                                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').length - 1) return null;
                                                                     return (
                                                                         <div key={index2} className="question-card">
                                                                             <h4>{question}</h4>
