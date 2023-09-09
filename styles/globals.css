@@ -15,6 +15,21 @@ body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
 }
 
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
 header {
     display: flex;
     flex-direction: row;
@@ -413,6 +428,7 @@ input {
     align-items: center;
 }
 
+
 .main-step-container .main-step-item {
     background: #becfff;
     color: #2d44ad;
@@ -422,6 +438,12 @@ input {
     text-align: left;
     width: 100%;
     cursor: pointer;
+}
+
+.main-step-item.transparent {
+    background: none;
+    line-height: 0.5;
+    color: #2d44ad;
 }
 
 .main-step-item h4 {
@@ -443,10 +465,21 @@ input {
         height: 110px;
     }
 
+    .main-step-item.transparent {
+        background: none;
+        line-height: 0.5;
+        color: #2d44ad;
+        height: 60px;
+    }
+
+    .main-step-item.transparent .icon {
+        top: -70px;
+    }
+
     .main-step-item .icon {
         position: relative;
         top: -90px;
-        font-size: 5em;
+        font-size: 4.5em;
         float: right;
     }
 }

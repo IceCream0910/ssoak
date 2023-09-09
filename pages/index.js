@@ -1,7 +1,7 @@
 import Head from "next/head";
 import styles from '@/styles/Home.module.css'
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from 'next/image'
 import { Router, useRouter } from "next/router";
 import { BottomSheet } from 'react-spring-bottom-sheet'
@@ -9,10 +9,98 @@ import 'react-spring-bottom-sheet/dist/style.css'
 import toast, { Toaster } from 'react-hot-toast';
 import IonIcon from "@reacticons/ionicons";
 
+import firestore from "../firebase/firebase"
+import { Timestamp, collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+
 export default function Home() {
   const { data: session } = useSession();
   const route = useRouter();
+  const [isSplashOpen, setIsSplashOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [ddaySchoolName, setDdaySchoolName] = useState('');
+  const [ddayDate, setDdayDate] = useState(null);
+  const [ddayText, setDdayText] = useState('');
+
+  const [ddayModalOpen, setDdayModalOpen] = useState(false);
+
+  const db = firestore;
+
+  useEffect(() => {
+    if (!session) {
+      setIsSplashOpen(true);
+      setTimeout(() => {
+        setIsSplashOpen(false);
+      }, 3000)
+    }
+  }, []);
+
+  useEffect(() => {
+    if (session) {
+      const docRef = doc(db, "users", session.user?.id);
+      getDoc(docRef).then((doc) => {
+        if (doc.exists()) {
+          setDdaySchoolName(doc.data().ddayName);
+          setDdayDate(doc.data().ddayDate);
+        }
+      }).catch((error) => {
+        console.error(error)
+      });
+    }
+  }, [session]);
+
+
+  useEffect(() => { //dday 갱신
+    if (ddaySchoolName && ddayDate) {
+      const todayForDday = new Date();
+      todayForDday.setHours(23, 59, 59, 999);
+      const convertedDdayDate = new Date(ddayDate);
+      const gap = convertedDdayDate.getTime() - todayForDday.getTime();
+      const ddayResult = Math.ceil(gap / (1000 * 60 * 60 * 24));
+      if (ddayResult == 0) {
+        setDdayText(`D-DAY`);
+      } else if (ddayResult < 0) {
+        setDdayText(`D+${-(ddayResult)}`);
+      } else {
+        setDdayText(`D-${ddayResult}`);
+      }
+    }
+  }, [ddaySchoolName, ddayDate]);
+
+
+  function saveDday() {
+    if (ddaySchoolName && ddayDate) {
+      setDdayModalOpen(false);
+      const todayForDday = new Date();
+      todayForDday.setHours(23, 59, 59, 999);
+      const convertedDdayDate = new Date(ddayDate);
+      const gap = convertedDdayDate.getTime() - todayForDday.getTime();
+      const ddayResult = Math.ceil(gap / (1000 * 60 * 60 * 24));
+      if (ddayResult == 0) {
+        setDdayText(`D-DAY`);
+      } else if (ddayResult < 0) {
+        setDdayText(`D+${-(ddayResult)}`);
+      } else {
+        setDdayText(`D-${-(ddayResult * -1)}`);
+      }
+
+      if (session.user?.id) { //user db에 저장
+        updateDoc(doc(db, "users", session.user?.id), {
+          ddayName: ddaySchoolName,
+          ddayDate: ddayDate
+        }).then(() => {
+          console.log("Document written with ID: ", session.user?.id);
+          toast.success('저장했어요');
+        }).catch((error) => {
+          console.error("Error adding document: ", error);
+          toast.error('저장에 실패했어요');
+        });
+      }
+
+    } else {
+      toast.error('모든 항목을 입력해주세요.')
+    }
+  }
 
 
   return (
@@ -24,11 +112,17 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      {isSplashOpen && <div className="splash-screen">
+        <Image src='/loader.gif' width={50} height={50} alt="splash-icon"></Image>
+      </div>
+      }
+
       <main className={`${styles.main}`}>
         <header>
           <div className="header-left">
 
-            <h3>유니터뷰 <span className="badge">beta</span></h3>
+            <h3>유니터뷰</h3>
           </div>
           <div className="header-right">
             <button className="transparent" onClick={() => window.open("https://slashpage.com/uniterview", '_blank')}><IonIcon name='notifications' style={{ fontSize: '18px' }} /></button>
@@ -43,8 +137,13 @@ export default function Home() {
         {session &&
           <>
             <h2>{session.user?.name} 님, 반가워요!</h2>
-
             <div className="main-step-container">
+              <div className="main-step-item transparent" onClick={() => setDdayModalOpen(true)}>
+                <h4>{ddaySchoolName ? ddaySchoolName + ' 면접일' : '가장 가까운 면접일을 설정해보세요'}</h4>
+                <h2>{ddayDate ? ddayText : "D-??"}</h2>
+                <div className="icon" style={{ opacity: 0.3, fontSize: 50 }}><IonIcon name='chevron-forward' /></div>
+              </div>
+
               <div className="main-step-item" onClick={() => route.push('/my')}>
                 <h4>STEP 1.</h4>
                 <h2>내 생기부 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
@@ -52,14 +151,26 @@ export default function Home() {
               </div>
               <div className="main-step-item" onClick={() => route.push('/generate')}>
                 <h4>STEP 2.</h4>
-                <h2>예상 질문 생성 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
+                <h2>예상 질문 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='chatbubble-ellipses' /></div>
               </div>
+
+            </div>
+            <br></br>
+
+            <div className="main-step-container">
               <div className="main-step-item" onClick={() => route.push('/practice')} style={{ border: 'none' }}>
                 <h4>STEP 3.</h4>
                 <h2>답변 작성 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
-                <div className="icon"><IonIcon name='sparkles' /></div>
+                <div className="icon"><IonIcon name='file-tray-stacked' /></div>
               </div>
+
+              <div className="main-step-item">
+                <h4>STEP 4.</h4>
+                <h2>AI 모의면접 <span className="badge">준비중</span></h2>
+                <div className="icon"><IonIcon name='people-circle' /></div>
+              </div>
+
             </div>
 
           </>}
@@ -97,6 +208,16 @@ export default function Home() {
           <button onClick={() => setModalOpen(false)}>닫기</button>
 
         </div>
+      </BottomSheet>
+
+      <BottomSheet open={ddayModalOpen} expandOnContentDrag={false} onDismiss={() => setDdayModalOpen(false)}>
+        <div className="bottom-sheet">
+          <h3>면접일 설정</h3>
+          <input placeholder="대학명" value={ddaySchoolName} onChange={(e) => setDdaySchoolName(e.target.value)}></input>
+          <input type="date" placeholder="면접 일자" value={ddayDate} onChange={(e) => setDdayDate(e.target.value)}></input>
+          <button onClick={() => saveDday()}>저장</button>
+        </div>
+
       </BottomSheet>
     </>
   )

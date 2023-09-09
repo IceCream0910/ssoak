@@ -432,7 +432,7 @@ export default function Upload() {
                     }
 
                 </> : <></>}
-                <BottomSheet open={modalOpen} expandOnContentDrag={true} onDismiss={() => setModalOpen(false)}>
+                <BottomSheet open={modalOpen} expandOnContentDrag={false} onDismiss={() => setModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h3>항목 추가</h3>
                         <input placeholder="과목명" value={modalSubject} onChange={(e) => handleModalSubjectChange(e)}></input>

@@ -1,8 +1,9 @@
 import { SessionProvider } from "next-auth/react";
-import '@/styles/globals.css'
-import ScrollToTop from "@/components/scrollToTop";
+import '../styles/globals.css'
+import ScrollToTop from "../components/scrollToTop";
 import React, { useEffect, useState } from "react";
 import router from "next/router";
+import Image from "next/image";
 
 
 export default function App({ Component, pageProps }) {
@@ -33,9 +34,7 @@ export default function App({ Component, pageProps }) {
     <SessionProvider session={pageProps.session}>
       {loading && (
         <div className="loading-full">
-          <div className="loading-circle">
-            <div className="spinner"></div>
-          </div>
+          <Image src='/loader.gif' width={50} height={50} alt="splash-icon"></Image>
         </div>
       )}
       <Component {...pageProps} />

@@ -626,7 +626,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     </div>
                 </BottomSheet>
 
-                <BottomSheet open={addQuestioMmodalOpen} expandOnContentDrag={true} onDismiss={() => setAddQuestionModalOpen(false)}>
+                <BottomSheet open={addQuestioMmodalOpen} expandOnContentDrag={false} onDismiss={() => setAddQuestionModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h3>질문 추가</h3>
                         <input placeholder="질문을 입력하세요" value={addQuestionText} onChange={(e) => setAddQuestionText(e.target.value)}></input>
