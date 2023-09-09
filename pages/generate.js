@@ -1,5 +1,5 @@
 import Head from "next/head";
-import styles from '@/styles/Home.module.css'
+import styles from '../styles/Home.module.css'
 import { useSession, signIn, signOut } from "next-auth/react";
 import firestore from "../firebase/firebase"
 import { Timestamp, collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
