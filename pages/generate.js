@@ -523,6 +523,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     </div>
                     {자동진JSON &&
                         자동진JSON.map((item, index) => {
+                            console.log(item)
                             return (
                                 <div key={index} className="analysis-container" id={`${item.grade}학년_${item.title}`}>
                                     <div className="analysis-left">
@@ -533,8 +534,9 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
                                     </div>
                                     <div className="analysis-right">
-                                        {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').map((question, index2) => {
-                                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').length - 1) return null;
+                                        {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').map((question, index2) => {
+                                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').length - 1) return null;
+                                            if (question.length < 2) return null;
                                             return (
                                                 <div key={index2} className="question-card">
                                                     <h4>{question}</h4>
@@ -581,8 +583,9 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                                                 </div>
                                                             </div>
                                                             <div className="analysis-right">
-                                                                {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').map((question, index2) => {
-                                                                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').split('[end]').length - 1) return null;
+                                                                {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').map((question, index2) => {
+                                                                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').length - 1) return null;
+                                                                    if (question.length < 2) return null;
                                                                     return (
                                                                         <div key={index2} className="question-card">
                                                                             <h4>{question}</h4>

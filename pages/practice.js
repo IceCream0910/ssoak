@@ -231,6 +231,7 @@ export default function Upload() {
         doc.addPage();
 
         questions.forEach((q, index) => {
+            if (q.question.length < 2 || q.question == 'undefined') return null;
             let questionText = `${q.question.trim()}`;
             let answerText = `${q.answer.trim() + '\n\n\n'}`;
             let memoText = `Memo\n${q.memo.trim()}`;
@@ -418,6 +419,7 @@ export default function Upload() {
                     </p>
 
                     {questions.map((item, index) => {
+                        if (item.question.length < 2 || item.question == 'undefined') return null;
                         return (
                             <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
                                 <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
