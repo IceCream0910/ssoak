@@ -41,7 +41,6 @@ export default function Upload() {
                     setName(doc.data().sanggibu_name);
                     if (!doc.data().hasQuestions) {
                         alert('예상 질문을 먼저 생성해주세요.');
-                        router.replace('/generate');
                     }
                     const 자동진 = (doc.data().sanggibu_자동진);
                     const 과세특 = (doc.data().sanggibu_과세특);
