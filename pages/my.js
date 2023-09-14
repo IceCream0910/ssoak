@@ -12,6 +12,7 @@ import moment from 'moment';
 import IonIcon from '@reacticons/ionicons'
 import { BottomSheet } from 'react-spring-bottom-sheet'
 import 'react-spring-bottom-sheet/dist/style.css'
+import Ocr from "../components/ocr";
 
 
 export default function Upload() {
@@ -30,7 +31,9 @@ export default function Upload() {
     const [modalContent, setModalContent] = useState('');
 
     const [indexModalOpen, setIndexModalOpen] = useState(false);
-    const [indexArr, setIndexArr] = useState(null)
+    const [indexArr, setIndexArr] = useState(null);
+
+    const [ocrModalOpen, setOCRModalOpen] = useState(false);
 
     const db = firestore;
 
@@ -337,7 +340,7 @@ export default function Upload() {
                 <IonIcon name="list-outline" size="large" />
             </button>
 
-            <button onClick={() => window.open('/ocr')} className={`scroll-top-btn`} style={{ bottom: '130px' }}>
+            <button onClick={() => setOCRModalOpen(true)} className={`scroll-top-btn`} style={{ bottom: '130px' }}>
                 <IonIcon name="camera-outline" size="large" />
             </button>
             <main className={`${styles.main}`}>
@@ -452,6 +455,12 @@ export default function Upload() {
                             })}
                         </div>
                         <button onClick={() => setIndexModalOpen(false)}>닫기</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={ocrModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setOCRModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <Ocr></Ocr>
                     </div>
                 </BottomSheet>
             </main >
