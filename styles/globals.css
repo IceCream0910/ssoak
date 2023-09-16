@@ -15,6 +15,12 @@ body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 5px;
+}
+
 .splash-screen {
     position: fixed;
     top: 0;
@@ -499,14 +505,36 @@ span.badge {
     height: auto;
 }
 
+
+.navigation-sidebar {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 30dvw;
+    height: 100dvh;
+    box-sizing: border-box;
+    background-color: #f1f5ff;
+    padding: 70px 30px;
+    overflow-y: auto;
+}
+
+.outer-sidebar {
+    width: 65dvw;
+    float: right;
+}
+
 @media screen and (max-width: 768px) {
     .big-image {
         width: 90%;
     }
-}
 
-.bottom-sheet a {
-    text-decoration: none;
-    color: inherit;
-    margin-bottom: 5px;
+    .navigation-sidebar {
+        display: none;
+    }
+
+    .outer-sidebar {
+        width: 100%;
+        float: auto;
+    }
 }

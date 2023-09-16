@@ -39,9 +39,6 @@ export default function Upload() {
             getDoc(docRef).then(async (doc) => {
                 if (doc.exists()) {
                     setName(doc.data().sanggibu_name);
-                    if (!doc.data().hasQuestions) {
-                        alert('예상 질문을 먼저 생성해주세요.');
-                    }
                     const 자동진 = (doc.data().sanggibu_자동진);
                     const 과세특 = (doc.data().sanggibu_과세특);
                     set자동진JSON(자동진);
@@ -89,6 +86,7 @@ export default function Upload() {
                         if (index === 과세특[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.')) {
                             return;
                         }
+                        if (!item.question) return;
                         item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
                             if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
                             setQuestions(questions => [...questions, { question: question, answer: '', type: '과세특', grade: grade, category: category, index: index, memo: '' }]);

@@ -61,8 +61,34 @@ export default function Upload() {
     }, [session]);
 
     useEffect(() => {
-        console.log("자동진JSON", 자동진JSON)
-        console.log("과세특JSON", 과세특JSON)
+        if (!과세특JSON) return;
+        var newArr = ['1학년_자율활동', '1학년_동아리활동', '1학년_진로활동', '2학년_자율활동', '2학년_동아리활동', '2학년_진로활동', '3학년_자율활동', '3학년_동아리활동', '3학년_진로활동']
+        Object.keys(과세특JSON).map((grade) => {
+            return (
+                <div key={grade}>
+                    <br></br>
+                    <h3>{grade}학년&nbsp;&nbsp;&nbsp;&nbsp;<button onClick={() => openAddModal(grade)}>항목 추가</button></h3>
+
+                    {Object.keys(과세특JSON[grade]).map((category) => {
+                        return (
+                            <div key={category}>
+                                {과세특JSON[grade][category].map((item, index) => {
+                                    if (!item.content) {
+                                        return null;
+                                    }
+                                    if ((index === 과세특JSON[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.'))) {
+                                        return null;
+                                    }
+                                    newArr.push(`${grade}학년_${item.content.replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0]}`)
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        })
+
+        setIndexArr(newArr);
         save();
     }, [자동진JSON, 과세특JSON]);
 
@@ -515,101 +541,113 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
                 <br></br><br></br><br></br>
 
+                <div className="outer-sidebar">
+                    {(name && 자동진JSON && 과세특JSON) ? <>
+                        <div className="analysis-container" style={{ marginBottom: '0', background: 'none', padding: '0' }}>
+                            <h3 style={{ marginLeft: '10px' }}>자율/동아리/진로</h3>
+                            <h3 className="header-title" style={{ width: '39%' }}>예상 질문</h3>
+                        </div>
+                        {자동진JSON &&
+                            자동진JSON.map((item, index) => {
+                                return (
+                                    <div key={index} className="analysis-container" id={`${item.grade}학년_${item.title}`}>
+                                        <div className="analysis-left">
+                                            <div className="analysis-card">
+                                                <h4>{item.grade}학년 {item.title}</h4>
+                                                {item.content}
+                                            </div>
 
-                {(name && 자동진JSON && 과세특JSON) ? <>
-                    <div className="analysis-container" style={{ marginBottom: '0', background: 'none', padding: '0' }}>
-                        <h3 style={{ marginLeft: '10px' }}>자율/동아리/진로</h3>
-                        <h3 className="header-title" style={{ width: '39%' }}>예상 질문</h3>
-                    </div>
-                    {자동진JSON &&
-                        자동진JSON.map((item, index) => {
-                            console.log(item)
-                            return (
-                                <div key={index} className="analysis-container" id={`${item.grade}학년_${item.title}`}>
-                                    <div className="analysis-left">
-                                        <div className="analysis-card">
-                                            <h4>{item.grade}학년 {item.title}</h4>
-                                            {item.content}
+                                        </div>
+                                        <div className="analysis-right">
+                                            {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').map((question, index2) => {
+                                                if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').length - 1) return null;
+                                                if (question.length < 2) return null;
+                                                return (
+                                                    <div key={index2} className="question-card">
+                                                        <h4>{question}</h4>
+                                                        <button onClick={() => deleteQuestionByIndex(index, question)}><IonIcon name='close' /></button>
+                                                    </div>
+                                                );
+                                            })
+                                            }
+                                            <button className="transparent" onClick={() => openAddQuestionModalByIndex(index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
+                                            <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByIndex(index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
                                         </div>
 
                                     </div>
-                                    <div className="analysis-right">
-                                        {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').map((question, index2) => {
-                                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').length - 1) return null;
-                                            if (question.length < 2) return null;
+                                )
+                            })
+                        }
+
+                        <hr></hr>
+                        <h3>과목별 세부능력 특기사항</h3>
+                        {과세특JSON &&
+                            Object.keys(과세특JSON).map((grade) => {
+                                return (
+                                    <div key={grade}>
+                                        <br></br>
+                                        <h3>{grade}학년</h3>
+
+                                        {Object.keys(과세특JSON[grade]).map((category) => {
                                             return (
-                                                <div key={index2} className="question-card">
-                                                    <h4>{question}</h4>
-                                                    <button onClick={() => deleteQuestionByIndex(index, question)}><IonIcon name='close' /></button>
-                                                </div>
-                                            );
-                                        })
-                                        }
-                                        <button className="transparent" onClick={() => openAddQuestionModalByIndex(index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
-                                        <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByIndex(index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
-                                    </div>
+                                                <div key={category}>
+                                                    {과세특JSON[grade][category].map((item, index) => {
+                                                        if (index === 과세특JSON[grade][category].length - 1) {
+                                                            return null;
+                                                        }
+                                                        else if (item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.')) {
+                                                            return (<></>
+                                                            );
+                                                        }
+                                                        return (
+                                                            <div key={index} className="analysis-container" id={item.content && `${grade}학년_${item.content.replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0]}`}>
+                                                                <div className="analysis-left">
+                                                                    <div className="analysis-card">
+                                                                        <h4></h4>
+                                                                        {item.content}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="analysis-right">
+                                                                    {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').map((question, index2) => {
+                                                                        if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').length - 1) return null;
+                                                                        if (question.length < 2) return null;
+                                                                        return (
+                                                                            <div key={index2} className="question-card">
+                                                                                <h4>{question}</h4>
+                                                                                <button onClick={() => deleteQuestionByMultiple(grade, category, index, question)}><IonIcon name='close' /></button>
+                                                                            </div>
+                                                                        );
+                                                                    })
+                                                                    }
+                                                                    <button className="transparent" onClick={() => openAddQuestionModalByMultiple(grade, category, index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
+                                                                    <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByArr(grade, category, index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
 
-                                </div>
-                            )
-                        })
-                    }
-
-                    <hr></hr>
-                    <h3>과목별 세부능력 특기사항</h3>
-                    {과세특JSON &&
-                        Object.keys(과세특JSON).map((grade) => {
-                            return (
-                                <div key={grade}>
-                                    <br></br>
-                                    <h3>{grade}학년</h3>
-
-                                    {Object.keys(과세특JSON[grade]).map((category) => {
-                                        return (
-                                            <div key={category}>
-                                                {과세특JSON[grade][category].map((item, index) => {
-                                                    if (index === 과세특JSON[grade][category].length - 1) {
-                                                        return null;
-                                                    }
-                                                    else if (item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.')) {
-                                                        return (<></>
-                                                        );
-                                                    }
-                                                    return (
-                                                        <div key={index} className="analysis-container" id={item.content && `${grade}학년_${item.content.replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0]}`}>
-                                                            <div className="analysis-left">
-                                                                <div className="analysis-card">
-                                                                    <h4></h4>
-                                                                    {item.content}
                                                                 </div>
                                                             </div>
-                                                            <div className="analysis-right">
-                                                                {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').map((question, index2) => {
-                                                                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').length - 1) return null;
-                                                                    if (question.length < 2) return null;
-                                                                    return (
-                                                                        <div key={index2} className="question-card">
-                                                                            <h4>{question}</h4>
-                                                                            <button onClick={() => deleteQuestionByMultiple(grade, category, index, question)}><IonIcon name='close' /></button>
-                                                                        </div>
-                                                                    );
-                                                                })
-                                                                }
-                                                                <button className="transparent" onClick={() => openAddQuestionModalByMultiple(grade, category, index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
-                                                                <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByArr(grade, category, index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                );
+                            })
+                        }
 
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            );
-                        })
-                    }
+                    </> : <></>}
+                </div>
 
-                </> : <></>}
+                <div className="navigation-sidebar">
+                    <h3>빠른 탐색</h3>
+                    <div style={{ overflowY: 'auto' }}>
+                        {indexArr && indexArr.map((item, key) => {
+                            return (<>
+                                <a key={key} href={`#${item}`} onClick={() => setIndexModalOpen(false)}>{item}<IonIcon name="chevron-forward-outline" /></a><br></br><br></br>
+                            </>)
+                        })}
+                    </div>
+                </div>
+
                 <BottomSheet open={modalOpen}>
                     <div className="bottom-sheet">
                         <div style={{ display: 'flex', alignItems: "center", gap: '20px' }}>
