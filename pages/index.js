@@ -33,6 +33,21 @@ export default function Home() {
         setIsSplashOpen(false);
       }, 3000)
     }
+    if (!document.querySelector(".adfit")?.querySelector("ins")) {
+      const ins = document.createElement("ins");
+      const scr = document.createElement("script");
+      ins.className = "kakao_ad_area";
+      ins.style.display = "none";
+      ins.style.width = "100%";
+      scr.async = true;
+      scr.type = "text/javascript";
+      scr.src = "//t1.daumcdn.net/kas/static/ba.min.js";
+      ins.setAttribute("data-ad-width", "300");
+      ins.setAttribute("data-ad-height", "250");
+      ins.setAttribute("data-ad-unit", "DAN-l3P0JEgce2Sq7xmR");
+      document.querySelector(".adfit")?.appendChild(ins);
+      document.querySelector(".adfit")?.appendChild(scr);
+    }
   }, []);
 
   useEffect(() => {
@@ -145,12 +160,10 @@ export default function Home() {
               </div>
 
               <div className="main-step-item" onClick={() => route.push('/my')}>
-                <h4>STEP 1.</h4>
                 <h2>내 생기부 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='document-text' /></div>
               </div>
               <div className="main-step-item" onClick={() => route.push('/generate')}>
-                <h4>STEP 2.</h4>
                 <h2>예상 질문 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='chatbubble-ellipses' /></div>
               </div>
@@ -159,18 +172,20 @@ export default function Home() {
             <br></br>
 
             <div className="main-step-container">
-              <div className="main-step-item" onClick={() => route.push('/practice')} style={{ border: 'none' }}>
-                <h4>STEP 3.</h4>
+              <div className="main-step-item" onClick={() => route.push('/practice')}>
                 <h2>답변 작성 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='file-tray-stacked' /></div>
               </div>
 
+
               <div className="main-step-item">
-                <h4>STEP 4.</h4>
-                <h2>AI 모의면접 <span className="badge">준비중</span></h2>
-                <div className="icon"><IonIcon name='people-circle' /></div>
+                <h4></h4>
+                <h2>대학별 예상 질문 <span className="badge">준비중</span></h2>
+                <div className="icon"><IonIcon name='layers' /></div>
               </div>
 
+
+              <div className="adfit"></div>
             </div>
 
           </>}

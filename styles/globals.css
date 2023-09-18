@@ -290,7 +290,7 @@ input {
     box-sizing: border-box;
 }
 
-.analysis-container .question-card {
+.question-card {
     background-color: rgb(200, 216, 255);
     border-radius: 0 20px 20px 20px;
     padding: 1px 20px;
@@ -484,7 +484,7 @@ input {
 
     .main-step-item .icon {
         position: relative;
-        top: -90px;
+        top: -40px;
         font-size: 4.5em;
         float: right;
     }
@@ -537,4 +537,69 @@ span.badge {
         width: 100%;
         float: auto;
     }
+}
+
+@media screen and (min-width: 768px) {
+
+    /* pc */
+    div[role=dialog] {
+        border-radius: 20px;
+        width: 70%;
+        top: 50%;
+        left: 50%;
+        bottom: 50%;
+        transform: translate(-50%, -50%);
+        background-color: transparent;
+    }
+
+    div[data-rsbs-header=true] {
+        display: none;
+    }
+
+    .bottom-sheet {
+        background-color: #fff;
+        border-radius: 20px;
+    }
+}
+
+.list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 15px;
+    padding: 0 10px;
+}
+
+.list-item.active {
+    background-color: rgb(231, 238, 255);
+
+}
+
+.list-item button {
+    font-size: 20px;
+    padding: 0;
+}
+
+#univInfo hr {
+    color: transparent;
+    border: none;
+}
+
+#univInfo .form-box {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#univInfo textarea,
+#univInfo input {
+    background-color: #e5ebfd;
+    width: 70%;
+}
+
+#univInfo textarea {
+    min-height: 70px;
 }

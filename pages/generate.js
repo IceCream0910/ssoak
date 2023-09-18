@@ -18,6 +18,7 @@ export default function Upload() {
     const { data: session } = useSession();
     const router = useRouter();
     const [name, setName] = useState('');
+    const [commonQuestions, setCommonQuestions] = useState(['자기소개 해주세요.', '이 학과에 지원한 동기를 말씀해주세요.', '본인의 장점과 단점이 무엇이라고 생각하나요?', '본인의 단점을 극복하기 위해 어떤 노력을 했나요?', '대학 졸업 후 어떤 일을 하실 계획인가요?', '본인이 꼭 합격해야 하는 이유를 말씀해보세요']);
     const [자동진JSON, set자동진JSON] = useState('');
     const [과세특JSON, set과세특JSON] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
@@ -33,7 +34,10 @@ export default function Upload() {
     const [isProcessingSpecific, setIsProsessingSpecific] = useState(false);
 
     const [indexModalOpen, setIndexModalOpen] = useState(false);
-    const [indexArr, setIndexArr] = useState(null)
+    const [indexArr, setIndexArr] = useState(null);
+
+    const [addCommonQuestionModalOpen, setAddCommonQuestionModalOpen] = useState(false);
+    const [addCommonQuestionText, setAddCommonQuestionText] = useState('');
 
     const db = firestore;
 
@@ -48,6 +52,7 @@ export default function Upload() {
                         router.replace('/my');
                     }
                     setName(doc.data().sanggibu_name);
+                    if (doc.data().commonQuestions) setCommonQuestions(doc.data().commonQuestions);
                     set자동진JSON(doc.data().sanggibu_자동진);
                     set과세특JSON(doc.data().sanggibu_과세특);
                     setHasQuestions(doc.data().hasQuestions || false);
@@ -62,7 +67,7 @@ export default function Upload() {
 
     useEffect(() => {
         if (!과세특JSON) return;
-        var newArr = ['1학년_자율활동', '1학년_동아리활동', '1학년_진로활동', '2학년_자율활동', '2학년_동아리활동', '2학년_진로활동', '3학년_자율활동', '3학년_동아리활동', '3학년_진로활동']
+        var newArr = ['공통질문', '1학년_자율활동', '1학년_동아리활동', '1학년_진로활동', '2학년_자율활동', '2학년_동아리활동', '2학년_진로활동', '3학년_자율활동', '3학년_동아리활동', '3학년_진로활동']
         Object.keys(과세특JSON).map((grade) => {
             return (
                 <div key={grade}>
@@ -395,6 +400,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
     function save() {
         if (name && 자동진JSON && 과세특JSON && session.user?.id) {
             updateDoc(doc(db, "users", session.user?.id), {
+                commonQuestions: commonQuestions,
                 sanggibu_name: name,
                 sanggibu_자동진: 자동진JSON,
                 sanggibu_과세특: 과세특JSON
@@ -485,7 +491,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
     const openIndexModal = () => {
         setIndexModalOpen(true);
-        var newArr = ['1학년_자율활동', '1학년_동아리활동', '1학년_진로활동', '2학년_자율활동', '2학년_동아리활동', '2학년_진로활동', '3학년_자율활동', '3학년_동아리활동', '3학년_진로활동']
+        var newArr = ['공통질문', '1학년_자율활동', '1학년_동아리활동', '1학년_진로활동', '2학년_자율활동', '2학년_동아리활동', '2학년_진로활동', '3학년_자율활동', '3학년_동아리활동', '3학년_진로활동']
         if (!과세특JSON) return null;
         Object.keys(과세특JSON).map((grade) => {
             return (
@@ -515,6 +521,30 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
         setIndexArr(newArr);
     }
 
+    useEffect(() => {
+        save();
+    }, [commonQuestions])
+
+    function addCommonQuestion() {
+        setCommonQuestions((prev) => {
+            const updatedData = [...prev];
+            updatedData.push(addCommonQuestionText);
+            return updatedData;
+        });
+        setAddCommonQuestionModalOpen(false);
+        setAddCommonQuestionText('');
+    }
+
+    function deleteCommonQuestion(index) {
+        if (confirm('질문을 삭제할까요?')) {
+            setCommonQuestions((prev) => {
+                const updatedData = [...prev];
+                updatedData.splice(index, 1);
+                return updatedData;
+            });
+        }
+    }
+
     return (
         <>
             <Toaster />
@@ -538,10 +568,24 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     </div>
                 </header>
 
-
                 <br></br><br></br><br></br>
 
                 <div className="outer-sidebar">
+                    <h3 style={{ marginLeft: '10px' }} id='공통질문'>공통 질문</h3>
+                    {commonQuestions && commonQuestions.map((item, index) => {
+                        return (
+                            <div key={index} className="analysis-container question-card" style={{ marginBottom: '10px', padding: '10px 20px' }}>
+                                <h3>Q. {item}</h3>
+                                <button onClick={() => deleteCommonQuestion(index)}><IonIcon name='close' /></button>
+                            </div>
+                        )
+                    })
+                    }
+                    <button onClick={() => setAddCommonQuestionModalOpen(true)}>질문 추가</button>
+
+
+                    <br></br> <br></br><br></br> <br></br>
+
                     {(name && 자동진JSON && 과세특JSON) ? <>
                         <div className="analysis-container" style={{ marginBottom: '0', background: 'none', padding: '0' }}>
                             <h3 style={{ marginLeft: '10px' }}>자율/동아리/진로</h3>
@@ -672,6 +716,15 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         <h3>질문 추가</h3>
                         <input placeholder="질문을 입력하세요" value={addQuestionText} onChange={(e) => setAddQuestionText(e.target.value)}></input>
                         <button onClick={() => addQuestion()}>추가</button>
+                    </div>
+                </BottomSheet>
+
+
+                <BottomSheet open={addCommonQuestionModalOpen} expandOnContentDrag={false} onDismiss={() => setAddCommonQuestionModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <h3>질문 추가</h3>
+                        <input placeholder="질문을 입력하세요" value={addCommonQuestionText} onChange={(e) => setAddCommonQuestionText(e.target.value)}></input>
+                        <button onClick={() => addCommonQuestion()}>추가</button>
                     </div>
                 </BottomSheet>
 

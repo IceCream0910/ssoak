@@ -19,6 +19,7 @@ export default function Upload() {
     const { data: session } = useSession();
     const router = useRouter();
     const [name, setName] = useState('');
+    const [commonQuestions, setCommonQuestions] = useState(['자기소개 해주세요.', '이 학과에 지원한 동기를 말씀해주세요.', '본인의 장점과 단점이 무엇이라고 생각하나요?', '본인의 단점을 극복하기 위해 어떤 노력을 했나요?', '대학 졸업 후 어떤 일을 하실 계획인가요?', '본인이 꼭 합격해야 하는 이유를 말씀해보세요']);
     const [자동진JSON, set자동진JSON] = useState('');
     const [과세특JSON, set과세특JSON] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
@@ -41,6 +42,7 @@ export default function Upload() {
                     setName(doc.data().sanggibu_name);
                     const 자동진 = (doc.data().sanggibu_자동진);
                     const 과세특 = (doc.data().sanggibu_과세특);
+                    if (doc.data().commonQuestions) setCommonQuestions(doc.data().commonQuestions);
                     set자동진JSON(자동진);
                     set과세특JSON(과세특);
                     if (doc.data().questionsArr) {
@@ -71,6 +73,11 @@ export default function Upload() {
     }, [questions]);
 
     function convertToQuestions(자동진, 과세특) {
+        commonQuestions.map((item, index) => {
+            if (!item) return;
+            result.unshift({ question: item, answer: '', type: '자율', index: index, memo: '' });
+        });
+
         자동진.map((item, index) => {
             if (!item.question) return;
             item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
@@ -99,6 +106,12 @@ export default function Upload() {
 
     function generateNewQuestions(자동진, 과세특) {
         const result = [];
+
+        commonQuestions.map((item, index) => {
+            if (!item) return;
+            result.unshift({ question: item, answer: '', type: '자율', index: index, memo: '' });
+        });
+
         자동진.map((item, index) => {
             if (!item.question) return;
             item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
