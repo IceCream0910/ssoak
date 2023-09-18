@@ -540,6 +540,7 @@ export default function Upload() {
             return updatedData;
         });
         setModalOpen(false);
+        save();
     }
 
     const handleModalSubjectChange = (e) => {
