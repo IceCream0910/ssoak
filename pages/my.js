@@ -739,7 +739,7 @@ export default function Upload() {
                     </div>
                 </BottomSheet>
 
-                <BottomSheet open={ocrModalOpen} expandOnContentDrag={true} scrollLocking={true} onDismiss={() => setOCRModalOpen(false)}>
+                <BottomSheet open={ocrModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setOCRModalOpen(false)}>
                     <div className="bottom-sheet">
                         <Ocr></Ocr>
                     </div>
