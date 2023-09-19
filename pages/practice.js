@@ -73,9 +73,13 @@ export default function Upload() {
     }, [questions]);
 
     function convertToQuestions(자동진, 과세특) {
-        commonQuestions.map((item, index) => {
+        commonQuestions.reverse().map((item, index) => {
             if (!item) return;
-            result.unshift({ question: item, answer: '', type: '자율', index: index, memo: '' });
+            setQuestions((prev) => {
+                const newArr = [...prev];
+                newArr.unshift({ question: item, answer: '', type: '자율', index: index, memo: '' });
+                return newArr;
+            });
         });
 
         자동진.map((item, index) => {
@@ -429,7 +433,7 @@ export default function Upload() {
                     </p>
 
                     {questions.map((item, index) => {
-                        if (item.question.length < 2 || item.question == 'undefined') return null;
+                        if (item.question.length < 2 || !item.question) return null;
                         return (
                             <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
                                 <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
