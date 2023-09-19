@@ -178,9 +178,9 @@ export default function Home() {
               </div>
 
 
-              <div className="main-step-item">
+              <div className="main-step-item" onClick={() => route.push('/univs')}>
                 <h4></h4>
-                <h2>대학별 예상 질문 <span className="badge">준비중</span></h2>
+                <h2>대학별 예상 질문 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='layers' /></div>
               </div>
 

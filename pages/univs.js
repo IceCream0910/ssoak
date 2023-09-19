@@ -20,7 +20,13 @@ export default function Upload() {
     const [univAddModalInput, setUnivAddModalInput] = useState('');
     const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
-    const departmentInput = useRef(null);
+    const [isInit, setIsInit] = useState(false);
+    const [updatingIndex, setupdatingIndex] = useState(null);
+
+    const [department, setDepartment] = useState('');
+    const [time, setTime] = useState('');
+    const [grading, setGrading] = useState('');
+    const [curriculum, setCurriculum] = useState('');
 
     const db = firestore;
 
@@ -30,7 +36,9 @@ export default function Upload() {
             const docRef = doc(db, "users", session.user?.id);
             getDoc(docRef).then((doc) => {
                 if (doc.exists()) {
+                    setUniversities(doc.data().universitiesName || []);
                     setUniversitiesData(doc.data().universities || []);
+                    setIsInit(true);
                 }
             }).catch((error) => {
                 console.error(error)
@@ -38,20 +46,39 @@ export default function Upload() {
         } else {
             router.replace('/');
         }
-    }, [session]);
+    }, []);
 
     useEffect(() => {
-        console.log(universitiesData);
-        if (universitiesData) {
-            let keys = universitiesData.map(item => Object.keys(item).toString());
-            setUniversities(keys);
-            save();
+        save();
+        if (isInit) {
+            selectUnivListItem(0)
         }
-    }, [universitiesData])
+        if (updatingIndex != null) {
+            selectUnivListItem(updatingIndex);
+            setupdatingIndex(null);
+        }
+        setIsInit(false);
+    }, [universitiesData, universities]);
+
+    useEffect(() => {
+        console.log(selectedItemIndex)
+    }, [selectedItemIndex])
 
     function addUnivToList() {
+        setupdatingIndex(universities.length)
+        setUniversities((prev) => {
+            const updatedData = [...prev];
+            updatedData.push(univAddModalInput);
+            return updatedData;
+        });
         setUniversitiesData((prev) => {
-            const updatedData = [...prev, { [univAddModalInput]: {} }];
+            const updatedData = [...prev];
+            updatedData.push({
+                department: '',
+                time: '',
+                grading: '',
+                curriculum: ''
+            });
             return updatedData;
         });
         setUnivAddModalInput('');
@@ -60,13 +87,21 @@ export default function Upload() {
 
     function deleteUniversity(key) {
         if (confirm('정말 삭제하시겠습니까?')) {
-            setUniversitiesData((prev) => {
+            setIsInit(true);
+            setUniversities((prev) => {
                 const updatedData = [...prev];
-                const indexToDelete = updatedData.findIndex((item) => Object.keys(item)[0] === key);
+                const indexToDelete = updatedData.findIndex((item, index) => index === key);
                 if (indexToDelete !== -1) {
                     updatedData.splice(indexToDelete, 1);
                 }
-
+                return updatedData;
+            });
+            setUniversitiesData((prev) => {
+                const updatedData = [...prev];
+                const indexToDelete = updatedData.findIndex((item, index) => index === key);
+                if (indexToDelete !== -1) {
+                    updatedData.splice(indexToDelete, 1);
+                }
                 return updatedData;
             });
         }
@@ -76,11 +111,23 @@ export default function Upload() {
 
     function selectUnivListItem(index) {
         setSelectedItemIndex(index);
+        if (universitiesData[index]) {
+            setDepartment(universitiesData[index].department || '');
+            setTime(universitiesData[index].time || '');
+            setGrading(universitiesData[index].grading || '');
+            setCurriculum(universitiesData[index].curriculum || '');
+        } else {
+            setDepartment('');
+            setTime('');
+            setGrading('');
+            setCurriculum('');
+        }
     }
 
     function save() {
-        if (session.user?.id) {
+        if (session.user?.id && universitiesData) {
             updateDoc(doc(db, "users", session.user?.id), {
+                universitiesName: universities,
                 universities: universitiesData
             }).then(() => {
                 console.log("Document written with ID: ", session.user?.id);
@@ -88,6 +135,19 @@ export default function Upload() {
                 console.error("Error adding document: ", error);
             });
         }
+    }
+
+    function saveUnivInfo() {
+        setUniversitiesData((prev) => {
+            const updatedData = [...prev];
+            updatedData[selectedItemIndex] = {
+                department: department,
+                time: time,
+                grading: grading,
+                curriculum: curriculum
+            }
+            return updatedData;
+        });
     }
 
     return (
@@ -111,41 +171,56 @@ export default function Upload() {
 
                 <br></br><br></br><br></br>
                 <div className="outer-sidebar" id="univInfo">
-                    <div className="form-box">지원학과/학부
-                        <input placeholder="학과 또는 학부 이름" ref={departmentInput}></input>
+
+                    {(universities.length > 0) && <>                    <div className="form-box">지원학과/학부
+                        <input placeholder="학과 또는 학부 이름" value={department} onChange={(e) => setDepartment(e.target.value)}></input>
                     </div>
 
-                    <div className="form-box">면접 평가 반영 요소
-                        <input placeholder="형식 자유. 반영비율은 기재하지 않아도 됨" ref={departmentInput}></input>
-                    </div>
-
-                    <div className="form-box">지원학과/학부 교과과정
-                        <textarea placeholder="대학별 홈페이지에서 교과과정 확인 후 기재. 형식 자유." ref={departmentInput}></textarea>
-                    </div>
-
-                    <button>저장</button>
-
-                    <hr></hr><hr></hr><hr></hr><hr></hr>
-                    <h3>입력한 내용을 기반으로 질문을 생성해봤어요.</h3>
-
-                    <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
-                        <div className="analysis-left analysis-container" style={{ width: '100%', flexDirection: 'column' }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
-                                <h4>ㅇㅇ</h4>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
-                                <textarea
-                                    style={{ background: 'none', width: '100%', padding: '20px' }}
-                                    className="answer-textarea"
-                                    spellCheck="false"
-                                    autoComplete="off"
-                                />
-                            </div>
-                            <button style={{ float: 'right', width: 'fit-content' }}>저장</button>
+                        <div className="form-box">면접 시간(분)
+                            <input type="number" placeholder="평균적인 면접 진행 시간. 대학에서 제공하는 자료나 면접 후기 참고." value={time} onChange={(e) => setTime(e.target.value)}></input>
                         </div>
-                    </div>
+
+                        <div className="form-box">면접 평가 반영 요소
+                            <input placeholder="형식 자유. 반영비율은 기재하지 않아도 됨" value={grading} onChange={(e) => setGrading(e.target.value)}></input>
+                        </div>
+
+                        <div className="form-box">지원학과/학부 교과과정
+                            <textarea placeholder="대학 홈페이지에서 교과과정 확인 후 기재. 형식 자유." value={curriculum} onChange={(e) => setCurriculum(e.target.value)}></textarea>
+                        </div>
+
+                        <button onClick={() => saveUnivInfo()}>저장</button>
+
+                        <hr></hr><hr></hr><hr></hr><hr></hr>
+                        <h3>{universities[selectedItemIndex]}에서 나올만한 질문을 준비해볼까요? <span class="badge">준비중</span></h3>
+
+                        <div id="practice-container" style={{ display: 'flex', gap: '50px', display: 'none' }}>
+                            <div className="analysis-left analysis-container" style={{ width: '100%', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
+                                    <h4>이 학과에서 무엇을 배우는지 알고 있나요?</h4>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
+                                    <textarea
+                                        style={{ background: 'none', width: '100%', padding: '20px' }}
+                                        className="answer-textarea"
+                                        spellCheck="false"
+                                        autoComplete="off"
+                                    />
+                                </div>
+                                <div>
+                                    <button className="transparent" onClick={() => feedback(index)}><IonIcon name="pulse-outline" />&nbsp;&nbsp;AI 피드백&nbsp;<span style={{ fontSize: 10, marginTop: '-5px' }}>beta</span></button>
+
+                                    <button className="transparent" style={{ float: 'right' }} onClick={() => save()}><IonIcon name="checkmark-done-outline" />&nbsp;&nbsp;저장</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br></br> <br></br> <br></br>
+
+                    </>
+                    }
+
                 </div>
 
                 <div className="navigation-sidebar">
@@ -155,7 +230,7 @@ export default function Upload() {
                             return (
                                 <div key={index} className={selectedItemIndex === index ? "list-item active" : "list-item"} onClick={() => selectUnivListItem(index)}>
                                     <h3>{item}</h3>
-                                    <button style={{ float: 'right' }} className="transparent" onClick={() => deleteUniversity(item)}><IonIcon name='close' /></button>
+                                    <button style={{ float: 'right' }} className="transparent" onClick={() => deleteUniversity(index)}><IonIcon name='close' /></button>
                                 </div>
                             )
                         })
