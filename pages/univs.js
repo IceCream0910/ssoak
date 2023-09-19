@@ -27,6 +27,11 @@ export default function Upload() {
     const [time, setTime] = useState('');
     const [grading, setGrading] = useState('');
     const [curriculum, setCurriculum] = useState('');
+    const [etc, setEtc] = useState('');
+
+    const [addQuestionModalOpen, setAddQuestionModalOpen] = useState(false);
+    const [questions, setQuestions] = useState([]);
+    const [modalContent, setModalContent] = useState('');
 
     const db = firestore;
 
@@ -49,7 +54,9 @@ export default function Upload() {
     }, []);
 
     useEffect(() => {
-        save();
+        if (session) {
+            save();
+        }
         if (isInit) {
             selectUnivListItem(0)
         }
@@ -61,8 +68,11 @@ export default function Upload() {
     }, [universitiesData, universities]);
 
     useEffect(() => {
-        console.log(selectedItemIndex)
-    }, [selectedItemIndex])
+        if (universitiesData) {
+            saveUnivInfo();
+        }
+    }, [questions]);
+
 
     function addUnivToList() {
         setupdatingIndex(universities.length)
@@ -77,7 +87,9 @@ export default function Upload() {
                 department: '',
                 time: '',
                 grading: '',
-                curriculum: ''
+                curriculum: '',
+                etc: '',
+                questions: [{ question: '우리 대학에 입학하면 꼭 듣고 싶은 수업이 있나요?', answer: '' }]
             });
             return updatedData;
         });
@@ -116,11 +128,15 @@ export default function Upload() {
             setTime(universitiesData[index].time || '');
             setGrading(universitiesData[index].grading || '');
             setCurriculum(universitiesData[index].curriculum || '');
+            setEtc(universitiesData[index].etc || '');
+            setQuestions(universitiesData[index].questions || []);
         } else {
             setDepartment('');
             setTime('');
             setGrading('');
             setCurriculum('');
+            setEtc('');
+            setQuestions([]);
         }
     }
 
@@ -137,6 +153,7 @@ export default function Upload() {
         }
     }
 
+
     function saveUnivInfo() {
         setUniversitiesData((prev) => {
             const updatedData = [...prev];
@@ -144,10 +161,42 @@ export default function Upload() {
                 department: department,
                 time: time,
                 grading: grading,
-                curriculum: curriculum
+                curriculum: curriculum,
+                etc: etc,
+                questions: questions
             }
             return updatedData;
         });
+    }
+
+    const handleAnswerEdit = (index, e) => {
+        e.style.height = 'auto';
+        let height = e.scrollHeight;
+        e.style.height = `${height + 8}px`;
+
+        let newQuestions = [...questions];
+        newQuestions[index].answer = e.value;
+        setQuestions(newQuestions);
+    }
+
+    function addQuestion() {
+        setQuestions((prev) => {
+            const newArr = [...prev];
+            newArr.unshift({ question: modalContent, answer: '' });
+            return newArr;
+        });
+        setAddQuestionModalOpen(false);
+        setModalContent('')
+    }
+
+    function deleteQuestion(index) {
+        if (confirm('정말 삭제하시겠습니까?')) {
+            setQuestions((prev) => {
+                const newArr = [...prev];
+                newArr.splice(index, 1);
+                return newArr;
+            });
+        }
     }
 
     return (
@@ -171,6 +220,22 @@ export default function Upload() {
 
                 <br></br><br></br><br></br>
                 <div className="outer-sidebar" id="univInfo">
+                    <div className="list-mobile">
+                        <div style={{ overflowY: 'auto' }}>
+                            {universities && universities.map((item, index) => {
+                                return (
+                                    <div key={index} className={selectedItemIndex === index ? "list-item active" : "list-item"} onClick={() => [window.scrollTo(0, 0), selectUnivListItem(index)]}>
+                                        <h3>{item}</h3>
+                                        <button style={{ float: 'right' }} className="transparent" onClick={() => deleteUniversity(index)}><IonIcon name='close' /></button>
+                                    </div>
+                                )
+                            })
+                            }
+                        </div>
+                        <br></br>
+                        <button onClick={() => setUnivAddModalOpen(true)}><IonIcon name="add" />&nbsp;대학 추가하기</button>
+                    </div>
+
 
                     {(universities.length > 0) && <>                    <div className="form-box">지원학과/학부
                         <input placeholder="학과 또는 학부 이름" value={department} onChange={(e) => setDepartment(e.target.value)}></input>
@@ -188,35 +253,50 @@ export default function Upload() {
                             <textarea placeholder="대학 홈페이지에서 교과과정 확인 후 기재. 형식 자유." value={curriculum} onChange={(e) => setCurriculum(e.target.value)}></textarea>
                         </div>
 
-                        <button onClick={() => saveUnivInfo()}>저장</button>
-
-                        <hr></hr><hr></hr><hr></hr><hr></hr>
-                        <h3>{universities[selectedItemIndex]}에서 나올만한 질문을 준비해볼까요? <span class="badge">준비중</span></h3>
-
-                        <div id="practice-container" style={{ display: 'flex', gap: '50px', display: 'none' }}>
-                            <div className="analysis-left analysis-container" style={{ width: '100%', flexDirection: 'column' }}>
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
-                                    <h4>이 학과에서 무엇을 배우는지 알고 있나요?</h4>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
-                                    <textarea
-                                        style={{ background: 'none', width: '100%', padding: '20px' }}
-                                        className="answer-textarea"
-                                        spellCheck="false"
-                                        autoComplete="off"
-                                    />
-                                </div>
-                                <div>
-                                    <button className="transparent" onClick={() => feedback(index)}><IonIcon name="pulse-outline" />&nbsp;&nbsp;AI 피드백&nbsp;<span style={{ fontSize: 10, marginTop: '-5px' }}>beta</span></button>
-
-                                    <button className="transparent" style={{ float: 'right' }} onClick={() => save()}><IonIcon name="checkmark-done-outline" />&nbsp;&nbsp;저장</button>
-                                </div>
-                            </div>
+                        <div className="form-box">기타
+                            <textarea placeholder="기타 참고할만한 특이사항을 입력해보세요." value={etc} onChange={(e) => setEtc(e.target.value)}></textarea>
                         </div>
 
-                        <br></br> <br></br> <br></br>
+                        <button onClick={() => [saveUnivInfo(), toast.success('저장했어요')]}>저장</button>
+
+                        <hr></hr><hr></hr><hr></hr><hr></hr>
+                        <h3>{universities[selectedItemIndex]}에서 나올만한 질문을 준비해볼까요?</h3>
+
+                        <div id="practice-container" style={{ display: 'flex', flexDirection: 'column' }}>
+
+                            {questions && questions.map((item, index) => {
+                                return (
+                                    <div className="analysis-left analysis-container" style={{ width: '100%', flexDirection: 'column' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
+                                            <h4>{item.question}</h4>
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
+                                            <textarea
+                                                style={{ background: 'none', width: '100%', padding: '20px' }}
+                                                value={item.answer}
+                                                onChange={(e) => handleAnswerEdit(index, e.target)}
+                                                className="answer-textarea"
+                                                spellCheck="false"
+                                                autoComplete="off"
+                                            />
+                                        </div>
+                                        <div>
+                                            <button className="transparent" onClick={() => deleteQuestion(index)}><IonIcon name="trash-outline" />&nbsp;&nbsp;삭제</button>
+
+                                            <button className="transparent" style={{ float: 'right' }} onClick={() => [saveUnivInfo(), toast.success('저장했어요')]}><IonIcon name="checkmark-done-outline" />&nbsp;&nbsp;저장</button>
+                                        </div>
+                                    </div>
+                                )
+
+                            })}
+
+                        </div>
+
+                        <button onClick={() => setAddQuestionModalOpen(true)}>{universities[selectedItemIndex]} 질문 추가하기</button>
+
+                        <br></br> <br></br> <br></br> <br></br> <br></br>
 
                     </>
                     }
@@ -228,7 +308,7 @@ export default function Upload() {
                     <div style={{ overflowY: 'auto' }}>
                         {universities && universities.map((item, index) => {
                             return (
-                                <div key={index} className={selectedItemIndex === index ? "list-item active" : "list-item"} onClick={() => selectUnivListItem(index)}>
+                                <div key={index} className={selectedItemIndex === index ? "list-item active" : "list-item"} onClick={() => [window.scrollTo(0, 0), selectUnivListItem(index)]}>
                                     <h3>{item}</h3>
                                     <button style={{ float: 'right' }} className="transparent" onClick={() => deleteUniversity(index)}><IonIcon name='close' /></button>
                                 </div>
@@ -240,11 +320,19 @@ export default function Upload() {
                     <button onClick={() => setUnivAddModalOpen(true)}><IonIcon name="add" />&nbsp;대학 추가하기</button>
                 </div>
 
-                <BottomSheet open={univAddModalOpen} expandOnContentDrag={false} onDismiss={() => [setUnivAddModalOpen(false),]}>
+                <BottomSheet open={univAddModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => [setUnivAddModalOpen(false),]}>
                     <div className="bottom-sheet">
                         <h3>대학 추가하기</h3>
                         <input placeholder="대학명을 입력하세요" value={univAddModalInput} onChange={(e) => setUnivAddModalInput(e.target.value)}></input>
                         <button onClick={() => addUnivToList()}>추가</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={addQuestionModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => [setAddQuestionModalOpen(false)]}>
+                    <div className="bottom-sheet">
+                        <h3>질문 추가하기</h3>
+                        <input placeholder="질문을 입력하세요" value={modalContent} onChange={(e) => setModalContent(e.target.value)}></input>
+                        <button onClick={() => addQuestion()}>추가</button>
                     </div>
                 </BottomSheet>
 

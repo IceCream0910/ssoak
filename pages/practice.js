@@ -111,7 +111,7 @@ export default function Upload() {
     function generateNewQuestions(자동진, 과세특) {
         const result = [];
 
-        commonQuestions.map((item, index) => {
+        commonQuestions.reverse().map((item, index) => {
             if (!item) return;
             result.unshift({ question: item, answer: '', type: '자율', index: index, memo: '' });
         });

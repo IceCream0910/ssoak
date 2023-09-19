@@ -524,6 +524,11 @@ span.badge {
     float: right;
 }
 
+.list-mobile {
+    display: none;
+}
+
+
 @media screen and (max-width: 768px) {
     .big-image {
         width: 90%;
@@ -536,6 +541,12 @@ span.badge {
     .outer-sidebar {
         width: 100%;
         float: auto;
+    }
+
+
+    .list-mobile {
+        display: block;
+        margin-bottom: 50px;
     }
 }
 
@@ -562,6 +573,7 @@ span.badge {
     }
 }
 
+
 .list-item {
     display: flex;
     flex-direction: row;
@@ -573,7 +585,14 @@ span.badge {
 
 .list-item.active {
     background-color: rgb(231, 238, 255);
+}
 
+.list-item button {
+    display: none;
+}
+
+.list-item.active button {
+    display: block;
 }
 
 .list-item button {
@@ -588,18 +607,18 @@ span.badge {
 
 #univInfo .form-box {
     display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: center;
+    flex-direction: column;
+    gap: 5px;
     margin-bottom: 15px;
 }
 
 #univInfo textarea,
 #univInfo input {
     background-color: #e5ebfd;
-    width: 70%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-#univInfo textarea {
-    min-height: 70px;
+.form-box textarea {
+    min-height: 200px;
 }
