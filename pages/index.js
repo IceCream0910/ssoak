@@ -21,6 +21,7 @@ export default function Home() {
   const [ddaySchoolName, setDdaySchoolName] = useState('');
   const [ddayDate, setDdayDate] = useState(null);
   const [ddayText, setDdayText] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [ddayModalOpen, setDdayModalOpen] = useState(false);
 
@@ -57,6 +58,7 @@ export default function Home() {
         if (doc.exists()) {
           setDdaySchoolName(doc.data().ddayName);
           setDdayDate(doc.data().ddayDate);
+          if (doc.data().isAdmin) setIsAdmin(doc.data().isAdmin || false);
         }
       }).catch((error) => {
         console.error(error)
@@ -152,6 +154,7 @@ export default function Home() {
         {session &&
           <>
             <h2>{session.user?.name} 님, 반가워요!</h2>
+            {isAdmin && <button onClick={() => route.push('/admin')}>학생 관리</button>}
             <div className="main-step-container">
               <div className="main-step-item transparent" onClick={() => setDdayModalOpen(true)}>
                 <h4>{ddaySchoolName ? ddaySchoolName + ' 면접일' : '가장 가까운 면접일을 설정해보세요'}</h4>
