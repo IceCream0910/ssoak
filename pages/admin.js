@@ -153,7 +153,7 @@ export default function Admin() {
                         </select>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', color: '#d6d2d2', position: 'fixed', background: '#f1f5ff', marginTop: '-10px', width: '100%' }}>
+                    <div className="admin-tabs" style={{}}>
                         <button className="transparent" style={{ paddingLeft: 0 }}><a href="#univs">대학 정보</a></button>|
                         <button className="transparent"><a href="#sanggibu">학생 생기부</a></button>|
                         <button className="transparent"><a href="#qna">예상 질문</a></button>
@@ -176,7 +176,7 @@ export default function Admin() {
                                     </div>
                                 ))
                             ) : (
-                                <h3>지원 대학 정보 및 예상 질문을 입력하지 않았습니다</h3>
+                                <h5>지원 대학 정보를 입력하지 않았습니다</h5>
                             )
                         }
 

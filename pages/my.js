@@ -91,7 +91,6 @@ export default function Upload() {
         const fileName = event.target.value;
         console.log(file, fileName);
         if (file) {
-            console.clear();
             if (fileName.split('.').pop().toLowerCase() === 'pdf') {
                 const pdfText = await convertPDFToText(file);
 
@@ -442,7 +441,6 @@ export default function Upload() {
 
             rows.forEach((row) => {
                 const cells = Array.from(row.querySelectorAll('td'));
-
                 if (cells.length === 4) {
                     // 학년 정보 저장
                     grade = parseInt(cells[0].textContent.trim(), 10);
@@ -456,8 +454,17 @@ export default function Upload() {
                     });
                 } else {
                     // 영역 및 시간 정보 저장
-                    title = cells[0].textContent.trim();
-                    content = cells[2].textContent.trim();
+                    const text = cells[0].textContent.trim().split(' : ');
+                    if(text.length === 4) {
+
+                    grade = text[0].replace('학년  영역', '');
+                    title = text[1].replace('  시간', '');
+                    content = text[3];
+                    } else {
+                        grade = text[0].replace('학년  영역', '');
+                        title = text[1].replace('  시간', '');
+                        content = text[4];
+                    }
 
                     result.push({
                         grade,
