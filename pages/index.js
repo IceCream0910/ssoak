@@ -34,7 +34,7 @@ export default function Home() {
         setIsSplashOpen(false);
       }, 3000)
     }
-    if (!document.querySelector(".adfit")?.querySelector("ins")) {
+    if (!document.querySelector(".adfit1")?.querySelector("ins")) {
       const ins = document.createElement("ins");
       const scr = document.createElement("script");
       ins.className = "kakao_ad_area";
@@ -206,7 +206,7 @@ export default function Home() {
               </div>
 
 
-              <div className="main-step-item" onClick={() => route.push('/mock')}>
+              <div className="main-step-item" onClick={() => route.push('/mock')} id="only-pc">
                 <h2>AI 모의면접 <span className="badge">beta</span> <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='timer-outline' /></div>
               </div>
@@ -214,15 +214,16 @@ export default function Home() {
 
           </>}
 
-        <div className="adfit2"></div>
-
 
         {!session && <>
           <h2>환영합니다!<br></br>로그인하고 시작해보세요.</h2>
           <button onClick={() => setModalOpen(true)}>로그인</button>
         </>}
 
-        <br></br><br></br><br></br><br></br><br></br><br></br>
+        <br></br><br></br><br></br><br></br>
+
+        <div className="adfit1" id="only-mobile"></div>
+        <div className="adfit2" id="only-pc"></div>
 
         <footer>
           © 2023. All rights reserved Yun Tae In.<br></br><br></br>

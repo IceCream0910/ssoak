@@ -562,9 +562,10 @@ span.badge {
         width: 100%;
     }
 
-    .adfit2 {
+    #only-pc {
         display: none;
     }
+
 }
 
 @media screen and (min-width: 768px) {
@@ -587,6 +588,10 @@ span.badge {
     .bottom-sheet {
         background-color: #fff;
         border-radius: 20px;
+    }
+
+    #only-mobile {
+        display: none;
     }
 }
 
@@ -668,4 +673,14 @@ select {
     background: #f1f5ff;
     margin-top: -10px;
     width: 100%
+}
+
+video {
+    border-radius: 20px;
+}
+
+.camera-container {
+    display: flex;
+    flex-direction: column;
+
 }
