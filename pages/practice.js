@@ -30,6 +30,11 @@ export default function Upload() {
     const [questions, setQuestions] = useState('');
     const [modalContent, setModalContent] = useState('');
     const [isReseting, setIsReseting] = useState(false);
+    const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+    const [isPdfOnlyQuestion, setIsPdfOnlyQuestion] = useState(true);
+    const [isPdfOnlyStar, setIsPdfOnlyStar] = useState(true);
+    const [isShowOnlyStar, setIsShowOnlyStar] = useState(false);
+
 
     const db = firestore;
 
@@ -77,7 +82,7 @@ export default function Upload() {
             if (!item) return;
             setQuestions((prev) => {
                 const newArr = [...prev];
-                newArr.unshift({ question: item, answer: '', type: '자율', index: index, memo: '' });
+                newArr.unshift({ question: item, answer: '', type: '자율', index: index, memo: '', isStar: false });
                 return newArr;
             });
         });
@@ -86,7 +91,7 @@ export default function Upload() {
             if (!item.question) return;
             item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
                 if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
-                setQuestions(questions => [...questions, { question: question, answer: '', type: '자동진', index: index, memo: '' }]);
+                setQuestions(questions => [...questions, { question: question, answer: '', type: '자동진', index: index, memo: '', isStar: false }]);
             })
         });
 
@@ -100,7 +105,7 @@ export default function Upload() {
                         if (!item.question) return;
                         item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
                             if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
-                            setQuestions(questions => [...questions, { question: question, answer: '', type: '과세특', grade: grade, category: category, index: index, memo: '' }]);
+                            setQuestions(questions => [...questions, { question: question, answer: '', type: '과세특', grade: grade, category: category, index: index, memo: '', isStar: false }]);
                         })
                     })
                 }
@@ -183,6 +188,21 @@ export default function Upload() {
         setQuestions(newQuestions);
     }
 
+    function toggleStar(index) {
+        let newQuestions = [...questions];
+        newQuestions[index].isStar = !newQuestions[index].isStar;
+        setQuestions(newQuestions);
+        if (questions && session.user?.id) {
+            updateDoc(doc(db, "users", session.user?.id), {
+                questionsArr: questions,
+            }).then(() => {
+                console.log("Document written with ID: ", session.user?.id);
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        }
+    }
+
 
     function save() {
         if (questions && session.user?.id) {
@@ -244,9 +264,16 @@ export default function Upload() {
 
         questions.forEach((q, index) => {
             if (q.question.length < 2 || q.question == 'undefined') return null;
+            if (isPdfOnlyStar && !q.isStar) return null;
             let questionText = `${q.question.trim()}`;
-            let answerText = `${q.answer.trim() + '\n\n\n'}`;
-            let memoText = `Memo\n${q.memo.trim()}`;
+            let answerText, memoText;
+            if (isPdfOnlyQuestion === true) {
+                answerText = `${q.answer.trim() + '\n\n\n'}`;
+                memoText = `Memo\n${q.memo.trim()}`;
+            } else {
+                answerText = `${'\n\n\n'}`;
+                memoText = `Memo\n`;
+            }
 
             var questionLines, answerLines, memoLines;
             // 현재 페이지에 텍스트 추가
@@ -415,7 +442,7 @@ export default function Upload() {
                         <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">답변 작성</h3>
                     </div>
                     <div className="header-right">
-                        <button onClick={() => generatePDF()}>PDF로 저장</button>
+                        <button onClick={() => setIsPdfModalOpen(true)}>PDF로 저장</button>
                     </div>
                 </header>
 
@@ -423,15 +450,21 @@ export default function Upload() {
                 <br></br><br></br>
 
                 {(name && questions) ? <>
-                    <h2 style={{ marginLeft: '10px' }}>{questions.length}개의 질문이 있어요.</h2>
                     <p style={{ marginLeft: '10px' }}>
                         생성된 질문에 답변을 생각해 작성해보세요.<br></br>
                         입력 후 반드시 저장 버튼을 눌러주세요.<br></br>
-                        답변이 바로 생각나지 않았거나 기억해야 할 내용이 있다면 메모를 추가해보세요.
+                        주요 질문은 스크랩해두면 나중에 모아볼 수 있어요.
+                        <br></br><br></br>
+                        <div style={{ float: 'right' }}>
+                            <input type="checkbox" id="onlyShowStar" name="onlyShowStar" checked={isShowOnlyStar} onChange={(e) => setIsShowOnlyStar(e.target.checked)} />
+                            <label for="onlyShowStar"> 스크랩된 질문만 보기</label></div>
+                        <br></br>
                     </p>
+
 
                     {questions.map((item, index) => {
                         if (item.question.length < 2 || !item.question) return null;
+                        if (isShowOnlyStar && !item.isStar) return null;
                         return (
                             <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
                                 <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
@@ -467,6 +500,7 @@ export default function Upload() {
                                 </div>
 
                                 <div>
+                                    <button className="transparent" onClick={() => toggleStar(index)}><IonIcon name={item.isStar ? "bookmark" : "bookmark-outline"} />&nbsp;&nbsp;{item.isStar ? "스크랩 해제" : "스크랩"}</button>
                                     <button className="transparent" onClick={() => feedback(index)}><IonIcon name="pulse-outline" />&nbsp;&nbsp;AI 피드백&nbsp;<span style={{ fontSize: 10, marginTop: '-5px' }}>beta</span></button>
 
                                     <button className="transparent" style={{ float: 'right' }} onClick={() => save()}><IonIcon name="checkmark-done-outline" />&nbsp;&nbsp;저장</button>
@@ -485,6 +519,21 @@ export default function Upload() {
                         </div>
                         <br></br>
                         <button onClick={() => setModalOpen(false)}>닫기</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={isPdfModalOpen} expandOnContentDrag={true} scrollLocking={true} onDismiss={() => setIsPdfModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <div>
+                            <h3>PDF로 저장</h3>
+                            <input type="checkbox" id="onlyStar" name="onlyStar" checked={isPdfOnlyStar} onChange={(e) => setIsPdfOnlyStar(e.target.checked)} />
+                            <label for="onlyStar"> 스크랩된 질문만 포함</label><br></br><br></br>
+                            <input type="checkbox" id="onlyValid" name="onlyValid" checked={isPdfOnlyQuestion} onChange={(e) => setIsPdfOnlyQuestion(e.target.checked)} />
+                            <label for="onlyValid"> 작성한 답변과 메모도 함께 PDF에 포함</label>
+                        </div>
+                        <br></br>
+                        <button onClick={() => generatePDF()}>저장</button>
+
                     </div>
                 </BottomSheet>
             </main >
