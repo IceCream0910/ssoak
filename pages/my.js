@@ -34,6 +34,7 @@ export default function Upload() {
     const [indexArr, setIndexArr] = useState(null);
 
     const [ocrModalOpen, setOCRModalOpen] = useState(false);
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
     const db = firestore;
 
@@ -455,11 +456,11 @@ export default function Upload() {
                 } else {
                     // 영역 및 시간 정보 저장
                     const text = cells[0].textContent.trim().split(' : ');
-                    if(text.length === 4) {
+                    if (text.length === 4) {
 
-                    grade = text[0].replace('학년  영역', '');
-                    title = text[1].replace('  시간', '');
-                    content = text[3];
+                        grade = text[0].replace('학년  영역', '');
+                        title = text[1].replace('  시간', '');
+                        content = text[3];
                     } else {
                         grade = text[0].replace('학년  영역', '');
                         title = text[1].replace('  시간', '');
@@ -627,8 +628,7 @@ export default function Upload() {
                     <div className="header-right">
                         {lastSaveTime && <p className="subText">{lastSaveTime}에 저장됨</p>}
                         {isChanged && <p className="subText">변경사항 있음</p>}
-                        <input type="file" id="file" accept=".html, .htm, .pdf" onChange={(e) => [handleUpload(e), e.target.value = '']} />
-                        <label for="file">{(name && 자동진JSON && 과세특JSON) ? "새로운 생기부 업로드" : "생기부 업로드"}</label>
+                        <button onClick={() => setUploadModalOpen(true)}>{(name && 자동진JSON && 과세특JSON) ? "새로운 생기부 업로드" : "생기부 업로드"}</button>
                         {(name && 자동진JSON && 과세특JSON) && <button onClick={() => save()}>저장</button>}
                     </div>
                 </header>
@@ -723,6 +723,22 @@ export default function Upload() {
                         })}
                     </div>
                 </div>
+
+                <BottomSheet open={uploadModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setUploadModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <h3>업로드 전 확인해주세요!</h3>
+                        <span style={{ color: 'red' }}><IonIcon name="warning"></IonIcon>&nbsp;생활기록부에서 자율/진로/동아리, 과세특 기재 내용만 사용자의 기기에서 안전하게 처리한 후 서버에 저장됩니다. AI 서비스 이용 시 제3자에게 생기부 내용이 전송될 수 있습니다.</span>
+                        <label for="onlyValid">자세한 내용은 <a href="https://slashpage.com/uniterview/privacy" target="_blank" style={{ textDecoration: 'underline' }}>개인정보 처리방침</a>을 확인해주세요.</label>
+                        <br></br>
+
+                        <input type="file" id="file" accept=".html, .htm, .pdf" onChange={(e) => [handleUpload(e), e.target.value = '']} />
+                        <label for="file" onClick={() => {
+                            setUploadModalOpen(false);
+                        }}>동의합니다</label>
+
+                    </div>
+
+                </BottomSheet>
 
                 <BottomSheet open={modalOpen} expandOnContentDrag={false} onDismiss={() => setModalOpen(false)}>
                     <div className="bottom-sheet">

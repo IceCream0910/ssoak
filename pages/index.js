@@ -25,6 +25,8 @@ export default function Home() {
 
   const [ddayModalOpen, setDdayModalOpen] = useState(false);
 
+  const [isAgreePolicy, setIsAgreePolicy] = useState(false);
+
   const db = firestore;
 
   useEffect(() => {
@@ -243,10 +245,20 @@ export default function Home() {
           <div>
             <h3>로그인하고 시작하세요</h3>
             <div style={{ display: 'flex', alignItems: "center", gap: '10px' }}>
-              <Image onClick={() => signIn("kakao", { callbackUrl: "/login" })} src="/kakao_login.png" alt="kakao" width={45} height={45} />
-              <Image onClick={() => signIn("naver", { callbackUrl: "/login" })} src="/naver_login.png" alt="naver" width={50} height={50} />
+              <Image onClick={() => {
+                if (!isAgreePolicy) { toast.error('개인정보 처리방침에 동의해주세요'); return; }
+                signIn("kakao", { callbackUrl: "/login" })
+              }} src="/kakao_login.png" alt="kakao" width={45} height={45} />
+              <Image onClick={() => {
+                if (!isAgreePolicy) { toast.error('개인정보 처리방침에 동의해주세요'); return; }
+                signIn("naver", { callbackUrl: "/login" })
+              }} src="/naver_login.png" alt="naver" width={50} height={50} />
             </div>
             <br></br>
+
+            <input type="checkbox" id="onlyValid" name="onlyValid" checked={isAgreePolicy} onChange={(e) => setIsAgreePolicy(e.target.checked)} />
+            <label for="onlyValid">&nbsp;<a href="https://slashpage.com/uniterview/privacy" target="_blank" style={{ textDecoration: 'underline' }}>개인정보 처리방침</a>에 동의합니다.</label>
+            <br></br><br></br>
           </div>
           <button onClick={() => setModalOpen(false)}>닫기</button>
 
