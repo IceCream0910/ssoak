@@ -484,7 +484,7 @@ export default function Upload() {
                             </div>}
                             {exampleQuestionsData && exampleQuestionsData.length <= 0 && <p>면접 기출을 찾지 못했어요</p>}
                             {exampleQuestionsData &&
-                                (exampleSearchText
+                                ((exampleSearchText && filteredQuestionsData)
                                     ? filteredQuestionsData.map((item, index) => (
                                         <div
                                             className={`example-question-card ${selectedExamples.includes(item) ? 'active' : ''

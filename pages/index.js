@@ -224,9 +224,6 @@ export default function Home() {
 
         <br></br><br></br><br></br><br></br>
 
-        <div className="adfit1" id="only-mobile"></div>
-        <div className="adfit2" id="only-pc"></div>
-
         <footer>
           © 2023. All rights reserved Yun Tae In.<br></br><br></br>
           <div style={{ display: 'flex', alignContent: 'center', opacity: '0.8' }}>
