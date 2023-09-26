@@ -47,10 +47,6 @@ export default function Upload() {
             const docRef = doc(db, "users", session.user?.id);
             getDoc(docRef).then((doc) => {
                 if (doc.exists()) {
-                    if (!doc.data().sanggibu_과세특) {
-                        alert('생기부를 먼저 업로드해주세요.');
-                        router.replace('/my');
-                    }
                     setName(doc.data().sanggibu_name);
                     if (doc.data().commonQuestions) setCommonQuestions(doc.data().commonQuestions);
                     set자동진JSON(doc.data().sanggibu_자동진);
@@ -678,7 +674,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                             })
                         }
 
-                    </> : <></>}
+                    </> : <>생기부를 아직 업로드하지 않았네요. 업로드 전에는 공통 질문만 추가할 수 있어요.</>}
                 </div>
 
                 <div className="navigation-sidebar">
