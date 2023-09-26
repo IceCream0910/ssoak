@@ -88,6 +88,7 @@ export default function Upload() {
     }, [자동진JSON, 과세특JSON])
 
     const handleUpload = async (event) => {
+        setUploadModalOpen(false);
         const file = event.target.files[0];
         const fileName = event.target.value;
         console.log(file, fileName);
@@ -455,17 +456,8 @@ export default function Upload() {
                     });
                 } else {
                     // 영역 및 시간 정보 저장
-                    const text = cells[0].textContent.trim().split(' : ');
-                    if (text.length === 4) {
-
-                        grade = text[0].replace('학년  영역', '');
-                        title = text[1].replace('  시간', '');
-                        content = text[3];
-                    } else {
-                        grade = text[0].replace('학년  영역', '');
-                        title = text[1].replace('  시간', '');
-                        content = text[4];
-                    }
+                    title = cells[0].textContent.trim();
+                    content = cells[2].textContent.trim();
 
                     result.push({
                         grade,
@@ -732,9 +724,7 @@ export default function Upload() {
                         <br></br>
 
                         <input type="file" id="file" accept=".html, .htm, .pdf" onChange={(e) => [handleUpload(e), e.target.value = '']} />
-                        <label for="file" onClick={() => {
-                            setUploadModalOpen(false);
-                        }}>동의합니다</label>
+                        <label for="file">동의합니다</label>
 
                     </div>
 
