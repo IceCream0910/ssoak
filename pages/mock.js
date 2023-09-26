@@ -83,6 +83,16 @@ export default function Mock() {
         };
     }, []);
 
+    useEffect(() => {
+        if (questions) {
+            const isStarQuestions = questions.filter(question => question.isStar);
+            if (isStarQuestions.length <= 0) {
+                alert('스크랩한 질문이 최소 1개 이상 있어야 모의면접을 시작할 수 있어요.')
+                router.replace('/');
+            }
+        }
+    }, [questions])
+
 
     const handleTextareaChange = (event) => {
         const answer = event.target.value;

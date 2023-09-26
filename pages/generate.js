@@ -394,12 +394,12 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
 
     function save() {
-        if (name && 자동진JSON && 과세특JSON && session.user?.id) {
+        if (session.user?.id) {
             updateDoc(doc(db, "users", session.user?.id), {
                 commonQuestions: commonQuestions,
-                sanggibu_name: name,
-                sanggibu_자동진: 자동진JSON,
-                sanggibu_과세특: 과세특JSON
+                sanggibu_name: name || '',
+                sanggibu_자동진: 자동진JSON || [],
+                sanggibu_과세특: 과세특JSON || []
             }).then(() => {
                 console.log("Document written with ID: ", session.user?.id);
             }).catch((error) => {
@@ -517,14 +517,19 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
         setIndexArr(newArr);
     }
 
-    useEffect(() => {
-        save();
-    }, [commonQuestions])
-
     function addCommonQuestion() {
         setCommonQuestions((prev) => {
             const updatedData = [...prev];
             updatedData.push(addCommonQuestionText);
+            if (updatedData && session.user?.id) {
+                updateDoc(doc(db, "users", session.user?.id), {
+                    commonQuestions: updatedData,
+                }).then(() => {
+                    console.log("Document written with ID: ", session.user?.id);
+                }).catch((error) => {
+                    console.error("Error adding document: ", error);
+                });
+            }
             return updatedData;
         });
         setAddCommonQuestionModalOpen(false);
@@ -536,6 +541,15 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
             setCommonQuestions((prev) => {
                 const updatedData = [...prev];
                 updatedData.splice(index, 1);
+                if (updatedData && session.user?.id) {
+                    updateDoc(doc(db, "users", session.user?.id), {
+                        commonQuestions: updatedData,
+                    }).then(() => {
+                        console.log("Document written with ID: ", session.user?.id);
+                    }).catch((error) => {
+                        console.error("Error adding document: ", error);
+                    });
+                }
                 return updatedData;
             });
         }
@@ -674,7 +688,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                             })
                         }
 
-                    </> : <>생기부를 아직 업로드하지 않았네요. 업로드 전에는 공통 질문만 추가할 수 있어요.</>}
+                    </> : <>생기부를 아직 업로드하지 않았네요. 업로드 전에는 공통 질문만 추가할 수 있어요.<br></br><br></br><br></br><br></br><br></br><br></br></>}
                 </div>
 
                 <div className="navigation-sidebar">

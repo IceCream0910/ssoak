@@ -47,14 +47,14 @@ export default function Upload() {
                     setName(doc.data().sanggibu_name);
                     const 자동진 = (doc.data().sanggibu_자동진);
                     const 과세특 = (doc.data().sanggibu_과세특);
-                    if (doc.data().commonQuestions) setCommonQuestions(doc.data().commonQuestions);
+                    setCommonQuestions(doc.data().commonQuestions || [])
                     set자동진JSON(자동진);
                     set과세특JSON(과세특);
                     if (doc.data().questionsArr) {
-                        updateQuestions(doc.data().questionsArr, await generateNewQuestions(자동진, 과세특));
+                        updateQuestions(doc.data().questionsArr, await generateNewQuestions(doc.data().commonQuestions, doc.data().sanggibu_자동진, doc.data().sanggibu_과세특));
                     } else {
-                        setQuestions([])
-                        convertToQuestions(자동진, 과세특);
+                        setQuestions([]);
+                        convertToQuestions(doc.data().commonQuestions, 자동진, 과세특);
                     }
                 }
             }).catch((error) => {
@@ -66,97 +66,132 @@ export default function Upload() {
     }, [session]);
 
     useEffect(() => {
-        //console.log("자동진JSON", 자동진JSON)
-        //console.log("과세특JSON", 과세특JSON)
-    }, [자동진JSON, 과세특JSON]);
-
-    useEffect(() => {
         if (isReseting) {
             save();
             setIsReseting(false);
         }
     }, [questions]);
 
-    function convertToQuestions(자동진, 과세특) {
-        commonQuestions.reverse().map((item, index) => {
-            if (!item) return;
-            setQuestions((prev) => {
-                const newArr = [...prev];
-                newArr.unshift({ question: item, answer: '', type: '자율', index: index, memo: '', isStar: false });
-                return newArr;
-            });
-        });
 
-        자동진.map((item, index) => {
-            if (!item.question) return;
-            item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
-                if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
-                setQuestions(questions => [...questions, { question: question, answer: '', type: '자동진', index: index, memo: '', isStar: false }]);
-            })
-        });
-
-        Object.keys(과세특).map((grade) => {
-            Object.keys(과세특[grade]).map((category) => {
-                {
-                    과세특[grade][category].map((item, index) => {
-                        if (index === 과세특[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.')) {
-                            return;
-                        }
-                        if (!item.question) return;
-                        item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
-                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
-                            setQuestions(questions => [...questions, { question: question, answer: '', type: '과세특', grade: grade, category: category, index: index, memo: '', isStar: false }]);
-                        })
-                    })
-                }
-            })
-        })
-    }
-
-    function generateNewQuestions(자동진, 과세특) {
+    function convertToQuestions(common, 자동진, 과세특) {
         const result = [];
 
-        commonQuestions.reverse().map((item, index) => {
+        common.reverse().map((item, index) => {
             if (!item) return;
-            result.unshift({ question: item, answer: '', type: '자율', index: index, memo: '' });
+            result.unshift({ question: item, answer: '', type: '자율', index: index, memo: '', isStar: false });
         });
+        if (자동진) {
+            자동진.map((item, index) => {
+                if (!item.question) return;
+                item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
+                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
+                    result.push({ question: question, answer: '', type: '자동진', index: index, memo: '', isStar: false });
+                })
+            });
+        }
 
-        자동진.map((item, index) => {
-            if (!item.question) return;
-            item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
-                if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
-                result.push({ question: question, answer: '', type: '자동진', index: index, memo: '' });
-            })
-        });
-
-        Object.keys(과세특).map((grade) => {
-            Object.keys(과세특[grade]).map((category) => {
-                {
-                    과세특[grade][category].map((item, index) => {
-                        if (index === 과세특[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.')) {
-                            return;
-                        }
-                        if (!item.question) return null;
-                        item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
-                            if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
-                            result.push({ question: question, answer: '', type: '과세특', grade: grade, category: category, index: index, memo: '' });
+        if (과세특) {
+            Object.keys(과세특).map((grade) => {
+                Object.keys(과세특[grade]).map((category) => {
+                    {
+                        과세특[grade][category].map((item, index) => {
+                            if (index === 과세특[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.')) {
+                                return;
+                            }
+                            if (!item.question) return null;
+                            item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
+                                if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
+                                result.push({ question: question, answer: '', type: '과세특', grade: grade, category: category, index: index, memo: '', isStar: false });
+                            })
                         })
-                    })
-                }
+                    }
+                })
             })
+        }
+        setQuestions(result);
+        if (result && session.user?.id) {
+            updateDoc(doc(db, "users", session.user?.id), {
+                questionsArr: result,
+            }).then(() => {
+                console.log("Document written with ID: ", session.user?.id);
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        }
+    }
+
+
+    function generateNewQuestions(common, 자동진, 과세특) {
+        const result = [];
+
+        common.reverse().map((item, index) => {
+            if (!item) return;
+            result.unshift({ question: item, answer: '', type: '자율', index: index, memo: '', isStar: false });
         });
+
+        if (자동진) {
+
+            자동진.map((item, index) => {
+                if (!item.question) return;
+                item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
+                    if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
+                    result.push({ question: question, answer: '', type: '자동진', index: index, memo: '' });
+                })
+            });
+        }
+
+
+        if (과세특) {
+
+            Object.keys(과세특).map((grade) => {
+                Object.keys(과세특[grade]).map((category) => {
+                    {
+                        과세특[grade][category].map((item, index) => {
+                            if (index === 과세특[grade][category].length - 1 || item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.')) {
+                                return;
+                            }
+                            if (!item.question) return null;
+                            item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').map((question, index2) => {
+                                if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').split('[end]').length - 1) return null;
+                                result.push({ question: question, answer: '', type: '과세특', grade: grade, category: category, index: index, memo: '' });
+                            })
+                        })
+                    }
+                })
+            });
+        }
+
+        if (result && session.user?.id) {
+            updateDoc(doc(db, "users", session.user?.id), {
+                questionsArr: result,
+            }).then(() => {
+                console.log("Document written with ID: ", session.user?.id);
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        }
+
         return result;
     }
 
     function updateQuestions(prevQuestions, newQuestions) {
         const updatedQuestions = newQuestions.map((newQuestion, index) => {
-            if (prevQuestions[index] && prevQuestions[index].question === newQuestion.question) {
+            if ((prevQuestions[index] && prevQuestions[index].question) && prevQuestions[index].question === newQuestion.question) {
                 return prevQuestions[index];
             } else {
                 return newQuestion;
             }
         });
         setQuestions(updatedQuestions);
+        if (updatedQuestions && session.user?.id) {
+            updateDoc(doc(db, "users", session.user?.id), {
+                questionsArr: updatedQuestions,
+            }).then(() => {
+                console.log("Document written with ID: ", session.user?.id);
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        }
     }
 
     function isJson(str) {
@@ -449,7 +484,7 @@ export default function Upload() {
 
                 <br></br><br></br>
 
-                {(name && questions) ? <>
+                {questions ? <>
                     <p style={{ marginLeft: '10px' }}>
                         생성된 질문에 답변을 생각해 작성해보세요.<br></br>
                         입력 후 반드시 저장 버튼을 눌러주세요.<br></br>
