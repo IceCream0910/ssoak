@@ -100,6 +100,10 @@ footer a {
     color: inherit
 }
 
+.navigation-sidebar a:hover {
+    opacity: 0.5;
+}
+
 
 button {
     border: none;
@@ -247,6 +251,11 @@ textarea {
 button.transparent {
     background-color: transparent;
     padding: 10px;
+}
+
+button.border {
+    background-color: transparent;
+    border: #becfff 2px solid;
 }
 
 .bottom-sheet {
@@ -603,10 +612,15 @@ span.badge {
     align-items: center;
     border-radius: 15px;
     padding: 0 10px;
+    transition: transform 0.2s;
 }
 
 .list-item.active {
-    background-color: rgb(231, 238, 255);
+    background-color: rgb(201, 217, 255);
+}
+
+.list-item:hover {
+    transform: translateY(-3px);
 }
 
 .list-item button {
@@ -683,4 +697,28 @@ video {
     display: flex;
     flex-direction: column;
 
+}
+
+.example-question-card {
+    border: #becfff 1px solid;
+    border-radius: 20px;
+    padding: 0px 20px 0px 20px;
+    margin-bottom: 10px;
+    transition: transform 0.2s;
+}
+
+.example-question-card:hover {
+    transform: translateY(-3px);
+}
+
+.example-question-card.active {
+    background-color: #627fff;
+    color: white;
+}
+
+.example-question-card span {
+    font-size: 13px;
+    opacity: 0.5;
+    position: relative;
+    top: -15px;
 }

@@ -33,6 +33,21 @@ export default function Upload() {
     const [questions, setQuestions] = useState([]);
     const [modalContent, setModalContent] = useState('');
 
+    const [isExampleModalOpen, setIsExampleModalOpen] = useState(false);
+    const [exampleLoading, setExampleLoading] = useState(false);
+    const [exampleQuestionsData, setExampleQuestionsData] = useState(null);
+    const [filteredQuestionsData, setFilteredQuestionsData] = useState(null);
+    const [exampleSearchText, setExampleSearchText] = useState(null);
+    const [selectedExamples, setSelectedExamples] = useState([]);
+    const [selectedQuestions, setSelectedQuestions] = useState([]);
+
+    const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
+    const [docsLoading, setDocsLoading] = useState(false);
+
+    const [docsData, setDocsData] = useState(null);
+
+
+
     const db = firestore;
 
     useEffect(() => {
@@ -199,6 +214,84 @@ export default function Upload() {
         }
     }
 
+    async function openExampleModal(query) {
+        let convertedQuery = query.trim();
+        setExampleLoading(true);
+        setIsExampleModalOpen(true);
+        if (!convertedQuery.includes('대학교') && convertedQuery.slice(-1) == '대') {
+            convertedQuery += '학교'
+        } else if (!convertedQuery.includes('대학교') && convertedQuery.slice(-1) != '대') {
+            convertedQuery += '대학교'
+        }
+        const response = await fetch(`/api/univs/questions/${encodeURIComponent(convertedQuery)}`);
+        const jsonData = await response.json();
+        setExampleQuestionsData(jsonData);
+        setExampleLoading(false);
+    }
+
+    async function openDocsModal(query) {
+        let convertedQuery = query.trim();
+        setDocsLoading(true);
+        setIsDocsModalOpen(true);
+        if (!convertedQuery.includes('대학교') && convertedQuery.slice(-1) == '대') {
+            convertedQuery += '학교'
+        } else if (!convertedQuery.includes('대학교') && convertedQuery.slice(-1) != '대') {
+            convertedQuery += '대학교'
+        }
+        const response = await fetch(`/api/univs/documents/${encodeURIComponent(convertedQuery)}`);
+        const jsonData = await response.json();
+        setDocsData(jsonData);
+        setDocsLoading(false);
+    }
+
+    useEffect(() => {
+        if (exampleSearchText != '' && exampleSearchText) {
+            setFilteredQuestionsData(
+                exampleQuestionsData.filter((item) =>
+                    item.모집단위.includes(exampleSearchText)
+                )
+            )
+        }
+    }, [exampleSearchText]);
+
+    const handleExampleClick = (item) => {
+        // 이미 선택된 항목인지 확인
+        const isSelected = selectedExamples.includes(item);
+
+        if (isSelected) {
+            // 이미 선택된 항목인 경우, 선택 해제
+            setSelectedExamples((prevSelected) =>
+                prevSelected.filter((selected) => selected !== item)
+            );
+            setSelectedQuestions((prevQuestions) =>
+                prevQuestions.filter((question) => question !== item.면접기출)
+            );
+        } else {
+            // 선택되지 않은 항목인 경우, 선택 추가
+            setSelectedExamples((prevSelected) => [...prevSelected, item]);
+            setSelectedQuestions((prevQuestions) => [...prevQuestions, item.면접기출]);
+        }
+    }
+
+    const addSelectedExamplesToMy = () => {
+        // 이미 questions 리스트에 있는 질문은 추가하지 않음
+        const newQuestions = selectedQuestions.filter(
+            (question) => !questions.some((q) => q.question === question)
+        );
+
+        // 선택된 질문들을 questions 리스트에 추가
+        setQuestions((prevQuestions) => [
+            ...prevQuestions,
+            ...newQuestions.map((question) => ({ question, answer: '' })),
+        ]);
+
+        // 선택한 항목들 초기화
+        setSelectedExamples([]);
+        setSelectedQuestions([]);
+        setIsExampleModalOpen(false);
+    }
+
+
     return (
         <>
             <Toaster />
@@ -237,9 +330,12 @@ export default function Upload() {
                     </div>
 
 
-                    {(universities.length > 0) && <>                    <div className="form-box">지원학과/학부
-                        <input placeholder="학과 또는 학부 이름" value={department} onChange={(e) => setDepartment(e.target.value)}></input>
-                    </div>
+                    {(universities.length > 0) && <>
+                        <button onClick={() => openDocsModal(universities[selectedItemIndex])}>{universities[selectedItemIndex]} 면접 참고 자료 찾아보기</button>
+                        <br></br><br></br>
+                        <div className="form-box">지원학과/학부
+                            <input placeholder="학과 또는 학부 이름" value={department} onChange={(e) => setDepartment(e.target.value)}></input>
+                        </div>
 
                         <div className="form-box">면접 시간(분)
                             <input type="number" placeholder="평균적인 면접 진행 시간. 대학에서 제공하는 자료나 면접 후기 참고." value={time} onChange={(e) => setTime(e.target.value)}></input>
@@ -296,7 +392,12 @@ export default function Upload() {
 
                         <button onClick={() => setAddQuestionModalOpen(true)}>{universities[selectedItemIndex]} 질문 추가하기</button>
 
-                        <br></br> <br></br> <br></br> <br></br> <br></br>
+                        <br></br> <br></br>
+
+                        <button onClick={() => openExampleModal(universities[selectedItemIndex])}>{universities[selectedItemIndex]} 면접 기출 확인하기</button>
+
+
+                        <br></br> <br></br> <br></br>
 
                     </>
                     }
@@ -333,6 +434,94 @@ export default function Upload() {
                         <h3>질문 추가하기</h3>
                         <input placeholder="질문을 입력하세요" value={modalContent} onChange={(e) => setModalContent(e.target.value)}></input>
                         <button onClick={() => addQuestion()}>추가</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={isDocsModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setIsDocsModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <h3>{universities && universities[selectedItemIndex]} 면접 참고 자료
+                            <span style={{ float: 'right', fontSize: '12px', opacity: 0.3, marginTop: '5px' }}>정보 출처 : <a href="https://dshs.site/" target="_blank" style={{ textDecoration: 'underline' }}>대학 수시면접 Archive</a></span>
+                        </h3>
+
+                        <div style={{ maxHeight: '60dvh', overflowY: 'scroll', paddingTop: '3px' }}>
+                            {docsLoading && <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                                <div className="loading-circle">
+                                    <div className="spinner"></div>
+                                </div>
+                            </div>}
+                            {docsData && docsData.length <= 0 && <p>자료를 찾지 못했어요</p>}
+                            {docsData && docsData.map((item, index) => (
+                                <div
+                                    className={`example-question-card`}
+                                    key={index}
+                                    onClick={() => window.open(`https://dshs.site${item.filename.replace('.', '')}`, '_blank')}
+                                >
+                                    <h3>{item.displayname}</h3>
+                                    <span>{item.recunit} - {item.type} | {item.source}</span>
+                                </div>
+                            )
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => setIsDocsModalOpen(false)}
+                        >닫기</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={isExampleModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => [setExampleSearchText(''), setFilteredQuestionsData([]), setExampleQuestionsData([]), setIsExampleModalOpen(false)]}>
+                    <div className="bottom-sheet">
+                        <h3>{universities && universities[selectedItemIndex]} 면접 기출
+                            <span style={{ float: 'right', fontSize: '12px', opacity: 0.3, marginTop: '5px' }}>정보 출처 : <a href="https://dshs.site/" target="_blank" style={{ textDecoration: 'underline' }}>대학 수시면접 Archive</a>, 정발고등학교</span>
+                        </h3>
+                        <input placeholder="모집단위(학과나 학부) 검색" value={exampleSearchText}
+                            onChange={(e) => setExampleSearchText(e.target.value)}></input>
+                        <div style={{ maxHeight: '60dvh', overflowY: 'scroll', paddingTop: '3px' }}>
+                            {exampleLoading && <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                                <div className="loading-circle">
+                                    <div className="spinner"></div>
+                                </div>
+                            </div>}
+                            {exampleQuestionsData && exampleQuestionsData.length <= 0 && <p>면접 기출을 찾지 못했어요</p>}
+                            {exampleQuestionsData &&
+                                (exampleSearchText
+                                    ? filteredQuestionsData.map((item, index) => (
+                                        <div
+                                            className={`example-question-card ${selectedExamples.includes(item) ? 'active' : ''
+                                                }`}
+                                            key={index}
+                                            onClick={() => handleExampleClick(item)}
+                                        >
+                                            <h3>{item.면접기출}</h3>
+                                            <span>{item.모집단위} | {item.전형명}</span>
+                                        </div>
+                                    ))
+                                    : exampleQuestionsData.map((item, index) => (
+                                        <div
+                                            className={`example-question-card ${selectedExamples.includes(item) ? 'active' : ''
+                                                }`}
+                                            key={index}
+                                            onClick={() => handleExampleClick(item)}
+                                        >
+                                            <h3>{item.면접기출}</h3>
+                                            <span>{item.모집단위} | {item.전형명}</span>
+                                        </div>
+                                    ))
+                                )}
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'row', width: 'auto', height: '50px', boxSizing: 'border-box', gap: '15px' }}>
+                            <button
+                                style={{ width: '50%', height: '50px' }}
+                                onClick={() => addSelectedExamplesToMy()}
+                            >선택한 질문 추가</button>
+
+                            <button className="border"
+                                style={{ width: '50%', height: '50px' }}
+                                onClick={() => [setExampleSearchText(''), setFilteredQuestionsData([]), setExampleQuestionsData([]), setIsExampleModalOpen(false)]}
+                            >닫기</button>
+
+                        </div>
                     </div>
                 </BottomSheet>
 
