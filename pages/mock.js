@@ -22,12 +22,16 @@ export default function Mock() {
     const [questions, setQuestions] = useState('');
     const [selectedQuestions, setSelectedQuestions] = useState('');
 
+    const [isInit, setIsInit] = useState(true);
+
     const [prevValue, setPrevValue] = useState('');
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
     const [recordVideoUri, setRecordVideoUri] = useState('');
 
     const [value, setValue] = useState('');
+
+    const [isListening, setIsListening] = useState(true);
 
     const videoRef = useRef(null);
     const mediaRecorder = useRef(null);
@@ -37,6 +41,10 @@ export default function Mock() {
 
     const db = firestore;
     let recognition;
+
+    var ttsAudio = new Audio(
+        ``
+    );
 
     useEffect(() => {
         if (session) {
@@ -91,18 +99,27 @@ export default function Mock() {
                 router.replace('/');
             }
         }
-    }, [questions])
+    }, [questions]);
+
+    function playTTS(text) {
+        ttsAudio.pause();
+        ttsAudio = new Audio(
+            `https://playentry.org/api/expansionBlock/tts/read.mp3?text=${encodeURIComponent(
+                text
+            )}&speed=0&pitch=0&speaker=hana&volume=1`
+        );
+        ttsAudio.play();
+    }
 
 
     const handleTextareaChange = (event) => {
         const answer = event.target.value;
-        // Update the selectedQuestions[currentQuestionIndex].answer
-        // whenever the textarea value changes
         setSelectedQuestions((prevQuestions) => {
             const updatedQuestions = [...prevQuestions];
             updatedQuestions[currentQuestionIndex].answer = answer;
             return updatedQuestions;
         });
+        setValue(answer);
     };
 
     const handleResize = () => {
@@ -156,15 +173,31 @@ export default function Mock() {
     }, []);
 
     function start() {
+        setIsInit(true);
         if (!questions) { alert('생성된 질문이 없어요. 먼저 예상 질문을 생성해주세요.'); return; }
-        const isStarQuestions = questions.filter(question => question.isStar);
-        const randomIsStarQuestions = [];
+        const excludedKeywords = ['지원한 동기', '지원동기', '지원 동기', '자기소개', '자기 소개']; //제외 키워드
 
-        for (let i = 0; i < Math.min(6, isStarQuestions.length); i++) {
+        const isStarQuestions = questions.filter(question => {
+            const hasExcludedKeyword = excludedKeywords.some(keyword =>
+                question.question.includes(keyword)
+            );
+            return !hasExcludedKeyword;
+        }).filter(question => question.isStar);
+        playTTS('자기소개와 지원동기를 말해주세요.');
+
+        const uniqueIsStarQuestions = new Set();
+
+        uniqueIsStarQuestions.add({ question: '간단한 자기소개와 지원동기를 말해주세요.', answer: '', type: '공통', index: 0, memo: '', isStar: true });
+
+
+        while (uniqueIsStarQuestions.size < Math.min(6, isStarQuestions.length)) {
             const randomIndex = Math.floor(Math.random() * isStarQuestions.length);
-            randomIsStarQuestions.push(isStarQuestions[randomIndex]);
+            uniqueIsStarQuestions.add(isStarQuestions[randomIndex]);
         }
-        setSelectedQuestions(randomIsStarQuestions);
+
+        const result = Array.from(uniqueIsStarQuestions);
+        console.log(result);
+        setSelectedQuestions(result);
 
         setStep(1);
     }
@@ -199,13 +232,14 @@ export default function Mock() {
             recognition.start();
         };
 
-        // startSpeechRecognition 함수가 prevValue를 의존하도록 useEffect를 사용
         startSpeechRecognition();
     }, [prevValue]);
 
 
     function nextQuestion() {
         setPrevValue(value);
+        console.log(selectedQuestions[currentQuestionIndex + 1].question);
+        playTTS(selectedQuestions[currentQuestionIndex + 1].question)
         setSelectedQuestions((prevQuestions) => {
             const updatedQuestions = [...prevQuestions];
             updatedQuestions[currentQuestionIndex].answer = value;
@@ -218,7 +252,7 @@ export default function Mock() {
         const videoBlob = new Blob(videoChunks.current, { type: 'video/webm' });
         const videoUrl = URL.createObjectURL(videoBlob);
         const link = document.createElement('a');
-        link.download = `${moment().format('YYMMDD_HHmmss')}.webm`;
+        link.download = `모의면접_${moment().format('YYMMDD_HHmmss')}.webm`;
         link.href = videoUrl;
         document.body.appendChild(link);
         link.click();
@@ -233,7 +267,7 @@ export default function Mock() {
         });
         setStep(2);
         mediaRecorder.current?.stop();
-
+        playTTS('수고하셨습니다. 모의면접이 종료되었습니다.');
         const videoBlob = new Blob(videoChunks.current, { type: 'video/webm' });
         setRecordVideoUri(URL.createObjectURL(videoBlob))
     }
@@ -259,6 +293,13 @@ export default function Mock() {
                         }} /> <h3 className="header-title">AI 모의면접 <span className="badge">beta</span> </h3>
                     </div>
                     <div className="header-right">
+                        <button onClick={() => {
+                            toast('다음에 또 만나요')
+                            router.replace('/');
+                            setTimeout(() => {
+                                location.reload()
+                            }, 1000)
+                        }}>나가기</button>
                     </div>
                 </header>
 
@@ -278,6 +319,8 @@ export default function Mock() {
                         <button onClick={() => [mediaRecorder.current?.start(), start()]}>
                             시작하기
                         </button>
+                        <p style={{ opacity: 0.5, fontSize: 13 }}>* 질문이 음성으로 제시되니 볼륨을 알맞게 조절해주세요.
+                            <br></br>* 브라우저에 따라 정상동작하지 않을 수 있습니다. Chrome 브라우저에 최적화되어 있습니다.</p>
                     </div>}
 
                     {step === 1 && <div style={{ width: '50%' }}>
@@ -298,14 +341,14 @@ export default function Mock() {
                                     />
                                 </div>
                                 <br></br>
-
                                 {currentQuestionIndex === selectedQuestions.length - 1 ? <button onClick={() => complete()}>완료</button>
                                     : <button onClick={() => [setCurrentQuestionIndex(currentQuestionIndex + 1), nextQuestion()]}>다음 질문</button>}
                             </>
                         }
                     </div>}
 
-                    {step === 2 && <div style={{ flexDirection: 'column' }}>
+                    {step === 2 && <div style={{ flexDirection: 'column', width: '100dvw' }}>
+                        <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
                         <h3>모의면접이 끝났어요!</h3>
 
                         {selectedQuestions && selectedQuestions.map((item, index) => {
@@ -328,7 +371,7 @@ export default function Mock() {
                         }
 
                         <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
-
+                        &nbsp;&nbsp;&nbsp;
                         <button onClick={() => {
                             toast('다음에 또 만나요')
                             router.replace('/');
@@ -336,6 +379,8 @@ export default function Mock() {
                                 location.reload()
                             }, 1000)
                         }}>나가기</button>
+
+                        <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
                     </div>
                     }
 
