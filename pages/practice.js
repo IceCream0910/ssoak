@@ -4,7 +4,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import firestore from "../firebase/firebase"
 import { Timestamp, collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import Image from 'next/image'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from "next/router";
 import { convert } from 'html-to-text';
 import toast, { Toaster } from 'react-hot-toast';
@@ -13,6 +13,8 @@ import IonIcon from '@reacticons/ionicons'
 import { BottomSheet } from 'react-spring-bottom-sheet'
 import 'react-spring-bottom-sheet/dist/style.css'
 import { jsPDF } from "jspdf";
+
+import { HorizontalScrolling } from "../components/horizontalScroll";
 
 
 export default function Upload() {
@@ -34,6 +36,10 @@ export default function Upload() {
     const [isPdfOnlyQuestion, setIsPdfOnlyQuestion] = useState(true);
     const [isPdfOnlyStar, setIsPdfOnlyStar] = useState(true);
     const [isShowOnlyStar, setIsShowOnlyStar] = useState(false);
+    const [universitiesData, setUniversitiesData] = useState(null);
+    const [universities, setUniversities] = useState([]);
+
+    const saveTimeoutRef = useRef(null);
 
 
     const db = firestore;
@@ -50,6 +56,8 @@ export default function Upload() {
                     setCommonQuestions(doc.data().commonQuestions || [])
                     set자동진JSON(자동진);
                     set과세특JSON(과세특);
+                    setUniversities(doc.data().universitiesName || []);
+                    setUniversitiesData(doc.data().universities || []);
                     if (doc.data().questionsArr) {
                         updateQuestions(doc.data().questionsArr, await generateNewQuestions(doc.data().commonQuestions, doc.data().sanggibu_자동진, doc.data().sanggibu_과세특));
                     } else {
@@ -211,6 +219,11 @@ export default function Upload() {
         let newQuestions = [...questions];
         newQuestions[index].answer = e.value;
         setQuestions(newQuestions);
+
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = setTimeout(() => {
+            save();
+        }, 1000);
     }
 
     const handleMemoEdit = (index, e) => {
@@ -221,6 +234,11 @@ export default function Upload() {
         let newQuestions = [...questions];
         newQuestions[index].memo = e.value;
         setQuestions(newQuestions);
+
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = setTimeout(() => {
+            save();
+        }, 1000);
     }
 
     function toggleStar(index) {
@@ -245,7 +263,6 @@ export default function Upload() {
                 questionsArr: questions,
             }).then(() => {
                 console.log("Document written with ID: ", session.user?.id);
-                toast.success("저장했어요")
             }).catch((error) => {
                 console.error("Error adding document: ", error);
             });
@@ -487,7 +504,6 @@ export default function Upload() {
                 {questions ? <>
                     <p style={{ marginLeft: '10px' }}>
                         생성된 질문에 답변을 생각해 작성해보세요.<br></br>
-                        입력 후 반드시 저장 버튼을 눌러주세요.<br></br>
                         주요 질문은 스크랩해두면 나중에 모아볼 수 있어요.
                         <br></br><br></br>
                         <div style={{ float: 'right' }}>
@@ -496,6 +512,11 @@ export default function Upload() {
                         <br></br>
                     </p>
 
+
+                    {universitiesData && <HorizontalScrolling universitiesData={universitiesData} />}
+
+
+                    <br></br> <br></br>
 
                     {questions.map((item, index) => {
                         if (item.question.length < 2 || !item.question) return null;
@@ -537,8 +558,6 @@ export default function Upload() {
                                 <div>
                                     <button className="transparent" onClick={() => toggleStar(index)}><IonIcon name={item.isStar ? "bookmark" : "bookmark-outline"} />&nbsp;&nbsp;{item.isStar ? "스크랩 해제" : "스크랩"}</button>
                                     <button className="transparent" onClick={() => feedback(index)}><IonIcon name="pulse-outline" />&nbsp;&nbsp;AI 피드백&nbsp;<span style={{ fontSize: 10, marginTop: '-5px' }}>beta</span></button>
-
-                                    <button className="transparent" style={{ float: 'right' }} onClick={() => save()}><IonIcon name="checkmark-done-outline" />&nbsp;&nbsp;저장</button>
                                 </div>
                             </div>
                         )

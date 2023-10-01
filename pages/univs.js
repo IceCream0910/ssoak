@@ -104,7 +104,7 @@ export default function Upload() {
                 grading: '',
                 curriculum: '',
                 etc: '',
-                questions: [{ question: '우리 대학에 입학하면 꼭 듣고 싶은 수업이 있나요?', answer: '' }]
+                questions: []
             });
             return updatedData;
         });
@@ -362,7 +362,7 @@ export default function Upload() {
 
                             {questions && questions.map((item, index) => {
                                 return (
-                                    <div className="analysis-left analysis-container" style={{ width: '100%', flexDirection: 'column' }}>
+                                    <div key={index} className="analysis-left analysis-container" style={{ width: '100%', flexDirection: 'column' }}>
                                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
                                             <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
                                             <h4>{item.question}</h4>

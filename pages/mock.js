@@ -21,6 +21,7 @@ export default function Mock() {
     const [univs, setUnivs] = useState(null);
     const [questions, setQuestions] = useState('');
     const [selectedQuestions, setSelectedQuestions] = useState('');
+    const [isShowOnlyStar, setIsShowOnlyStar] = useState(true);
 
     const [isInit, setIsInit] = useState(true);
 
@@ -32,6 +33,7 @@ export default function Mock() {
     const [value, setValue] = useState('');
 
     const [isListening, setIsListening] = useState(true);
+    const [tts, setTTS] = useState();
 
     const videoRef = useRef(null);
     const mediaRecorder = useRef(null);
@@ -41,10 +43,6 @@ export default function Mock() {
 
     const db = firestore;
     let recognition;
-
-    var ttsAudio = new Audio(
-        ``
-    );
 
     useEffect(() => {
         if (session) {
@@ -70,6 +68,12 @@ export default function Mock() {
             router.replace('/')
         }
         getMediaPermission();
+
+        setTTS(new Audio(
+            `https://playentry.org/api/expansionBlock/tts/read.mp3?text=${encodeURIComponent(
+                ''
+            )}&speed=0&pitch=0&speaker=hana&volume=1`
+        ));
 
         window.addEventListener('resize', handleResize);
 
@@ -102,14 +106,17 @@ export default function Mock() {
     }, [questions]);
 
     function playTTS(text) {
-        ttsAudio.pause();
-        ttsAudio = new Audio(
+        tts.pause();
+        setTTS(new Audio(
             `https://playentry.org/api/expansionBlock/tts/read.mp3?text=${encodeURIComponent(
-                text
+                text || '오류가 발생했어요'
             )}&speed=0&pitch=0&speaker=hana&volume=1`
-        );
-        ttsAudio.play();
+        ));
     }
+
+    useEffect(() => {
+        tts && tts.play();
+    }, [tts]);
 
 
     const handleTextareaChange = (event) => {
@@ -176,13 +183,23 @@ export default function Mock() {
         setIsInit(true);
         if (!questions) { alert('생성된 질문이 없어요. 먼저 예상 질문을 생성해주세요.'); return; }
         const excludedKeywords = ['지원한 동기', '지원동기', '지원 동기', '자기소개', '자기 소개']; //제외 키워드
+        var isStarQuestions;
+        if (isShowOnlyStar) {
+            isStarQuestions = questions.filter(question => {
+                const hasExcludedKeyword = excludedKeywords.some(keyword =>
+                    question.question.includes(keyword)
+                );
+                return !hasExcludedKeyword;
+            }).filter(question => question.isStar);
+        } else {
+            isStarQuestions = questions.filter(question => {
+                const hasExcludedKeyword = excludedKeywords.some(keyword =>
+                    question.question.includes(keyword)
+                );
+                return !hasExcludedKeyword;
+            });
+        }
 
-        const isStarQuestions = questions.filter(question => {
-            const hasExcludedKeyword = excludedKeywords.some(keyword =>
-                question.question.includes(keyword)
-            );
-            return !hasExcludedKeyword;
-        }).filter(question => question.isStar);
         playTTS('자기소개와 지원동기를 말해주세요.');
 
         const uniqueIsStarQuestions = new Set();
@@ -218,8 +235,12 @@ export default function Mock() {
                 const speechResult =
                     event.results[event.results.length - 1][0].transcript;
                 resultTxt += speechResult;
-                console.log("result: ", resultTxt, "prev: ", prevValue);
-                setValue(resultTxt.replace(prevValue, ''));
+                if (selectedQuestions[currentQuestionIndex]) {
+                    setValue(resultTxt.replace(prevValue, '').replace(selectedQuestions[currentQuestionIndex].question.replace('?', ''), ''));
+                } else {
+                    setValue(resultTxt.replace(prevValue, ''));
+                }
+
             };
 
             recognition.onend = () => {
@@ -293,23 +314,28 @@ export default function Mock() {
                         }} /> <h3 className="header-title">AI 모의면접 <span className="badge">beta</span> </h3>
                     </div>
                     <div className="header-right">
+                        <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
+
                         <button onClick={() => {
                             toast('다음에 또 만나요')
                             router.replace('/');
                             setTimeout(() => {
                                 location.reload()
-                            }, 1000)
+                            }, 500)
                         }}>나가기</button>
                     </div>
                 </header>
 
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '50px', justifyContent: 'center', alignItems: 'center', height: '100dvh' }}>
+                {step != 2 && <div style={{ display: 'flex', flexDirection: 'row', gap: '50px', justifyContent: 'center', alignItems: 'center', height: '100dvh' }}>
                     {step != 2 &&
                         <div className="camera-container" style={{ width: '400px' }}>
                             <video ref={videoRef} autoPlay />
                         </div>}
 
                     {step === 0 && <div className="camera-container" style={{ gap: '10px' }}>
+                        <div style={{ float: 'right' }}>
+                            <input type="checkbox" id="onlyShowStar" name="onlyShowStar" checked={isShowOnlyStar} onChange={(e) => setIsShowOnlyStar(e.target.checked)} />
+                            <label for="onlyShowStar"> 스크랩된 질문에서만 질문</label></div>
                         <p>
                             - 생성한 예상 질문 중 '답변 작성' 페이지에서 스크랩한 질문 중 6개를 랜덤으로 질문합니다.<br></br>
                             - 질문이 화면에 표시된 후 답변을 말하면 자동으로 인식되어 입력됩니다.<br></br>
@@ -346,45 +372,44 @@ export default function Mock() {
                             </>
                         }
                     </div>}
+                </div>}
 
-                    {step === 2 && <div style={{ flexDirection: 'column', width: '100dvw' }}>
-                        <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
-                        <h3>모의면접이 끝났어요!</h3>
+                {step === 2 && <div>
+                    <br></br><br></br><br></br>
+                    <h3>모의면접이 끝났어요!</h3>
 
-                        {selectedQuestions && selectedQuestions.map((item, index) => {
-                            if (item.question.length < 2 || !item.question || item.question == "undefined") return null;
-                            return (
-                                <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
-                                    <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
-                                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
-                                            <h4>{item.question}</h4>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
-                                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
-                                            <p>{item.answer}</p>
-                                        </div>
+                    {selectedQuestions && selectedQuestions.map((item, index) => {
+                        if (item.question.length < 2 || !item.question || item.question == "undefined") return null;
+                        return (
+                            <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
+                                <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
+                                        <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
+                                        <h4>{item.question}</h4>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
+                                        <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
+                                        <p>{item.answer}</p>
                                     </div>
                                 </div>
-                            )
-                        })
-                        }
-
-                        <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
-                        &nbsp;&nbsp;&nbsp;
-                        <button onClick={() => {
-                            toast('다음에 또 만나요')
-                            router.replace('/');
-                            setTimeout(() => {
-                                location.reload()
-                            }, 1000)
-                        }}>나가기</button>
-
-                        <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
-                    </div>
+                            </div>
+                        )
+                    })
                     }
 
+                    <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button onClick={() => {
+                        toast('다음에 또 만나요')
+                        router.replace('/');
+                        setTimeout(() => {
+                            location.reload()
+                        }, 1000)
+                    }}>나가기</button>
+
+                    <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
                 </div>
+                }
             </main >
         </>
     )
