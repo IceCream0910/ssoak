@@ -351,13 +351,6 @@ export default function Mock() {
                 <br></br><br></br><br></br>
                 <h3>모의면접이 끝났어요!</h3>
 
-                {recordVideoUri && (
-                    <video className="record-video" controls>
-                        <source src={recordVideoUri} type="video/webm" />
-                        Your browser does not support the video tag.
-                    </video>
-                )}
-                <br></br>
                 <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
                 <br></br><br></br>
                 {selectedQuestions && selectedQuestions.map((item, index) => {
