@@ -1,11 +1,10 @@
 .main {
-  padding: 20px;
+  padding: 30px;
   min-height: 100dvh;
 }
 
 @media screen and (max-width: 768px) {
   .main {
-    padding-top: 20px;
-    padding: 20px;
+    padding: 30px;
   }
 }

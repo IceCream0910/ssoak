@@ -208,7 +208,7 @@ export default function Home() {
               </div>
 
 
-              <div className="main-step-item" onClick={() => route.push('/mock')} id="only-pc">
+              <div className="main-step-item" onClick={() => route.push('/mock')}>
                 <h2>AI 모의면접 <span className="badge">beta</span> <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h2>
                 <div className="icon"><IonIcon name='timer-outline' /></div>
               </div>

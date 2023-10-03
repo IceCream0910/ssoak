@@ -41,7 +41,6 @@ export default function Upload() {
 
     const saveTimeoutRef = useRef(null);
 
-
     const db = firestore;
 
     useEffect(() => {

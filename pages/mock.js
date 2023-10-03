@@ -60,13 +60,6 @@ export default function Mock() {
         } else {
             router.replace('/');
         }
-
-        const screenWidth = window.innerWidth;
-
-        if (screenWidth <= 768) {
-            alert('PC에서만 지원되는 기능입니다.');
-            router.replace('/')
-        }
         getMediaPermission();
 
         setTTS(new Audio(
@@ -75,10 +68,8 @@ export default function Mock() {
             )}&speed=0&pitch=0&speaker=hana&volume=1`
         ));
 
-        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', handleResize);
             if (mediaRecorder.current) {
                 mediaRecorder.current.stop();
                 const videoTracks = videoRef.current?.srcObject?.getVideoTracks();
@@ -129,14 +120,6 @@ export default function Mock() {
         setValue(answer);
     };
 
-    const handleResize = () => {
-        const screenWidth = window.innerWidth;
-
-        if (screenWidth <= 768) {
-            alert('PC에서만 지원되는 기능입니다.');
-            router.replace('/')
-        }
-    };
 
     const getMediaPermission = useCallback(async () => {
         try {
@@ -301,116 +284,111 @@ export default function Mock() {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main className={`${styles.main}`}>
 
-                <header>
-                    <div className="header-left">
-                        <IonIcon name='chevron-back-outline' onClick={() => {
-                            toast('다음에 또 만나요')
-                            router.replace('/');
-                            setTimeout(() => {
-                                location.reload()
-                            }, 1000)
-                        }} /> <h3 className="header-title">AI 모의면접 <span className="badge">beta</span> </h3>
-                    </div>
-                    <div className="header-right">
-                        <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
-
-                        <button onClick={() => {
-                            toast('다음에 또 만나요')
-                            router.replace('/');
-                            setTimeout(() => {
-                                location.reload()
-                            }, 500)
-                        }}>나가기</button>
-                    </div>
-                </header>
-
-                {step != 2 && <div style={{ display: 'flex', flexDirection: 'row', gap: '50px', justifyContent: 'center', alignItems: 'center', height: '100dvh' }}>
-                    {step != 2 &&
-                        <div className="camera-container" style={{ width: '400px' }}>
-                            <video ref={videoRef} autoPlay />
-                        </div>}
-
-                    {step === 0 && <div className="camera-container" style={{ gap: '10px' }}>
-                        <div style={{ float: 'right' }}>
-                            <input type="checkbox" id="onlyShowStar" name="onlyShowStar" checked={isShowOnlyStar} onChange={(e) => setIsShowOnlyStar(e.target.checked)} />
-                            <label for="onlyShowStar"> 스크랩된 질문에서만 질문</label></div>
-                        <p>
-                            - 생성한 예상 질문 중 '답변 작성' 페이지에서 스크랩한 질문 중 6개를 랜덤으로 질문합니다.<br></br>
-                            - 질문이 화면에 표시된 후 답변을 말하면 자동으로 인식되어 입력됩니다.<br></br>
-                            - 질문에 대한 답변이 끝나면 '다음 답변' 버튼을 눌러주세요.
-                        </p>
-
-                        <button onClick={() => [mediaRecorder.current?.start(), start()]}>
-                            시작하기
-                        </button>
-                        <p style={{ opacity: 0.5, fontSize: 13 }}>* 질문이 음성으로 제시되니 볼륨을 알맞게 조절해주세요.
-                            <br></br>* 브라우저에 따라 정상동작하지 않을 수 있습니다. Chrome 브라우저에 최적화되어 있습니다.</p>
-                    </div>}
-
-                    {step === 1 && <div style={{ width: '50%' }}>
-                        {selectedQuestions &&
-                            <>
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
-                                    <h4>{selectedQuestions[currentQuestionIndex].question}</h4>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
-                                    <textarea
-                                        className="answer-textarea"
-                                        spellCheck="false"
-                                        autoComplete="off"
-                                        value={value} // Display recognized speech in textarea
-                                        onChange={handleTextareaChange} // Update answer as user types
-                                    />
-                                </div>
-                                <br></br>
-                                {currentQuestionIndex === selectedQuestions.length - 1 ? <button onClick={() => complete()}>완료</button>
-                                    : <button onClick={() => [setCurrentQuestionIndex(currentQuestionIndex + 1), nextQuestion()]}>다음 질문</button>}
-                            </>
-                        }
-                    </div>}
-                </div>}
-
-                {step === 2 && <div>
-                    <br></br><br></br><br></br>
-                    <h3>모의면접이 끝났어요!</h3>
-
-                    {selectedQuestions && selectedQuestions.map((item, index) => {
-                        if (item.question.length < 2 || !item.question || item.question == "undefined") return null;
-                        return (
-                            <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
-                                <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
-                                        <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
-                                        <h4>{item.question}</h4>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
-                                        <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
-                                        <p>{item.answer}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    })
-                    }
-
-                    <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
-                    &nbsp;&nbsp;&nbsp;
-                    <button onClick={() => {
+            <header style={{ background: 'linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))', color: 'black' }}>
+                <div className="header-left">
+                    <IonIcon name='chevron-back-outline' onClick={() => {
                         toast('다음에 또 만나요')
                         router.replace('/');
                         setTimeout(() => {
                             location.reload()
                         }, 1000)
-                    }}>나가기</button>
-
-                    <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
+                    }} /> <h3 className="header-title">AI 모의면접 <span className="badge">beta</span> </h3>
                 </div>
+                <div className="header-right">
+                    <button className="red" onClick={() => {
+                        toast('다음에 또 만나요')
+                        router.replace('/');
+                        setTimeout(() => {
+                            location.reload()
+                        }, 500)
+                    }}>나가기</button>
+                </div>
+            </header>
+
+            {step != 2 && <video className="webcam" ref={videoRef} autoPlay />}
+
+            {step === 0 && <div>
+                <div className="mock-content-container">
+                    <div style={{ float: 'right' }}>
+                        <input type="checkbox" id="onlyShowStar" name="onlyShowStar" checked={isShowOnlyStar} onChange={(e) => setIsShowOnlyStar(e.target.checked)} />
+                        <label for="onlyShowStar"> 스크랩된 질문에서만 질문</label></div>
+                    <br></br>
+
+                    <button onClick={() => [mediaRecorder.current?.start(), start()]}>
+                        시작하기
+                    </button>
+                    <p style={{ opacity: 0.5, fontSize: 13 }}>* 질문이 음성으로 제시되니 볼륨을 알맞게 조절해주세요.
+                        <br></br>* 브라우저에 따라 정상동작하지 않을 수 있습니다. Chrome 브라우저에 최적화되어 있습니다.</p>
+                </div>
+            </div>}
+
+            {step === 1 && <div style={{ width: '50%' }}>
+                {selectedQuestions &&
+                    <div className="mock-content-container">
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
+                            <h4>{selectedQuestions[currentQuestionIndex].question}</h4>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
+                            <textarea
+                                className="answer-textarea"
+                                spellCheck="false"
+                                autoComplete="off"
+                                value={value} // Display recognized speech in textarea
+                                onChange={handleTextareaChange} // Update answer as user types
+                            />
+                        </div>
+                        <br></br>
+                        {currentQuestionIndex === selectedQuestions.length - 1 ? <button onClick={() => complete()}>완료</button>
+                            : <button onClick={() => [setCurrentQuestionIndex(currentQuestionIndex + 1), nextQuestion()]}>다음 질문</button>}
+                    </div>
                 }
-            </main >
+            </div>}
+
+            {step === 2 && <div style={{ padding: '20px' }}>
+                <br></br><br></br><br></br>
+                <h3>모의면접이 끝났어요!</h3>
+
+                {recordVideoUri && (
+                    <video className="record-video" controls>
+                        <source src={recordVideoUri} type="video/webm" />
+                        Your browser does not support the video tag.
+                    </video>
+                )}
+                <br></br>
+                <button onClick={() => downloadVideo()}>녹화한 영상 저장</button>
+                <br></br><br></br>
+                {selectedQuestions && selectedQuestions.map((item, index) => {
+                    if (item.question.length < 2 || !item.question || item.question == "undefined") return null;
+                    return (
+                        <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
+                            <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
+                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
+                                    <h4>{item.question}</h4>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px', width: '100%' }}>
+                                    <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
+                                    <p>{item.answer}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                })
+                }
+
+                <br></br><br></br><br></br><br></br><br></br>
+            </div>
+            }
+            <style jsx>
+                {`
+                    html {
+                        overflow:hidden !important;
+                    }
+                `}
+            </style>
         </>
     )
 }

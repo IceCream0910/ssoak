@@ -11,9 +11,8 @@ body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
     scroll-behavior: smooth;
     overflow-x: hidden;
+    margin: 0;
 }
-
-
 
 * {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
@@ -138,6 +137,11 @@ button:active {
     -moz-transform: scale(.96);
     -ms-transform: scale(.96);
     -o-transform: scale(.96)
+}
+
+button.red {
+    background-color: #ffd2d2;
+    color: #ff4141;
 }
 
 
@@ -578,7 +582,6 @@ span.badge {
     #only-pc {
         display: none;
     }
-
 }
 
 @media screen and (min-width: 768px) {
@@ -693,15 +696,12 @@ select {
     width: 100%
 }
 
-video {
-    border-radius: 20px;
+.webcam {
+    width: 100dvw;
+    height: calc(100dvh - 4px);
+    object-fit: cover;
 }
 
-.camera-container {
-    display: flex;
-    flex-direction: column;
-
-}
 
 .example-question-card {
     border: #becfff 1px solid;
@@ -740,5 +740,33 @@ video {
     100% {
         transform: translateY(0);
         opacity: 1;
+    }
+}
+
+.mock-content-container {
+    position: fixed;
+    bottom: 0;
+    width: 100dvw;
+    min-height: 60%;
+    background: linear-gradient(to top, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0.3) 80%, rgba(255, 255, 255, 0));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.mock-content-container button {
+    height: 50px;
+}
+
+.record-video {
+    border-radius: 10px;
+    width: 50%;
+}
+
+@media screen and (max-width: 768px) {
+    .record-video {
+        width: 100%;
     }
 }

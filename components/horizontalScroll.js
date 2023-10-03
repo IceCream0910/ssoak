@@ -5,6 +5,7 @@ import IonIcon from '@reacticons/ionicons';
 export function HorizontalScrolling({ universitiesData }) {
     const containerRef = useRef(null);
     const router = useRouter();
+    const [isMobile, setIsMobile] = useState(false);
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
     const [animate, setAnimate] = useState(false); // 애니메이션 클래스 추가/제거 상태
     const itemDisplayInterval = 5000;
@@ -46,6 +47,12 @@ export function HorizontalScrolling({ universitiesData }) {
         updateDisplayedQuestions();
         const questionDisplayTimer = setInterval(updateDisplayedQuestions, itemDisplayInterval);
 
+        const screenWidth = window.innerWidth;
+
+        if (screenWidth <= 768) {
+            setIsMobile(true);
+        }
+
         return () => {
             clearInterval(questionDisplayTimer);
         };
@@ -53,7 +60,7 @@ export function HorizontalScrolling({ universitiesData }) {
 
     return (
         <>
-            <h3>대학별 예상 질문 답변 작성하러 가기<IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h3>
+            <h3>대학별 예상 질문 <IonIcon name='chevron-forward' style={{ position: 'relative', top: '4px' }} /></h3>
             <div
                 ref={containerRef}
                 style={{ marginTop: '-10px', boxSizing: 'border-box', position: 'relative' }}
@@ -72,6 +79,10 @@ export function HorizontalScrolling({ universitiesData }) {
                 </div>
             </div>
             <br></br><br></br>
+            {isMobile && <>
+                <br></br><br></br><br></br><br></br>
+            </>}
+
         </>
     );
 }
