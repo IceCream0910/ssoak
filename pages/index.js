@@ -52,6 +52,8 @@ export default function Upload() {
 
     const [addCommonQuestionModalOpen, setAddCommonQuestionModalOpen] = useState(false);
     const [addCommonQuestionText, setAddCommonQuestionText] = useState('');
+
+    const [isOpenCommonQuestion, setIsOpenCommonQuestion] = useState(false);
     const saveTimeoutRef = useRef(null);
     const db = firestore;
 
@@ -1080,23 +1082,30 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         </div>
 
 
-                        <h3 style={{ marginLeft: '10px' }} id='공통질문'>공통 질문</h3>
-                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                            {commonQuestions && commonQuestions.map((item, index) => {
-                                return (
-                                    <div key={index} className="analysis-container question-card" style={{ borderRadius: '15px', margin: '5px 5px 5px 0', fontSize: '13px', padding: '0 20px', width: 'fit-content' }}>
-                                        <h3>Q. {item}</h3>
-                                        <button onClick={() => deleteCommonQuestion(index)}><IonIcon name='close' /></button>
-                                    </div>
-                                )
-                            })
-                            }
-                        </div>
+                        <h3 style={{ marginLeft: '10px' }} id='공통질문'
+                            onClick={() => setIsOpenCommonQuestion(!isOpenCommonQuestion)}>
+                            공통 질문&nbsp;
+                            {isOpenCommonQuestion ? <IonIcon name='chevron-up-outline' style={{ position: 'relative', top: '2px' }} /> : <IonIcon name='chevron-down-outline' style={{ position: 'relative', top: '2px' }} />}
+                        </h3>
+
+                        {isOpenCommonQuestion && <>
+                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                {commonQuestions && commonQuestions.map((item, index) => {
+                                    return (
+                                        <div key={index} className="analysis-container question-card" style={{ borderRadius: '15px', margin: '5px 5px 5px 0', fontSize: '13px', padding: '0 20px', width: 'fit-content' }}>
+                                            <h3>Q. {item}</h3>
+                                            <button onClick={() => deleteCommonQuestion(index)}><IonIcon name='close' /></button>
+                                        </div>
+                                    )
+                                })
+                                }
+                            </div>
+                            <br></br>
+                            <button onClick={() => setAddCommonQuestionModalOpen(true)}><IonIcon name='add' />&nbsp;질문 추가</button>
+                            <br></br><br></br> <br></br>
+                        </>}
+
                         <br></br>
-                        <button onClick={() => setAddCommonQuestionModalOpen(true)}><IonIcon name='add' />&nbsp;질문 추가</button>
-
-
-                        <br></br> <br></br><br></br> <br></br>
 
                         {(name && 자동진JSON && 과세특JSON) ? <>
                             <h3 style={{ marginLeft: '10px' }}>자율/동아리/진로</h3>
@@ -1212,7 +1221,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                             }
 
                         </> : <>생기부를 아직 업로드하지 않았네요. 업로드 전에는 공통 질문만 추가할 수 있어요.<br></br><br></br><br></br><br></br><br></br><br></br></>}
-                    </>}
+                    </>}<br></br><br></br><br></br><br></br><br></br><br></br>
                 </div>
 
                 {session && <div className="navigation-sidebar">

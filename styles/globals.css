@@ -14,11 +14,24 @@ body {
     margin: 0;
 }
 
-* {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #5272ff;
+    border-radius: 15px;
 }
 
 
+* {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+*:focus {
+    outline: none;
+}
 
 a {
     text-decoration: none;
@@ -103,9 +116,6 @@ footer a {
     color: inherit
 }
 
-.navigation-sidebar a:hover {
-    opacity: 0.5;
-}
 
 
 button {
@@ -548,7 +558,7 @@ span.badge {
 }
 
 .outer-sidebar.without-nav {
-    width: 75dvw;
+    width: 72dvw;
 }
 
 .list-mobile {
