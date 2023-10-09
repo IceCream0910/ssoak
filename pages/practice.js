@@ -15,6 +15,7 @@ import 'react-spring-bottom-sheet/dist/style.css'
 import { jsPDF } from "jspdf";
 
 import { HorizontalScrolling } from "../components/horizontalScroll";
+import { Sidebar } from "../components/sidebar";
 
 
 export default function Upload() {
@@ -31,6 +32,7 @@ export default function Upload() {
     const [hasQuestions, setHasQuestions] = useState(false);
     const [questions, setQuestions] = useState('');
     const [modalContent, setModalContent] = useState('');
+    const [modalMemo, setModalMemo] = useState('');
     const [isReseting, setIsReseting] = useState(false);
     const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
     const [isPdfOnlyQuestion, setIsPdfOnlyQuestion] = useState(true);
@@ -273,11 +275,13 @@ export default function Upload() {
         if (questions[index].type === '자동진') {
             const indexOf자동진 = questions[index].index;
             setModalContent(자동진JSON[indexOf자동진].title + ": " + 자동진JSON[indexOf자동진].content);
+            setModalMemo(자동진JSON[indexOf자동진].memo || '');
         } else if (questions[index].type === '과세특') {
             const gradeOf과세특 = questions[index].grade;
             const categoryOf과세특 = questions[index].category;
             const indexOf과세특 = questions[index].index;
             setModalContent(과세특JSON[gradeOf과세특][categoryOf과세특][indexOf과세특].content);
+            setModalMemo(과세특JSON[gradeOf과세특][categoryOf과세특][indexOf과세특].memo || '');
         }
     }
 
@@ -469,6 +473,10 @@ export default function Upload() {
                     let newQuestions = [...questions];
                     newQuestions[index].memo = resultMsg;
                     setQuestions(newQuestions);
+                    clearTimeout(saveTimeoutRef.current);
+                    saveTimeoutRef.current = setTimeout(() => {
+                        save();
+                    }, 1000);
                 }
                 readChunks();
             })
@@ -487,88 +495,81 @@ export default function Upload() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className={`${styles.main}`}>
+                <Sidebar />
 
-                <header>
-                    <div className="header-left">
-                        <IonIcon name='chevron-back-outline' onClick={() => router.back()} /><h3 className="header-title">답변 작성</h3>
-                    </div>
-                    <div className="header-right">
-                        <button onClick={() => setIsPdfModalOpen(true)}>PDF로 저장</button>
-                    </div>
-                </header>
+                <div className="outer-sidebar without-nav">
+                    <br></br>
+
+                    {questions ? <>
+                        <button style={{ float: 'right' }} onClick={() => setIsPdfModalOpen(true)}>PDF로 저장</button>
 
 
-                <br></br><br></br>
+                        <p style={{ marginLeft: '10px' }}><h2>답변 작성</h2>
+                            생성된 질문에 답변을 생각해 작성해보세요.<br></br>
+                            주요 질문은 스크랩해두면 나중에 모아볼 수 있어요.
+                            <br></br><br></br>
+                            <div style={{ float: 'right' }}>
+                                <input type="checkbox" id="onlyShowStar" name="onlyShowStar" checked={isShowOnlyStar} onChange={(e) => setIsShowOnlyStar(e.target.checked)} />
+                                <label for="onlyShowStar"> 스크랩된 질문만 보기</label></div>
+                            <br></br>
+                        </p>
+                        <br></br> <br></br>
 
-                {questions ? <>
-                    <p style={{ marginLeft: '10px' }}>
-                        생성된 질문에 답변을 생각해 작성해보세요.<br></br>
-                        주요 질문은 스크랩해두면 나중에 모아볼 수 있어요.
-                        <br></br><br></br>
-                        <div style={{ float: 'right' }}>
-                            <input type="checkbox" id="onlyShowStar" name="onlyShowStar" checked={isShowOnlyStar} onChange={(e) => setIsShowOnlyStar(e.target.checked)} />
-                            <label for="onlyShowStar"> 스크랩된 질문만 보기</label></div>
-                        <br></br>
-                    </p>
-
-
-                    {universitiesData && <HorizontalScrolling universitiesData={universitiesData} />}
-
-
-                    <br></br> <br></br>
-
-                    {questions.map((item, index) => {
-                        if (item.question.length < 2 || !item.question) return null;
-                        if (isShowOnlyStar && !item.isStar) return null;
-                        return (
-                            <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
-                                <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
-                                    <div className="analysis-left">
-                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
-                                            <h4>{item.question}</h4>
+                        {questions.map((item, index) => {
+                            if (item.question.length < 2 || !item.question) return null;
+                            if (isShowOnlyStar && !item.isStar) return null;
+                            return (
+                                <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>
+                                    <div id="practice-container" style={{ display: 'flex', gap: '50px' }}>
+                                        <div className="analysis-left">
+                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                                                <h1 style={{ marginTop: '5px', color: '#5272ff' }}>Q.</h1>
+                                                <h4>{item.question}</h4>
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
+                                                <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
+                                                <textarea
+                                                    className="answer-textarea"
+                                                    value={item.answer}
+                                                    onChange={(e) => handleAnswerEdit(index, e.target)}
+                                                    spellCheck="false"
+                                                    autoComplete="off"
+                                                />
+                                            </div>
                                         </div>
-                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: '10px' }}>
-                                            <h1 style={{ marginTop: '5px', color: '#5272ff' }}>A.</h1>
+                                        <div className="analysis-right">
+                                            <button className="transparent"
+                                                onClick={() => openDetailModal(index)}
+                                            >생기부 기재 내용 확인하기&nbsp;<IonIcon name="chevron-up-circle-outline" /></button>
+                                            <br></br><span style={{ marginLeft: '10px' }}>메모</span>
                                             <textarea
-                                                className="answer-textarea"
-                                                value={item.answer}
-                                                onChange={(e) => handleAnswerEdit(index, e.target)}
+                                                className="memo-textarea"
+                                                value={item.memo}
+                                                onChange={(e) => handleMemoEdit(index, e.target)}
                                                 spellCheck="false"
                                                 autoComplete="off"
                                             />
                                         </div>
                                     </div>
-                                    <div className="analysis-right">
-                                        <button className="transparent"
-                                            onClick={() => openDetailModal(index)}
-                                        >생기부 기재 내용 확인하기&nbsp;<IonIcon name="chevron-up-circle-outline" /></button>
-                                        <br></br><span style={{ marginLeft: '10px' }}>메모</span>
-                                        <textarea
-                                            className="memo-textarea"
-                                            value={item.memo}
-                                            onChange={(e) => handleMemoEdit(index, e.target)}
-                                            spellCheck="false"
-                                            autoComplete="off"
-                                        />
+
+                                    <div>
+                                        <button className="transparent" onClick={() => toggleStar(index)}><IonIcon name={item.isStar ? "bookmark" : "bookmark-outline"} />&nbsp;&nbsp;{item.isStar ? "스크랩 해제" : "스크랩"}</button>
+                                        <button className="transparent" onClick={() => feedback(index)}><IonIcon name="pulse-outline" />&nbsp;&nbsp;AI 피드백&nbsp;<span style={{ fontSize: 10, marginTop: '-5px' }}>beta</span></button>
                                     </div>
                                 </div>
-
-                                <div>
-                                    <button className="transparent" onClick={() => toggleStar(index)}><IonIcon name={item.isStar ? "bookmark" : "bookmark-outline"} />&nbsp;&nbsp;{item.isStar ? "스크랩 해제" : "스크랩"}</button>
-                                    <button className="transparent" onClick={() => feedback(index)}><IonIcon name="pulse-outline" />&nbsp;&nbsp;AI 피드백&nbsp;<span style={{ fontSize: 10, marginTop: '-5px' }}>beta</span></button>
-                                </div>
-                            </div>
-                        )
-                    })
-                    }
-                </> : <></>}
+                            )
+                        })
+                        }
+                    </> : <></>}
+                </div>
 
                 <BottomSheet open={modalOpen} expandOnContentDrag={true} onDismiss={() => setModalOpen(false)}>
                     <div className="bottom-sheet">
                         <div>
                             <h3>관련 생기부 기재 내용</h3>
                             <span>{modalContent}</span>
+
+                            {modalMemo && <span><hr></hr>메모ㅡ<br></br>{modalMemo}</span>}
                         </div>
                         <br></br>
                         <button onClick={() => setModalOpen(false)}>닫기</button>

@@ -10,6 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import IonIcon from '@reacticons/ionicons'
 import { BottomSheet } from 'react-spring-bottom-sheet'
 import 'react-spring-bottom-sheet/dist/style.css'
+import { Sidebar } from "../components/sidebar";
 export default function Upload() {
     const { data: session } = useSession();
     const router = useRouter();
@@ -303,16 +304,11 @@ export default function Upload() {
             </Head>
             <main className={`${styles.main}`}>
 
-                <header>
-                    <div className="header-left">
-                        <IonIcon name='chevron-back-outline' onClick={() => router.replace('/')} /> <h3 className="header-title">대학별 예상 질문</h3>
-                    </div>
-                    <div className="header-right"> </div>
-                </header>
+                <Sidebar />
 
-
-                <br></br><br></br><br></br>
+                <br></br>
                 <div className="outer-sidebar" id="univInfo">
+                    <h2 id="only-mobile">대학별 정보</h2>
                     <div className="list-mobile">
                         <div style={{ overflowY: 'auto' }}>
                             {universities && universities.map((item, index) => {
