@@ -96,7 +96,7 @@ export function Sidebar() {
                     <span>대학별 정보</span>
                 </a>
                 <a className={currentPath === '/mock' ? "active" : ""}
-                    onClick={() => window.open('/mock')}>
+                    onClick={() => router.replace('/univs')}>
                     <IonIcon name={currentPath === '/mock' ? "easel" : "easel-outline"} style={{ fontSize: '27px' }} />
                     <span>모의면접</span>
                 </a>
