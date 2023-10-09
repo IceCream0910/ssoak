@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+
+const withPWA = require("next-pwa");
+
+const config = {
   reactStrictMode: false,
   async rewrites() {
     return [
@@ -14,5 +17,10 @@ const nextConfig = {
     ]
   }
 }
+
+const nextConfig = withPWA({
+  dest: "public",
+  runtimeCaching: [],
+})(config);
 
 module.exports = nextConfig
