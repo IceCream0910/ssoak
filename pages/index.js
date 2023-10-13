@@ -552,11 +552,10 @@ export default function Upload() {
         e.style.height = 'auto';
         let height = e.scrollHeight;
         e.style.height = `${height + 8}px`;
+
         set과세특JSON((prev) => {
             const updatedData = { ...prev };
-
-            updatedData[grade][category][index] = { content: e.value, question: '' };
-
+            updatedData[grade][category][index].content = e.value;
             return updatedData;
         });
     };
