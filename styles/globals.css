@@ -639,7 +639,7 @@ span.badge {
     justify-content: space-between;
     align-items: center;
     border-radius: 15px;
-    padding: 0 10px;
+    padding: 0 15px;
     transition: transform 0.2s;
 }
 
@@ -846,4 +846,21 @@ select {
     .sidebar-component.mobile {
         display: flex;
     }
+}
+
+.dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 20px;
+    z-index: 9;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu button {
+    justify-content: flex-start;
 }

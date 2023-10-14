@@ -23,9 +23,11 @@ export default function Upload() {
     const [html, setHtml] = useState('');
     const [text, setText] = useState('');
     const [name, setName] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const [ocrModalOpen, setOCRModalOpen] = useState(false);
     const [uploadModalOpen, setUploadModalOpen] = useState(false);
+    const [memoModalOpen, setMemoModalOpen] = useState(false);
 
     const [commonQuestions, setCommonQuestions] = useState(['자기소개 해주세요.', '이 학과에 지원한 동기를 말씀해주세요.']);
     const [자동진JSON, set자동진JSON] = useState('');
@@ -55,6 +57,8 @@ export default function Upload() {
 
     const [isOpenCommonQuestion, setIsOpenCommonQuestion] = useState(false);
     const saveTimeoutRef = useRef(null);
+    const dropdownRef = useRef(null);
+
     const db = firestore;
 
     useEffect(() => {
@@ -102,6 +106,23 @@ export default function Upload() {
         }, 700);
     }, [자동진JSON, 과세특JSON]);
 
+
+    const handleOutsideClick = (event) => {
+        if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(event.target) &&
+            event.target.tagName !== "BUTTON"
+        ) {
+            setIsDropdownOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, []);
 
 
     /* 생기부 업로드 로직 시작 */
@@ -692,6 +713,7 @@ export default function Upload() {
                 messages: [{
                     role: "system", content: `
                 You're an interview question generater system three interview questions in korean based on the content of a given '세부능력 및 특기사항'. You need to gauge the student's effort, growth, and actual performance based on the given content. And you're not chatbot but system that should answer only in defined format. Don't answer like 'Sure, here are the three interview questions based on the given' at first.
+                질문은 가급적 간결하게 해줘.
                 \`\`\`Here are the examples of interview question:
                 - 국어 교과의 생각 키우기 활동에서 다문화 학생에 대한 역차별
                 정책에 대한 글을 썼다고 합니다. 이 활동에서 주장한 본인의 의견을 간략하게 말씀해
@@ -1036,6 +1058,29 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
         });
     }
 
+    function deleteAllQuestions() {
+        if (confirm('공통 질문을 제외한 모든 질문이 삭제됩니다. 게속하시겠습니까?')) {
+            set자동진JSON((prev) => {
+                const updatedData = [...prev];
+                updatedData.map((item) => {
+                    item.question = '';
+                })
+                return updatedData;
+            });
+            set과세특JSON((prev) => {
+                const updatedData = { ...prev };
+                Object.keys(updatedData).map((grade) => {
+                    Object.keys(updatedData[grade]).map((category) => {
+                        updatedData[grade][category].map((item) => {
+                            item.question = '';
+                        })
+                    })
+                })
+                return updatedData;
+            });
+        }
+    }
+
     return (
         <>
             <Toaster />
@@ -1064,21 +1109,28 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
                 <div className="outer-sidebar">
                     {session && <>
-                        <button className='red' id="only-mobile" onClick={() => [signOut()]}
-                            style={{ float: 'right', marginTop: '10px' }}>로그아웃</button>
-                        <h2 id="only-mobile">내 생기부</h2>
-                        <div className="sanggibu-card" style={{ padding: "15px 20px", textAlign: 'center', }}>
-                            {!(name && 자동진JSON && 과세특JSON) && <>
-                                <Image src='/document-upload.svg' width={0} height={0} sizes="100vw" className="big-image" alt="upload"></Image>
-                                <p><a target="_blank" href="https://slashpage.com/uniterview/uploadguide" style={{ color: '#5272ff', textDecoration: 'underline' }}>생기부 업로드 가이드</a>를 읽고 오른쪽 위의 생기부 업로드 버튼을 눌러 업로드해주세요.</p>
-                                <button onClick={() => setUploadModalOpen(true)}>생기부 업로드</button>
-                            </>}
-                            {(name && 자동진JSON && 과세특JSON) && <div style={{ textAlign: 'left' }}>
-                                <p>- 아래에서 생기부 내용과 항목 별 질문을 만들 수 있어요.</p>
-                                <p>- 3학년 생활기록부가 아직 반영되지 않은 경우 직접 입력해주세요.</p>
-                                <button onClick={() => setUploadModalOpen(true)}>새로운 생기부 업로드</button>
-                            </div>}
+                        <div style={{ marginTop: '-20px' }}>
+                            <button className="transparent" style={{ float: 'right', marginTop: '-10px', justifyContent: 'flex-end', padding: 0 }} onClick={() => setIsDropdownOpen(!isDropdownOpen)}><IonIcon name='ellipsis-vertical' style={{ fontSize: '20px' }} /></button>
+                            <h3 style={{ marginLeft: '10px' }}>내 생기부</h3>
+                            <p style={{ marginLeft: '10px' }}>- 아래에서 생기부 내용을 확인하고 항목별 질문을 만들 수 있어요.</p>
+                            <p style={{ marginLeft: '10px' }}>- 3학년 생활기록부가 아직 반영되지 않은 경우 직접 입력해주세요.</p>
                         </div>
+
+                        {isDropdownOpen && <div className="dropdown-menu" ref={dropdownRef}>
+                            {(name && 자동진JSON && 과세특JSON) && <button className="transparent" onClick={() => [setIsDropdownOpen(false), setUploadModalOpen(true)]}>새로운 생기부 업로드</button>}
+                            <button className="transparent" onClick={() => [setIsDropdownOpen(false), setMemoModalOpen(true)]}>생기부 메모 모아보기</button>
+                            <button className="transparent" style={{ color: 'red' }} onClick={() => [setIsDropdownOpen(false), deleteAllQuestions()]}>모든 질문 삭제</button>
+                            <button className="transparent" style={{ color: 'red' }} onClick={() => [setIsDropdownOpen(false), signOut()]}>로그아웃</button>
+                        </div>}
+                        <br></br><br></br>
+
+
+                        {!(name && 자동진JSON && 과세특JSON) && <div className="sanggibu-card" style={{ padding: "15px 20px", textAlign: 'center', }}>
+                            <Image src='/document-upload.svg' width={0} height={0} sizes="100vw" className="big-image" alt="upload"></Image>
+                            <p><a target="_blank" href="https://slashpage.com/uniterview/uploadguide" style={{ color: '#5272ff', textDecoration: 'underline' }}>생기부 업로드 가이드</a>를 읽고 오른쪽 위의 생기부 업로드 버튼을 눌러 업로드해주세요.</p>
+                            <button onClick={() => setUploadModalOpen(true)}>생기부 업로드</button>
+
+                        </div>}
 
 
                         <h3 style={{ marginLeft: '10px' }} id='공통질문'
@@ -1329,6 +1381,36 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                             })}
                         </div>
                         <button onClick={() => setIndexModalOpen(false)}>닫기</button>
+                    </div>
+                </BottomSheet>
+
+                <BottomSheet open={memoModalOpen} expandOnContentDrag={false} onDismiss={() => setMemoModalOpen(false)}>
+                    <div className="bottom-sheet">
+                        <h2>생기부 메모 모아보기</h2>
+                        <div style={{ maxHeight: '70dvh', overflowY: 'auto' }}>
+                            {자동진JSON &&
+                                자동진JSON.map((item, index) => {
+                                    if (!item.memo) return;
+                                    return (<><div key={index} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div><br></br></>
+
+                                    )
+                                })
+                            }
+                            {과세특JSON &&
+                                Object.keys(과세특JSON).map((grade) => {
+                                    Object.keys(과세특JSON[grade]).map((category) => {
+                                        과세특JSON[grade][category].map((item, index) => {
+                                            if (!item.memo) return;
+                                            return (<>
+                                                <div key={grade + category + index} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div>
+                                                <br></br></>
+                                            );
+                                        })
+                                    })
+                                })
+                            }
+                        </div>
+                        <button onClick={() => setMemoModalOpen(false)}>닫기</button>
                     </div>
                 </BottomSheet>
             </main >

@@ -23,8 +23,6 @@ export function Sidebar() {
             const docRef = doc(db, "users", session.user?.id);
             getDoc(docRef).then((doc) => {
                 if (doc.exists()) {
-                    setDdaySchoolName(doc.data().ddayName);
-                    setDdayDate(doc.data().ddayDate);
                     if (doc.data().isAdmin) setIsAdmin(doc.data().isAdmin || false);
                 }
             }).catch((error) => {
@@ -60,6 +58,11 @@ export function Sidebar() {
                         onClick={() => router.replace('/mock')}>
                         <h3>AI 모의면접</h3>
                     </div>
+                    {isAdmin &&
+                        <div className={currentPath === '/admin' ? "list-item active" : "list-item"}
+                            onClick={() => router.replace('/admin')}>
+                            <h3>학생 관리</h3>
+                        </div>}
 
                     <div style={{ position: 'absolute', bottom: '30px' }}>
                         <div style={{ display: 'flex', gap: "20px", alignItems: 'center' }}>
