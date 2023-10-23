@@ -1119,6 +1119,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         {isDropdownOpen && <div className="dropdown-menu" ref={dropdownRef}>
                             {(name && 자동진JSON && 과세특JSON) && <button className="transparent" onClick={() => [setIsDropdownOpen(false), setUploadModalOpen(true)]}>새로운 생기부 업로드</button>}
                             <button className="transparent" onClick={() => [setIsDropdownOpen(false), setMemoModalOpen(true)]}>생기부 메모 모아보기</button>
+                            <button className="transparent" onClick={() => [setIsDropdownOpen(false), startAnalysis()]}>모든 항목에 AI 질문 생성</button>
                             <button className="transparent" style={{ color: 'red' }} onClick={() => [setIsDropdownOpen(false), deleteAllQuestions()]}>모든 질문 삭제</button>
                             <button className="transparent" style={{ color: 'red' }} onClick={() => [setIsDropdownOpen(false), signOut()]}>로그아웃</button>
                         </div>}
@@ -1388,27 +1389,32 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     <div className="bottom-sheet">
                         <h2>생기부 메모 모아보기</h2>
                         <div style={{ maxHeight: '70dvh', overflowY: 'auto' }}>
+
                             {자동진JSON &&
                                 자동진JSON.map((item, index) => {
-                                    if (!item.memo) return;
-                                    return (<><div key={index} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div><br></br></>
-
-                                    )
+                                    if (item.memo) {
+                                        return (
+                                            <div key={`auto_${index}`} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div>
+                                        );
+                                    }
+                                    return null; // 또는 다른 처리 방식을 선택할 수 있음
                                 })
                             }
                             {과세특JSON &&
                                 Object.keys(과세특JSON).map((grade) => {
-                                    Object.keys(과세특JSON[grade]).map((category) => {
-                                        과세특JSON[grade][category].map((item, index) => {
-                                            if (!item.memo) return;
-                                            return (<>
-                                                <div key={grade + category + index} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div>
-                                                <br></br></>
-                                            );
-                                        })
-                                    })
+                                    return Object.keys(과세특JSON[grade]).map((category) => {
+                                        return 과세특JSON[grade][category].map((item, index) => {
+                                            if (item.memo) {
+                                                return (
+                                                    <div key={`tax_${grade}_${category}_${index}`} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div>
+                                                );
+                                            }
+                                            return null; // 또는 다른 처리 방식을 선택할 수 있음
+                                        });
+                                    });
                                 })
                             }
+
                         </div>
                         <button onClick={() => setMemoModalOpen(false)}>닫기</button>
                     </div>
