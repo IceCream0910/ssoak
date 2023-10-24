@@ -148,7 +148,7 @@ export default function Upload() {
                 set자동진JSON(convert자동진TextToJSON(creative));
 
                 //과세특 추출
-                const tax1학년 = pdfText.split('6. 교과학습발달상황  [1학년]')[1];
+                const tax1학년 = pdfText.split('6. 교과학습발달상황  [1학년]')[0];
                 var startIndex = tax1학년.indexOf('세 부 능 력 및 특 기 사 항 ');
                 var endIndex = tax1학년.indexOf('<진로 선택 과목> ');
                 const 과세특1학년Raw = tax1학년.substring(startIndex, endIndex).trim().replace("세 부 능 력 및 특 기 사 항 ", "");
@@ -339,7 +339,7 @@ export default function Upload() {
             return;
         }
 
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.303/pdf.worker.min.js';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
 
         const pdfData = new Uint8Array(await file.arrayBuffer());
 
@@ -357,6 +357,7 @@ export default function Upload() {
     };
 
     function convert자동진TextToJSON(text) {
+        console.log(text.split('2   자율활동   '))
         //자율
         var startIndex = text.indexOf('1 자율활동');
         var endIndex = text.indexOf('동아리활동   ');
@@ -1294,7 +1295,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                         <label for="onlyValid">자세한 내용은 <a href="https://slashpage.com/uniterview/privacy" target="_blank" style={{ textDecoration: 'underline' }}>개인정보 처리방침</a>을 확인해주세요.</label>
                         <br></br>
 
-                        <input type="file" id="file" accept=".html, .htm, .pdf" onChange={(e) => [handleUpload(e), e.target.value = '']} />
+                        <input type="file" id="file" accept=".html, .htm" onChange={(e) => [handleUpload(e), e.target.value = '']} />
                         <label for="file">동의합니다</label>
 
                     </div>
