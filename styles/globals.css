@@ -5,9 +5,50 @@
     font-style: normal;
 }
 
+:root {
+    --background: #f1f5ff;
+    --secondary-bg: #fff;
+    --text: #000;
+    --active-color: #c9d9ff;
+    --container: #e7eeff;
+    --button-bg: #becfff;
+    --button-text: #5272ff;
+    --memo-bg: #fff8da;
+    --input-bg: #e5ebfd;
+    --input-text: #474747;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #121212;
+        --secondary-bg: #242424;
+        --text: #f3f3f3;
+        --active-color: #5272ff;
+        --container: #353841;
+        --button-bg: #3b3b3e;
+        --button-text: #becfff;
+        --memo-bg: #464a5b;
+        --input-bg: #474747;
+        --input-text: #e5ebfd;
+    }
+
+    .sidebar-component {
+        background-color: #242424 !important;
+    }
+
+    button.red {
+        color: #fd9696 !important;
+    }
+
+    .sanggibu-card a {
+        color: #becfff !important;
+    }
+}
+
 html,
 body {
-    background-color: #f1f5ff;
+    background-color: var(--background);
+    color: var(--text);
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
     scroll-behavior: smooth;
     overflow-x: hidden;
@@ -121,8 +162,8 @@ footer a {
 button {
     border: none;
     border-radius: 10px;
-    background-color: #becfff;
-    color: #5272ff;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     padding: 10px 1.25rem;
     cursor: pointer;
     display: inline-flex;
@@ -163,8 +204,8 @@ button svg {
 input {
     border: none;
     border-radius: 10px;
-    background-color: #fff;
-    color: #474747;
+    background-color: var(--input-bg) !important;
+    color: var(--input-text);
     padding: 15px 20px;
     display: inline-flex;
     justify-content: center;
@@ -223,7 +264,7 @@ textarea {
     border-radius: 10px;
     padding: 20px;
     background: transparent;
-    color: #474747;
+    color: var(--text);
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -261,7 +302,7 @@ textarea {
 
 .sanggibu-card {
     text-align: right;
-    background-color: rgb(231, 238, 255);
+    background-color: var(--container);
     border-radius: 20px;
     padding: 20px;
     margin-bottom: 20px;
@@ -283,11 +324,7 @@ button.border {
     flex-direction: column;
     gap: 10px;
     padding: 20px;
-}
-
-.bottom-sheet textarea,
-input {
-    background-color: #e5ebfd;
+    background-color: var(--secondary-bg);
 }
 
 .bottom-sheet textarea {
@@ -301,7 +338,7 @@ input {
     justify-content: space-between;
     gap: 20px;
     margin-bottom: 50px;
-    background-color: rgb(231, 238, 255);
+    background-color: var(--container);
     border-radius: 20px;
     padding: 20px;
     box-sizing: border-box;
@@ -404,7 +441,7 @@ input {
     padding: 10px 15px;
     min-height: 100px;
     box-sizing: border-box;
-    background-color: rgb(255, 248, 218) !important;
+    background-color: var(--memo-bg) !important;
     margin-top: 10px;
 }
 
@@ -547,7 +584,7 @@ span.badge {
     width: 20dvw;
     height: 100dvh;
     box-sizing: border-box;
-    background-color: #f1f5ff;
+    background-color: var(--background);
     padding: 30px;
     overflow-y: auto;
 }
@@ -596,7 +633,7 @@ span.badge {
         color: #d6d2d2;
         position: fixed;
         top: 50px;
-        background: #f1f5ff;
+        background: var(--background);
         width: 100%;
     }
 
@@ -623,7 +660,7 @@ span.badge {
     }
 
     .bottom-sheet {
-        background-color: #fff;
+        background-color: var(--secondary-bg);
         border-radius: 20px;
     }
 
@@ -644,7 +681,7 @@ span.badge {
 }
 
 .list-item.active {
-    background-color: rgb(201, 217, 255);
+    background-color: var(--active-color);
 }
 
 .list-item:hover {
@@ -679,7 +716,7 @@ span.badge {
 #univInfo textarea,
 #univInfo input[type=text],
 #univInfo input[type=number] {
-    background-color: #e5ebfd;
+    background-color: var(--input-bg);
     width: 100%;
     box-sizing: border-box;
 }
@@ -712,7 +749,7 @@ select {
     align-items: center;
     color: #d6d2d2;
     position: fixed;
-    background: #f1f5ff;
+    background: var(--background);
     margin-top: -10px;
     width: 100%
 }
@@ -795,7 +832,7 @@ select {
     width: 20dvw;
     height: 100dvh;
     box-sizing: border-box;
-    background-color: #f1f5ff;
+    background-color: var(--background);
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
     padding: 30px;
     overflow: hidden;
@@ -854,7 +891,7 @@ select {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: #fff;
+    background: var(--secondary-bg);
     padding: 10px;
     border-radius: 20px;
     z-index: 9;
