@@ -1223,7 +1223,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                                                 );
                                                             }
                                                             return (
-                                                                <div key={index} className="analysis-container" id={item.content && `${grade}학년_${item.content.replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').replace(' ', '').split(':')[0]}`}>
+                                                                <div key={index} className="analysis-container" id={item.content && `${grade}학년_${item.content.replace('미래식량과 나의진로', '개세특: ').replace('미래 식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').replace(' ', '').split(':')[0]}`}>
                                                                     <div className="analysis-left">
                                                                         <div className="analysis-card" style={{ height: '100%' }}>
                                                                             <textarea
