@@ -16,6 +16,7 @@
     --memo-bg: #fff8da;
     --input-bg: #e5ebfd;
     --input-text: #474747;
+    --transparent-text: rgba(0, 0, 0, 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,6 +31,7 @@
         --memo-bg: #464a5b;
         --input-bg: #474747;
         --input-text: #e5ebfd;
+        --transparent-text: rgba(255, 255, 255, 0.3);
     }
 
     .sidebar-component {
@@ -855,7 +857,7 @@ select {
 }
 
 .sidebar-component.mobile a {
-    color: rgba(0, 0, 0, .3) !important;
+    color: var(--transparent-text) !important;
     font-size: 13px;
     cursor: pointer;
     width: 30%;
