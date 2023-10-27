@@ -1394,8 +1394,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                             {자동진JSON &&
                                 자동진JSON.map((item, index) => {
                                     if (item.memo) {
-                                        return (
-                                            <div key={`auto_${index}`} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div>
+                                        return (<>
+                                            <div key={`auto_${index}`} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div><br></br></>
                                         );
                                     }
                                     return null; // 또는 다른 처리 방식을 선택할 수 있음
@@ -1406,8 +1406,8 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                                     return Object.keys(과세특JSON[grade]).map((category) => {
                                         return 과세특JSON[grade][category].map((item, index) => {
                                             if (item.memo) {
-                                                return (
-                                                    <div key={`tax_${grade}_${category}_${index}`} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div>
+                                                return (<>
+                                                    <div key={`tax_${grade}_${category}_${index}`} dangerouslySetInnerHTML={{ __html: item.memo.replace(/\n/g, "<br></br>") }}></div><br></br></>
                                                 );
                                             }
                                             return null; // 또는 다른 처리 방식을 선택할 수 있음
