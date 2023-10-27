@@ -571,7 +571,7 @@ export default function Upload() {
                             <span>{modalContent}</span>
 
                             {modalMemo && <span><hr></hr>메모ㅡ<br></br>
-                                <div key={`tax_${grade}_${category}_${index}`} dangerouslySetInnerHTML={{ __html: modalMemo.replace(/\n/g, "<br></br>") }}></div>
+                                <div dangerouslySetInnerHTML={{ __html: modalMemo.replace(/\n/g, "<br></br>") }}></div>
                             </span>}
                         </div>
                         <br></br>
