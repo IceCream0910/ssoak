@@ -564,7 +564,7 @@ export default function Upload() {
                     <br></br> <br></br> <br></br><br></br> <br></br> <br></br>
                 </div>
 
-                <BottomSheet open={modalOpen} expandOnContentDrag={true} onDismiss={() => setModalOpen(false)}>
+                <BottomSheet open={modalOpen} expandOnContentDrag={true} scrollLocking={true} onDismiss={() => setModalOpen(false)}>
                     <div className="bottom-sheet">
                         <div>
                             <h3>관련 생기부 기재 내용</h3>

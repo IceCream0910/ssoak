@@ -711,29 +711,12 @@ export default function Upload() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                messages: [{
-                    role: "system", content: `
-                You're an interview question generater system three interview questions in korean based on the content of a given '세부능력 및 특기사항'. You need to gauge the student's effort, growth, and actual performance based on the given content. And you're not chatbot but system that should answer only in defined format. Don't answer like 'Sure, here are the three interview questions based on the given' at first.
-                질문은 가급적 간결하게 해줘.
-                \`\`\`Here are the examples of interview question:
-                - 국어 교과의 생각 키우기 활동에서 다문화 학생에 대한 역차별
-                정책에 대한 글을 썼다고 합니다. 이 활동에서 주장한 본인의 의견을 간략하게 말씀해
-                주세요.
-                - 동아리 활동을 하면서 여러 나라의 문화와 언어를 배웠는데, 본인에게 가장 영향을 주었거나 인상 깊었던 나라는 어디였고, 어떤 영향을 받았는지 말씀해 주세요. 
-                - 도시 환경을 개선하기 위해 환경 문제와 에너지 수급 문제는 매우 중요한 문제입니다. 교과 활동 중에 환경과 에너지 문제에 관심을 가지게 된 배경을 설명해 주세요.
-                - 진로활동에서 3년 동안 꾸준히 프로그래머라는 직업에 관심을 보이며 관련된 활동을 했는데 실제로 작업한 프로그램이나 코딩작업은 무엇이었나요?
-                - 수학 교과 시간에 미분을 이용하여 영화 CG그래픽을 보다 현실감 있게 만드는 방법에 대해 발표했는데 어떤 내용이었는지 구체적으로 얘기해 주세요.
-                - 화성 가상 우주 기지 프로젝트 활동 중 식물 생육에 관해 조사했습니다. 이때 조사한 식물의 생육 방식에 대해 설명해 주고, 과학적인 근거도 같이 설명해 주세요.
-                - 동아리 활동을 보니 파리대왕 토론 활동에서 형사미성년자의 나이를 하향해야 한다고 주장하였는데, 이 주장의 근거에 대하여 설명해 주세요.
-                \`\`\`
-                ` },
-                {
-                    role: "user", content: `
-\`\`\`세부능력 및 특기사항(don't include in your answer):${자동진JSON[index].content}\`\`\`
-Provide only 3 questions without prefixing your answer with your answer. Tell me the three interview questions. 각 질문 끝에는 [end]를 붙이고, 질문 앞에는 1. 2. 3.을 붙여주세요.
+                messages: [
+                    {
+                        role: "user", content: `너는 대학 면접관이야. 아래 생기부를 보고 질문을 3개 정도 만들어줘. 질문은 최대한 간결하게 해줘.  각 질문 끝에는 [end]를 붙이고, 질문 앞에는 1. 2. 3.을 붙여주세요.\n\n생기부:${자동진JSON[index].content}
                     ` }],
                 model: "gpt-3.5-turbo",
-                max_tokens: 4096,
+                max_tokens: 1024,
                 temperature: 0.3,
                 presence_penalty: 2,
                 top_p: 1,
@@ -800,27 +783,12 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                messages: [{
-                    role: "system", content: `
-                You're an interview question generater system three interview questions in korean based on the content of a given '세부능력 및 특기사항'. You need to gauge the student's effort, growth, and actual performance based on the given content. And you're not chatbot but system that should answer only in defined format. Don't answer like 'Sure, here are the three interview questions based on the given' at first.
-                \`\`\`Here are the examples of interview question:
-                - 국어 교과의 생각 키우기 활동에서 다문화 학생에 대한 역차별
-                정책에 대한 글을 썼다고 합니다. 이 활동에서 주장한 본인의 의견을 간략하게 말씀해
-                주세요.
-                - 동아리 활동을 하면서 여러 나라의 문화와 언어를 배웠는데, 본인에게 가장 영향을 주었거나 인상 깊었던 나라는 어디였고, 어떤 영향을 받았는지 말씀해 주세요. 
-                - 도시 환경을 개선하기 위해 환경 문제와 에너지 수급 문제는 매우 중요한 문제입니다. 교과 활동 중에 환경과 에너지 문제에 관심을 가지게 된 배경을 설명해 주세요.
-                - 진로활동에서 3년 동안 꾸준히 프로그래머라는 직업에 관심을 보이며 관련된 활동을 했는데 실제로 작업한 프로그램이나 코딩작업은 무엇이었나요?
-                - 수학 교과 시간에 미분을 이용하여 영화 CG그래픽을 보다 현실감 있게 만드는 방법에 대해 발표했는데 어떤 내용이었는지 구체적으로 얘기해 주세요.
-                - 화성 가상 우주 기지 프로젝트 활동 중 식물 생육에 관해 조사했습니다. 이때 조사한 식물의 생육 방식에 대해 설명해 주고, 과학적인 근거도 같이 설명해 주세요.
-                - 동아리 활동을 보니 파리대왕 토론 활동에서 형사미성년자의 나이를 하향해야 한다고 주장하였는데, 이 주장의 근거에 대하여 설명해 주세요.
-                \`\`\`
-                ` }, {
-                    role: "user", content: `You're an interview question generater system three interview questions in korean based on the content of a given '세부능력 및 특기사항'. You need to gauge the student's effort, growth, and actual performance based on the given content. And you're not chatbot but system that should answer only in defined format. Don't answer like 'Sure, here are the three interview questions based on the given' at first.
-\`\`\`세부능력 및 특기사항(don't include in your answer):${과세특JSON[grade][category][index].content}\`\`\`
-Provide only 3 questions without prefixing your answer with your answer. Tell me the three interview questions. 각 질문 끝에는 [end]를 붙이고, 질문 앞에는 1. 2. 3.을 붙여주세요. 질문은 너무 길지 않게 한 문장으로만 해줘.
+                messages: [
+                    {
+                        role: "user", content: `너는 대학 면접관이야. 아래 생기부를 보고 질문을 3개 정도 만들어줘. 질문은 최대한 간결하게 해줘. 각 질문 끝에는 [end]를 붙이고, 질문 앞에는 1. 2. 3.을 붙여주세요.\n\n생기부:${과세특JSON[grade][category][index].content}
                     ` }],
                 model: "gpt-3.5-turbo",
-                max_tokens: 4096,
+                max_tokens: 1024,
                 temperature: 0.3,
                 presence_penalty: 2,
                 top_p: 1,
@@ -1302,7 +1270,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
 
                 </BottomSheet>
 
-                <BottomSheet open={addModalOpen} expandOnContentDrag={false} onDismiss={() => setAddModalOpen(false)}>
+                <BottomSheet open={addModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setAddModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h3>생기부 항목 추가</h3>
                         <input placeholder="과목명" value={modalSubject} onChange={(e) => handleModalSubjectChange(e)}></input>
@@ -1311,7 +1279,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     </div>
                 </BottomSheet>
 
-                <BottomSheet open={modalOpen}>
+                <BottomSheet open={modalOpen} scrollLocking={true} >
                     <div className="bottom-sheet">
                         <div style={{ display: 'flex', alignItems: "center", gap: '20px' }}>
                             <div>
@@ -1331,7 +1299,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                 </BottomSheet>
 
 
-                <BottomSheet open={addQuestioMmodalOpen} expandOnContentDrag={false} onDismiss={() => setAddQuestionModalOpen(false)}>
+                <BottomSheet open={addQuestioMmodalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setAddQuestionModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h3>질문 추가</h3>
                         <input placeholder="질문을 입력하세요" value={addQuestionText} onChange={(e) => setAddQuestionText(e.target.value)}></input>
@@ -1340,7 +1308,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                 </BottomSheet>
 
 
-                <BottomSheet open={addCommonQuestionModalOpen} expandOnContentDrag={false} onDismiss={() => setAddCommonQuestionModalOpen(false)}>
+                <BottomSheet open={addCommonQuestionModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setAddCommonQuestionModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h3>공통 질문 추가</h3>
                         <input placeholder="질문을 입력하세요" value={addCommonQuestionText} onChange={(e) => setAddCommonQuestionText(e.target.value)}></input>
@@ -1372,7 +1340,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     </div>
                 </BottomSheet>
 
-                <BottomSheet open={indexModalOpen} expandOnContentDrag={false} onDismiss={() => setIndexModalOpen(false)}>
+                <BottomSheet open={indexModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setIndexModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h2>빠른 탐색</h2>
                         <div style={{ height: '70dvh', overflowY: 'auto' }}>
@@ -1386,7 +1354,7 @@ Provide only 3 questions without prefixing your answer with your answer. Tell me
                     </div>
                 </BottomSheet>
 
-                <BottomSheet open={memoModalOpen} expandOnContentDrag={false} onDismiss={() => setMemoModalOpen(false)}>
+                <BottomSheet open={memoModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setMemoModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h2>생기부 메모 모아보기</h2>
                         <div style={{ maxHeight: '70dvh', overflowY: 'auto' }}>
