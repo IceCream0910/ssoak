@@ -105,7 +105,7 @@ export function Sidebar() {
                 </a>
             </div>
 
-            <BottomSheet open={modalOpen} expandOnContentDrag={true} onDismiss={() => setModalOpen(false)}>
+            <BottomSheet open={modalOpen} expandOnContentDrag={true} scrollLocking={true} onDismiss={() => setModalOpen(false)}>
                 <div className="bottom-sheet">
                     <div>
                         <h3>로그인하고 시작하세요</h3>

@@ -35,8 +35,8 @@ export default function Upload() {
     const [modalMemo, setModalMemo] = useState('');
     const [isReseting, setIsReseting] = useState(false);
     const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
-    const [isPdfOnlyQuestion, setIsPdfOnlyQuestion] = useState(true);
-    const [isPdfOnlyStar, setIsPdfOnlyStar] = useState(true);
+    const [isPdfOnlyQuestion, setIsPdfOnlyQuestion] = useState(false);
+    const [isPdfOnlyStar, setIsPdfOnlyStar] = useState(false);
     const [isShowOnlyStar, setIsShowOnlyStar] = useState(false);
     const [universitiesData, setUniversitiesData] = useState(null);
     const [universities, setUniversities] = useState([]);
@@ -310,7 +310,7 @@ export default function Upload() {
 
         doc.setFontSize(20);
         doc.setTextColor(51, 102, 255);
-        doc.text("Uniterview.", 10, 60, { align: "left" });
+        doc.text(name, 10, 60, { align: "left" });
 
         var currentPageHeight = 15; // 현재 페이지의 높이
 
@@ -322,7 +322,7 @@ export default function Upload() {
             if (isPdfOnlyStar && !q.isStar) return null;
             let questionText = `${q.question.trim()}`;
             let answerText, memoText;
-            if (isPdfOnlyQuestion === true) {
+            if (isPdfOnlyQuestion === false) {
                 answerText = `${q.answer.trim() + '\n\n\n'}`;
                 memoText = `Memo\n${q.memo.trim()}`;
             } else {
