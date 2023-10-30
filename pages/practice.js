@@ -35,7 +35,7 @@ export default function Upload() {
     const [modalMemo, setModalMemo] = useState('');
     const [isReseting, setIsReseting] = useState(false);
     const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
-    const [isPdfOnlyQuestion, setIsPdfOnlyQuestion] = useState(false);
+    const [isPdfOnlyQuestion, setIsPdfOnlyQuestion] = useState(true);
     const [isPdfOnlyStar, setIsPdfOnlyStar] = useState(false);
     const [isShowOnlyStar, setIsShowOnlyStar] = useState(false);
     const [universitiesData, setUniversitiesData] = useState(null);
@@ -151,7 +151,6 @@ export default function Upload() {
 
 
         if (과세특) {
-
             Object.keys(과세특).map((grade) => {
                 Object.keys(과세특[grade]).map((category) => {
                     {
@@ -167,16 +166,6 @@ export default function Upload() {
                         })
                     }
                 })
-            });
-        }
-
-        if (result && session.user?.id) {
-            updateDoc(doc(db, "users", session.user?.id), {
-                questionsArr: result,
-            }).then(() => {
-                console.log("Document written with ID: ", session.user?.id);
-            }).catch((error) => {
-                console.error("Error adding document: ", error);
             });
         }
 
@@ -224,7 +213,7 @@ export default function Upload() {
         clearTimeout(saveTimeoutRef.current);
         saveTimeoutRef.current = setTimeout(() => {
             save();
-        }, 1000);
+        }, 700);
     }
 
     const handleMemoEdit = (index, e) => {
@@ -239,7 +228,7 @@ export default function Upload() {
         clearTimeout(saveTimeoutRef.current);
         saveTimeoutRef.current = setTimeout(() => {
             save();
-        }, 1000);
+        }, 700);
     }
 
     function toggleStar(index) {
@@ -322,7 +311,7 @@ export default function Upload() {
             if (isPdfOnlyStar && !q.isStar) return null;
             let questionText = `${q.question.trim()}`;
             let answerText, memoText;
-            if (isPdfOnlyQuestion === false) {
+            if (isPdfOnlyQuestion === true) {
                 answerText = `${q.answer.trim() + '\n\n\n'}`;
                 memoText = `Memo\n${q.memo.trim()}`;
             } else {
@@ -396,6 +385,7 @@ export default function Upload() {
         doc.save(`uniterview_${moment().format('YYMMDD_HHmmss')}.pdf`);
         toast.dismiss();
         toast.success('PDF 파일을 저장했어요');
+        setIsPdfModalOpen(false);
     }
 
     function feedback(index) {
@@ -516,7 +506,7 @@ export default function Upload() {
                         <br></br> <br></br>
 
                         {questions.map((item, index) => {
-                            if (item.question.length < 2 || !item.question) return null;
+                            if (item.question.length < 2 || !item.question || item.question == 'undefined') return null;
                             if (isShowOnlyStar && !item.isStar) return null;
                             return (
                                 <div key={index} className="analysis-container" style={{ flexDirection: 'column' }}>

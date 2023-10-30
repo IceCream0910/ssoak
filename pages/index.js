@@ -638,6 +638,15 @@ export default function Upload() {
         await new Promise(resolve => setTimeout(resolve, 10500));
 
         await startAnalysis과세특();
+        if (session) {
+            updateDoc(doc(db, "users", session.user?.id), {
+                hasQuestions: true,
+            }).then(() => {
+                console.log("Document written with ID: ", session.user?.id);
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        }
         toast.success('분석이 완료되었습니다.');
         setModalOpen(false);
     }
@@ -832,7 +841,10 @@ export default function Upload() {
                     과세특JSON[grade][category][index].question += "[end]" + resultMsg;
                     과세특JSON[grade][category][index].question = 과세특JSON[grade][category][index].question.replaceAll('[end][end]', '[end]');
                     setCompletedCount((prev) => prev + 1);
-                    setIsProsessingSpecific(false);
+                    setTimeout(() => {
+                        set과세특JSON({ ...과세특JSON });
+                        setIsProsessingSpecific(false);
+                    }, 1000);
                 }
                 readChunks();
             })
