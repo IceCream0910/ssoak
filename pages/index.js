@@ -1369,7 +1369,7 @@ export default function Upload() {
                 <BottomSheet open={memoModalOpen} expandOnContentDrag={false} scrollLocking={true} onDismiss={() => setMemoModalOpen(false)}>
                     <div className="bottom-sheet">
                         <h2>생기부 메모 모아보기</h2>
-                        <div style={{ maxHeight: '70dvh', overflowY: 'auto' }}>
+                        <div style={{ maxHeight: '70dvh', overflowY: 'auto' }} id="all-memo">
 
                             {자동진JSON &&
                                 자동진JSON.map((item, index) => {
@@ -1397,7 +1397,26 @@ export default function Upload() {
                             }
 
                         </div>
-                        <button onClick={() => setMemoModalOpen(false)}>닫기</button>
+
+                        <div style={{ display: 'flex', flexDirection: 'row', width: 'auto', height: '50px', boxSizing: 'border-box', gap: '15px' }}>
+                            <button
+                                style={{ width: '50%', height: '50px' }}
+                                onClick={() => {
+                                    var range = document.createRange();
+                                    range.selectNode(document.getElementById("all-memo"));
+                                    window.getSelection().removeAllRanges();
+                                    window.getSelection().addRange(range);
+                                    document.execCommand("copy");
+                                    window.getSelection().removeAllRanges();
+                                    toast.success('클립보드에 복사했어요.');
+                                }}
+                            >전체 복사</button>
+
+                            <button className="border"
+                                style={{ width: '50%', height: '50px' }}
+                                onClick={() => setMemoModalOpen(false)}
+                            >닫기</button>
+                        </div>
                     </div>
                 </BottomSheet>
             </main >
