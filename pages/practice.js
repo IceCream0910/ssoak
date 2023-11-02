@@ -173,13 +173,27 @@ export default function Upload() {
     }
 
     function updateQuestions(prevQuestions, newQuestions) {
+        const existingContents = prevQuestions
+            .map((question) => ({
+                question: question.question,
+                answer: question.answer,
+                memo: question.memo
+            }));
+
+
         const updatedQuestions = newQuestions.map((newQuestion, index) => {
-            if ((prevQuestions[index] && prevQuestions[index].question) && prevQuestions[index].question === newQuestion.question) {
-                return prevQuestions[index];
-            } else {
-                return newQuestion;
+            const matchedContent = existingContents.find(
+                (content) => content.question === newQuestion.question
+            );
+
+            if (matchedContent) {
+                newQuestion.answer = matchedContent.answer;
+                newQuestion.memo = matchedContent.memo;
             }
+
+            return newQuestion;
         });
+
         setQuestions(updatedQuestions);
         if (updatedQuestions && session.user?.id) {
             updateDoc(doc(db, "users", session.user?.id), {
@@ -190,6 +204,12 @@ export default function Upload() {
                 console.error("Error adding document: ", error);
             });
         }
+    }
+
+
+    function getPreviousAnswer(question) {
+        const existingQuestion = questions.find((q) => q.question === question);
+        return existingQuestion ? existingQuestion.answer : '';
     }
 
     function isJson(str) {
