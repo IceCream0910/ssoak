@@ -315,7 +315,7 @@ export default function Upload() {
         doc.rect(0, 0, 210, 297, "F");
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(34);
-        doc.text("면접 대비 자료", 10, 50, { align: "left" });
+        doc.text("면접 예상 질문", 10, 50, { align: "left" });
 
         doc.setFontSize(20);
         doc.setTextColor(51, 102, 255);
@@ -353,8 +353,8 @@ export default function Upload() {
 
 
             // 현재 페이지에 텍스트 추가하고 페이지 높이 업데이트
-            const lineHeight = 8; // 줄 간격 조정
-            const lineSpacing = 3; // 줄 간격 조정
+            const lineHeight = 4; // 줄 간격 조정
+            const lineSpacing = 1; // 줄 간격 조정
             const pageHeightLimit = 280;
 
             const totalLines = questionLines.length + answerLines.length + memoLines.length;
@@ -364,10 +364,10 @@ export default function Upload() {
             }
 
             // Question 추가
-            doc.setFontSize(19);
+            doc.setFontSize(13);
             doc.setTextColor(51, 102, 255);
             doc.text("Q. ", 10, currentPageHeight);
-            doc.setFontSize(14);
+            doc.setFontSize(11);
             doc.setTextColor(0, 0, 0);
             doc.text(questionLines, 20, currentPageHeight);
             currentPageHeight += questionLines.length * lineHeight + lineSpacing;
@@ -377,10 +377,10 @@ export default function Upload() {
                 doc.addPage();
                 currentPageHeight = 15;
             }
-            doc.setFontSize(19);
+            doc.setFontSize(13);
             doc.setTextColor(51, 102, 255);
             doc.text("A. ", 10, currentPageHeight);
-            doc.setFontSize(14);
+            doc.setFontSize(11);
             doc.setTextColor(0, 0, 0);
             doc.text(answerLines, 20, currentPageHeight);
             currentPageHeight += answerLines.length * lineHeight + lineSpacing;
@@ -388,17 +388,17 @@ export default function Upload() {
             // Memo 추가
             if (currentPageHeight + memoLines.length * lineHeight + lineSpacing > pageHeightLimit) {
                 doc.addPage();
-                currentPageHeight = 15;
+                currentPageHeight = 5;
             }
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(150, 150, 150);
-            doc.text(memoLines, 10, currentPageHeight);
+            doc.text(memoLines, 10, currentPageHeight - 5);
             currentPageHeight += memoLines.length * lineHeight + lineSpacing;
 
             // Memo가 끝날 때 회색 가로줄 추가
             doc.setDrawColor(200, 200, 200);
             doc.setLineWidth(0.5);
-            doc.line(10, currentPageHeight - 2, 200, currentPageHeight - 2); // 가로줄 추가
+            doc.line(10, currentPageHeight - 2, 200, currentPageHeight - 3); // 가로줄 추가
             currentPageHeight += lineHeight; // 가로줄에 대한 간격 추가
         });
 
