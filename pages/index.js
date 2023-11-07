@@ -119,10 +119,44 @@ export default function Upload() {
 
     useEffect(() => {
         document.addEventListener('mousedown', handleOutsideClick);
+        document.addEventListener('scrollend', handleScroll);
+
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
+            document.removeEventListener('scrollend', handleScroll);
         };
     }, []);
+
+    const handleScroll = () => {
+        const scrollPosition = window.scrollY;
+        const analysisContainers = document.querySelectorAll('.analysis-container');
+        const sidebarLinks = document.querySelectorAll('.nav-sidebar-scroll a');
+        let currentContainerId = '';
+
+        analysisContainers.forEach(container => {
+            const containerTop = container.offsetTop - 100;
+            const containerBottom = containerTop + container.offsetHeight;
+            if (scrollPosition >= containerTop && scrollPosition < containerBottom) {
+                currentContainerId = container.id;
+            }
+        });
+
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute('href').slice(1) === currentContainerId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+        const sidebar = document.querySelector('.nav-sidebar-scroll');
+        const activeLink = document.querySelector('.nav-sidebar-scroll a.active');
+
+        //scroll sidebar to active link
+        if (activeLink) {
+            activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
 
 
     /* 생기부 업로드 로직 시작 */
@@ -712,27 +746,16 @@ export default function Upload() {
 
     function analysisByIndex(index) {
         console.log(index, 'start');
-        fetch("https://ai.fakeopen.com/v1/chat/completions", {
-            //GPT3.5
+        fetch("/api/openai", {
             method: "POST",
             headers: {
-                Authorization: "Bearer pk-this-is-a-real-free-pool-token-for-everyone",
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                messages: [
-                    {
-                        role: "user", content: `너는 대학 면접관이야. 아래 생기부를 보고 질문을 3개 정도 만들어줘. 질문은 최대한 간결하게 해줘.  각 질문 끝에는 [end]를 붙이고, 질문 앞에는 1. 2. 3.을 붙여주세요.\n\n생기부:${자동진JSON[index].content}
-                    ` }],
-                model: "gpt-3.5-turbo",
-                max_tokens: 1024,
-                temperature: 0.3,
-                presence_penalty: 2,
-                top_p: 1,
-                frequency_penalty: 1,
-                stream: true,
+                content: 자동진JSON[index].content
             }),
         })
+
             .then((response) => {
                 if (!response.body) {
                     throw new Error("Response body is null");
@@ -747,27 +770,13 @@ export default function Upload() {
                         const data = decoder.decode(result.value, {
                             stream: true,
                         });
-                        const parsedData = data
-                            .replaceAll("data: ", "")
-                            .trim()
-                            .split("\n");
-                        parsedData.forEach((item) => {
-                            if (data && isJson(item)) {
-                                if (
-                                    JSON.parse(item).choices &&
-                                    JSON.parse(item).choices[0].delta &&
-                                    JSON.parse(item).choices[0].delta.content
-                                ) {
-                                    resultMsg +=
-                                        JSON.parse(item).choices[0].delta.content;
-                                }
-                            }
-                        });
+                        resultMsg = JSON.parse(data).choices[0].message.content;
                         result = await reader.read();
                     }
-                    console.log(index, "done", resultMsg);
-                    자동진JSON[index].question += "[end]" + resultMsg;
-                    자동진JSON[index].question = 자동진JSON[index].question.replaceAll('[end][end]', '[end]');
+                    console.log(index, "done", JSON.parse(resultMsg));
+                    자동진JSON[index].question += "[end]" + JSON.parse(resultMsg).questions;
+                    자동진JSON[index].summary = JSON.parse(resultMsg).summary;
+                    자동진JSON[index].question = 자동진JSON[index].question.replaceAll('[end][end]', '[end]').replaceAll('[end],', '[end]');
                     setCompletedCount((prev) => prev + 1);
                     setTimeout(() => {
                         set자동진JSON([...자동진JSON]);
@@ -784,25 +793,13 @@ export default function Upload() {
 
     function analysisByArr(grade, category, index) {
         console.log(grade, category, index, 'start');
-        fetch("https://ai.fakeopen.com/v1/chat/completions", {
-            //GPT3.5
+        fetch("/api/openai", {
             method: "POST",
             headers: {
-                Authorization: "Bearer pk-this-is-a-real-free-pool-token-for-everyone",
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                messages: [
-                    {
-                        role: "user", content: `너는 대학 면접관이야. 아래 생기부를 보고 질문을 3개 정도 만들어줘. 질문은 최대한 간결하게 해줘. 각 질문 끝에는 [end]를 붙이고, 질문 앞에는 1. 2. 3.을 붙여주세요.\n\n생기부:${과세특JSON[grade][category][index].content}
-                    ` }],
-                model: "gpt-3.5-turbo",
-                max_tokens: 1024,
-                temperature: 0.3,
-                presence_penalty: 2,
-                top_p: 1,
-                frequency_penalty: 1,
-                stream: true,
+                content: 과세특JSON[grade][category][index].content
             }),
         })
             .then((response) => {
@@ -819,27 +816,13 @@ export default function Upload() {
                         const data = decoder.decode(result.value, {
                             stream: true,
                         });
-                        const parsedData = data
-                            .replaceAll("data: ", "")
-                            .trim()
-                            .split("\n");
-                        parsedData.forEach((item) => {
-                            if (data && isJson(item)) {
-                                if (
-                                    JSON.parse(item).choices &&
-                                    JSON.parse(item).choices[0].delta &&
-                                    JSON.parse(item).choices[0].delta.content
-                                ) {
-                                    resultMsg +=
-                                        JSON.parse(item).choices[0].delta.content;
-                                }
-                            }
-                        });
+                        resultMsg = JSON.parse(data).choices[0].message.content;
                         result = await reader.read();
                     }
-                    console.log(index, "done", resultMsg);
-                    과세특JSON[grade][category][index].question += "[end]" + resultMsg;
-                    과세특JSON[grade][category][index].question = 과세특JSON[grade][category][index].question.replaceAll('[end][end]', '[end]');
+                    console.log(index, "done", JSON.parse(resultMsg));
+                    과세특JSON[grade][category][index].question += "[end]" + JSON.parse(resultMsg).questions;
+                    과세특JSON[grade][category][index].summary = JSON.parse(resultMsg).summary;
+                    과세특JSON[grade][category][index].question = 과세특JSON[grade][category][index].question.replaceAll('[end][end]', '[end]').replaceAll('[end],', '[end]');
                     setCompletedCount((prev) => prev + 1);
                     setTimeout(() => {
                         set과세특JSON({ ...과세특JSON });
@@ -1242,6 +1225,14 @@ export default function Upload() {
 
                                             </div>
                                             <div className="analysis-right">
+                                                {item.summary &&
+                                                    <>
+                                                        <h4>AI 요약</h4>
+                                                        <p style={{ fontSize: '14px', marginTop: '-10px' }}>{item.summary}</p>
+                                                        <br></br>
+                                                    </>
+                                                }
+                                                {item.question && <h4>예상 질문</h4>}
                                                 {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').map((question, index2) => {
                                                     if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').trim().split('[end]').length - 1) return null;
                                                     if (question.length < 2) return null;
@@ -1254,7 +1245,7 @@ export default function Upload() {
                                                 })
                                                 }
                                                 <button className="transparent" onClick={() => openAddQuestionModalByIndex(index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
-                                                <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByIndex(index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
+                                                <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByIndex(index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 분석</button>
                                             </div>
 
                                         </div>
@@ -1299,6 +1290,14 @@ export default function Upload() {
                                                                         </div>
                                                                     </div>
                                                                     <div className="analysis-right">
+                                                                        {item.summary &&
+                                                                            <>
+                                                                                <h4>AI 요약</h4>
+                                                                                <p style={{ fontSize: '14px', marginTop: '-10px' }}>{item.summary}</p>
+                                                                                <br></br>
+                                                                            </>
+                                                                        }
+                                                                        {item.question && <h4>예상 질문</h4>}
                                                                         {item.question && item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').map((question, index2) => {
                                                                             if (index2 == item.question.replaceAll('1. ', '').replaceAll('2. ', '').replaceAll('3. ', '').replace('undefined', '').replace('undefined[end]', '').split('[end]').length - 1) return null;
                                                                             if (question.length < 2) return null;
@@ -1311,7 +1310,7 @@ export default function Upload() {
                                                                         })
                                                                         }
                                                                         <button className="transparent" onClick={() => openAddQuestionModalByMultiple(grade, category, index)}><IonIcon name="add-outline" />&nbsp;&nbsp;직접 질문 추가</button>
-                                                                        <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByArr(grade, category, index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 질문 생성</button>
+                                                                        <button className="transparent" onClick={() => [setIsProsessingSpecific(true), analysisByArr(grade, category, index)]}><IonIcon name="color-wand-outline" />&nbsp;&nbsp;AI 분석</button>
 
                                                                     </div>
                                                                 </div>
@@ -1334,7 +1333,7 @@ export default function Upload() {
 
                 {session && <div className="navigation-sidebar">
                     <h3>빠른 탐색</h3>
-                    <div style={{ overflowY: 'auto' }}>
+                    <div style={{ overflowY: 'auto' }} className="nav-sidebar-scroll">
                         {indexArr && indexArr.map((item, key) => {
                             return (<>
                                 <a key={key} href={`#${item.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').replace(/\s*/g, "").replace(/\n/g, "")}`} onClick={() => setIndexModalOpen(false)}>{item}<IonIcon name="chevron-forward-outline" /></a><br></br><br></br>
@@ -1412,12 +1411,12 @@ export default function Upload() {
                                 </div>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                                <h3>질문을 생성하고 있어요.</h3>
-                                <span>완료될 때까지 창을 닫지 말고 기다려주세요.</span>
+                                <h3>생기부를 분석하는 중이예요.</h3>
+                                <span>생기부 항목에 대한 요약과 예상 질문이 자동으로 생성됩니다. 완료될 때까지 창을 닫지 말고 기다려주세요.</span>
+                                <br></br>
                             </div>
+
                         </div>
-                        <br></br>
-                        <button onClick={() => stopAnalysisFunc()}>중지</button>
                     </div>
                 </BottomSheet>
 

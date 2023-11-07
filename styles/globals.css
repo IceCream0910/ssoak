@@ -297,6 +297,8 @@ textarea {
 }
 
 .analysis-card .memo-textarea {
+    position: relative;
+    bottom: 0;
     min-height: 100px;
     height: 100px;
     padding: 20px;
@@ -589,6 +591,13 @@ span.badge {
     background-color: var(--background);
     padding: 30px;
     overflow-y: auto;
+}
+
+
+.navigation-sidebar a.active {
+    color: var(--button-text);
+    font-weight: 600;
+
 }
 
 .outer-sidebar {
