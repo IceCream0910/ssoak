@@ -1,6 +1,6 @@
 
 export default async function handler(req, res) {
-    const { content } = req.body;
+    const { messages, isJson } = req.body;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -10,23 +10,13 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
             model: "gpt-3.5-turbo-1106",
-            messages: [
-                {
-                    role: "system",
-                    content:
-                        "You're a college interviewer AI. Use the 생기부 input to formulate 2~5 questions and summary with activity keywords. Keep your questions as concise as possible. Put '[end]' at the end of each question. Answer JSON format(key : questions, summary) in korean lanugage.",
-                },
-                {
-                    role: "user",
-                    content: "생기부 : " + content,
-                },
-            ],
+            messages: messages,
             temperature: 1,
             max_tokens: 1024,
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
-            response_format: { type: "json_object" },
+            response_format: { type: `${isJson == false ? "text" : "json_object"}` },
         }),
     });
 

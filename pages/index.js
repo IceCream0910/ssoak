@@ -23,6 +23,7 @@ export default function Upload() {
     const [html, setHtml] = useState('');
     const [text, setText] = useState('');
     const [name, setName] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const [ocrModalOpen, setOCRModalOpen] = useState(false);
@@ -72,6 +73,7 @@ export default function Upload() {
                     set자동진JSON(doc.data().sanggibu_자동진);
                     set과세특JSON(doc.data().sanggibu_과세특);
                     setHasQuestions(doc.data().hasQuestions || false);
+                    if (doc.data().isAdmin) setIsAdmin(doc.data().isAdmin || false);
                 }
             }).catch((error) => {
                 console.error(error)
@@ -752,7 +754,17 @@ export default function Upload() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                content: 자동진JSON[index].content
+                messages: [
+                    {
+                        role: "system",
+                        content:
+                            "You're a college interviewer AI. Use the 생기부 input to formulate 2~5 questions and summary with activity keywords. Keep your questions as concise as possible. Put '[end]' at the end of each question. Answer JSON format(key : questions, summary) in korean lanugage.",
+                    },
+                    {
+                        role: "user",
+                        content: "생기부 : " + 자동진JSON[index].content,
+                    },
+                ]
             }),
         })
 
@@ -799,7 +811,17 @@ export default function Upload() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                content: 과세특JSON[grade][category][index].content
+                messages: [
+                    {
+                        role: "system",
+                        content:
+                            "You're a college interviewer AI. Use the 생기부 input to formulate 2~5 questions and summary with activity keywords. Keep your questions as concise as possible. Put '[end]' at the end of each question. Answer JSON format(key : questions, summary) in korean lanugage.",
+                    },
+                    {
+                        role: "user",
+                        content: "생기부 : " + 과세특JSON[grade][category][index].content,
+                    },
+                ]
             }),
         })
             .then((response) => {
@@ -1156,6 +1178,7 @@ export default function Upload() {
                         </div>
 
                         {isDropdownOpen && <div className="dropdown-menu" ref={dropdownRef}>
+                            {isAdmin && <button className="transparent" id="only-mobile" onClick={() => [setIsDropdownOpen(false), router.push('/admin')]}>학생 관리</button>}
                             {(name && 자동진JSON && 과세특JSON) && <button className="transparent" onClick={() => [setIsDropdownOpen(false), setUploadModalOpen(true)]}>새로운 생기부 업로드</button>}
                             <button className="transparent" onClick={() => [setIsDropdownOpen(false), setMemoModalOpen(true)]}>생기부 메모 모아보기</button>
                             <button className="transparent" onClick={() => [setIsDropdownOpen(false), startAnalysis()]}>모든 항목에 AI 질문 생성</button>

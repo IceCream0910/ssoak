@@ -54,9 +54,9 @@ export function Sidebar() {
                         onClick={() => router.replace('/univs')}>
                         <h3>대학별 정보</h3>
                     </div>
-                    <div className={currentPath === '/mock' ? "list-item active" : "list-item"}
-                        onClick={() => router.replace('/mock')}>
-                        <h3>AI 모의면접</h3>
+                    <div className={currentPath === '/chat' ? "list-item active" : "list-item"}
+                        onClick={() => router.replace('/chat')}>
+                        <h3>챗터뷰</h3>
                     </div>
                     {isAdmin &&
                         <div className={currentPath === '/admin' ? "list-item active" : "list-item"}
@@ -75,7 +75,7 @@ export function Sidebar() {
                         <div style={{ display: 'flex', fontSize: '12px', alignContent: 'center', opacity: '0.8' }}>
                             <a href="https://slashpage.com/uniterview/privacy" target="_blank">개인정보처리방침</a>&nbsp;|&nbsp;<a href="https://slashpage.com/uniterview/forum" target="_blank">오류 제보</a>
                         </div>
-                        <span style={{ fontSize: '12px', opacity: '0.8' }}>© 2023 Yun Tae In</span>
+                        <span style={{ fontSize: '12px', opacity: '0.8' }}>© 2023 <a href='https://taein.vercel.app' target='_blank'>Yun Tae In</a></span>
                     </div>
                 </div>
                 <br></br>
@@ -98,10 +98,10 @@ export function Sidebar() {
 
                     <span>대학별 정보</span>
                 </a>
-                <a className={currentPath === '/mock' ? "active" : ""}
-                    onClick={() => router.replace('/univs')}>
-                    <IonIcon name={currentPath === '/mock' ? "easel" : "easel-outline"} style={{ fontSize: '27px' }} />
-                    <span>모의면접</span>
+                <a className={currentPath === '/chat' ? "active" : ""}
+                    onClick={() => router.replace('/chat')}>
+                    <IonIcon name={currentPath === '/chat' ? "chatbubbles" : "chatbubbles-outline"} style={{ fontSize: '27px' }} />
+                    <span>챗터뷰</span>
                 </a>
             </div>
 

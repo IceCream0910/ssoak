@@ -38,8 +38,14 @@
         background-color: #242424 !important;
     }
 
+    button.red.transparent {
+        color: #fd9696 !important;
+        background-color: transparent !important;
+    }
+
     button.red {
         color: #fd9696 !important;
+        background-color: #574c4c !important;
     }
 
     .sanggibu-card a {
@@ -62,7 +68,7 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-thumb {
-    background: #5272ff;
+    background: var(--button-bg);
     border-radius: 15px;
 }
 
@@ -911,4 +917,94 @@ select {
 
 .dropdown-menu button {
     justify-content: flex-start;
+}
+
+/*챗터뷰*/
+#chat .input-container {
+    position: fixed;
+    bottom: 20px;
+    width: 70%;
+    background-color: var(--secondary-bg);
+    border-radius: 20px;
+}
+
+#chat .input-container input {
+    background-color: transparent !important;
+    padding: 20px;
+    width: 85%;
+}
+
+
+#chat .input-container button {
+    border-radius: 50%;
+    margin-top: 8px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    float: right;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#chat .suggest-reply-container {
+    position: fixed;
+    width: 70%;
+    bottom: 100px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: end;
+    box-sizing: border-box;
+}
+
+#chat .chat-container {
+    width: 100%;
+    height: 80vh;
+    overflow-y: scroll;
+}
+
+#chat .chat-container .message {
+    background-color: var(--secondary-bg);
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin-bottom: 0px;
+    display: inline-block;
+    width: fit-content;
+    max-width: 70%;
+    word-break: break-all;
+}
+
+#chat .chat-container .message.user-message {
+    background-color: var(--active-color);
+    border-radius: 20px 5px 20px 20px;
+    float: right;
+    margin-bottom: 30px;
+}
+
+
+@media screen and (max-width: 768px) {
+    #chat .input-container {
+        left: 0;
+        bottom: 65px;
+        border-radius: 20px 20px 0 0;
+        height: 70px;
+        width: 100%;
+    }
+
+    #chat .input-container input {
+        background-color: transparent !important;
+        padding: 20px;
+        width: 70%;
+    }
+
+    #chat .suggest-reply-container {
+        position: fixed;
+        width: 85%;
+        bottom: 160px;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: end;
+    }
+
 }
