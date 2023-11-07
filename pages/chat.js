@@ -223,7 +223,7 @@ export default function Chat() {
                 setIsTailing(false);
                 proceedToNextQuestion();
             } else {
-                const shouldGenerateTail = Math.random() < 0.8 && currentQuestionIndex < selectedQuestions.length - 1;
+                const shouldGenerateTail = Math.random() < 0.3 && currentQuestionIndex < selectedQuestions.length - 1;
 
                 if (shouldGenerateTail) {
                     generateAndSetTailQuestion();
