@@ -1062,6 +1062,81 @@ export default function Upload() {
         }
     }
 
+    function startWithoutFile() {
+        set자동진JSON([
+            {
+                grade: 1,
+                content: '',
+                question: '',
+                title: "자율활동"
+            },
+            {
+                grade: 1,
+                content: '',
+                question: '',
+                title: "동아리활동"
+            },
+            {
+                grade: 1,
+                content: '',
+                question: '',
+                title: "진로활동"
+            },
+            {
+                grade: 2,
+                content: '',
+                question: '',
+                title: "자율활동"
+            },
+            {
+                grade: 2,
+                content: '',
+                question: '',
+                title: "동아리활동"
+            },
+            {
+                grade: 2,
+                content: '',
+                question: '',
+                title: "진로활동"
+            },
+            {
+                grade: 3,
+                content: '',
+                question: '',
+                title: "자율활동"
+            },
+            {
+                grade: 3,
+                content: '',
+                question: '',
+                title: "동아리활동"
+            },
+            {
+                grade: 3,
+                content: '',
+                question: '',
+                title: "진로활동"
+            },
+        ]);
+        set과세특JSON({
+            "1": {
+                "1": [],
+                "2": []
+            },
+            "2": {
+                "1": [],
+                "2": []
+            },
+            "3": {
+                "1": [],
+                "2": [],
+                "3": [],
+            }
+        });
+        setName('유니터뷰');
+    }
+
     return (
         <>
             <Toaster />
@@ -1110,8 +1185,8 @@ export default function Upload() {
                         {!(name && 자동진JSON && 과세특JSON) && <div className="sanggibu-card" style={{ padding: "15px 20px", textAlign: 'center', }}>
                             <Image src='/document-upload.svg' width={0} height={0} sizes="100vw" className="big-image" alt="upload"></Image>
                             <p><a target="_blank" href="https://slashpage.com/uniterview/uploadguide" style={{ color: '#5272ff', textDecoration: 'underline' }}>생기부 업로드 가이드</a>를 읽고 오른쪽 위의 생기부 업로드 버튼을 눌러 업로드해주세요.</p>
-                            <button onClick={() => setUploadModalOpen(true)}>생기부 업로드</button>
-
+                            <button onClick={() => setUploadModalOpen(true)}>생기부 업로드</button>&nbsp;&nbsp;
+                            <button onClick={() => startWithoutFile()}>수동으로 입력하기</button>
                         </div>}
 
 
