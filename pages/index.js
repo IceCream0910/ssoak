@@ -92,7 +92,7 @@ export default function Upload() {
                             if (item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.') || !item.content) {
                                 return null;
                             }
-                            newArr.push(`${grade}학년_${item.content.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0]}`)
+                            newArr.push(`${grade}학년_${item.content.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0].replace(' ', "")}`)
                         })
                     }
                 })
@@ -950,7 +950,7 @@ export default function Upload() {
                             if (item.content.includes('당해학년도 학교생활기록은 제공하지 않습니다.') || !item.content) {
                                 return null;
                             }
-                            newArr.push(`${grade}학년_${item.content.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0]}`)
+                            newArr.push(`${grade}학년_${item.content.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(': ')[0].replace(' ', "")}`)
                         })
                     }
                 })
@@ -1269,7 +1269,7 @@ export default function Upload() {
                                                                 );
                                                             }
                                                             return (
-                                                                <div key={index} className="analysis-container" id={item.content && `${grade}학년_${item.content.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').replace(' ', '').split(':')[0]}`}>
+                                                                <div key={index} className="analysis-container" id={item.content && `${grade}학년_${item.content.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').split(':')[0].trim().replace(' ', "")}`}>
                                                                     <div className="analysis-left">
                                                                         <div className="analysis-card" style={{ height: '100%' }}>
                                                                             <textarea
@@ -1336,7 +1336,7 @@ export default function Upload() {
                     <div style={{ overflowY: 'auto' }} className="nav-sidebar-scroll">
                         {indexArr && indexArr.map((item, key) => {
                             return (<>
-                                <a key={key} href={`#${item.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').replace(/\s*/g, "").replace(/\n/g, "")}`} onClick={() => setIndexModalOpen(false)}>{item}<IonIcon name="chevron-forward-outline" /></a><br></br><br></br>
+                                <a key={key} href={`#${item.replace('미래 식량과 나의진로', '개세특: ').replace('미래식량과 나의진로', '개세특: ').replace('자율교육과정 국제문제 프로젝트', '개세특: ').replace(/\s*/g, "").replace(/\n/g, "").replace(' ', "")}`} onClick={() => setIndexModalOpen(false)}>{item}<IonIcon name="chevron-forward-outline" /></a><br></br><br></br>
                             </>)
                         })}
                     </div>
