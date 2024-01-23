@@ -150,7 +150,7 @@ export default function Community() {
                 <Spacer y={20} />
                 <h3>내가 쓴 글</h3>
                 {posts && posts.map((post, index) => (
-                    <div className="post-item" key={index} onClick={() => router.push(`/community/${post.id}`)}>
+                    <div className="post-item" key={index} onClick={() => window.open(`/community/${item.id}`, '_blank')}>
                         <div className="post-header">
                             <img src={`../../icons/profileImg/letter${user.profileImg || 1}.png`} className="profile-img" />
                             <span id="uname">{user.nickname}</span>

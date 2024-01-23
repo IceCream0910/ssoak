@@ -288,7 +288,7 @@ export default function Community() {
 
             <main>
                 <header>
-                    <IonIcon name="chevron-back" onClick={() => router.back()} style={{ fontSize: '25px', cursor: 'pointer' }} />
+                    <IonIcon name="chevron-back" onClick={() => window.close()} style={{ fontSize: '25px', cursor: 'pointer' }} />
                     {currentUserId && post && currentUserId === post.userId && (
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'absolute', right: '20px', top: '10px' }}>
                             {!isVote && <button style={{ background: 'none', padding: '5px' }} onClick={() => handleEditPost()}>수정</button>}

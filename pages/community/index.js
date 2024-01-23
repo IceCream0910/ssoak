@@ -192,7 +192,7 @@ export default function Community() {
                 {data && data.map((item, index) => {
                     if (item.category == '공지') return;
                     return (
-                        <div className="post-item" onClick={() => router.push(`/community/${item.id}`)} data-createdat={item.createdAt.toDate().getTime()}>
+                        <div className="post-item" onClick={() => window.open(`/community/${item.id}`, '_blank')} data-createdat={item.createdAt.toDate().getTime()}>
                             <div>
                                 <div className="post-header">
                                     <img src={`icons/profileImg/letter${item.profileImg || 1}.png`} className="profile-img" />
