@@ -32,15 +32,7 @@ export default function Community() {
         }
 
 
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
-        document.addEventListener('dragstart', (e) => {
-            e.preventDefault();
-        });
-        document.addEventListener('selectstart', (e) => {
-            e.preventDefault();
-        });
+
     }, []);
 
     useEffect(() => {
@@ -128,7 +120,7 @@ export default function Community() {
                     onClick={() => window.open("https://status.sungil.me/", '_blank')}><IonIcon name="server-outline" />&nbsp;&nbsp;서비스 상태 확인</button>
                 <Spacer />
                 <button style={{ background: 'none', padding: 0, color: 'var(--text)' }}
-                    onClick={() => window.open("https://github.com/icecream0910/sungil-meal-app", '_blank')}><IonIcon name="logo-github" />&nbsp;&nbsp;프로젝트 소스코드</button>
+                    onClick={() => window.open("https://github.com/IceCream0910/ssoak", '_blank')}><IonIcon name="logo-github" />&nbsp;&nbsp;프로젝트 소스코드</button>
                 <Spacer />
 
                 <button style={{ background: 'none', padding: 0, color: 'var(--text)' }}

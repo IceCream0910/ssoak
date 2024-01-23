@@ -82,15 +82,7 @@ export default function Feed() {
             }
         }
 
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
-        document.addEventListener('dragstart', (e) => {
-            e.preventDefault();
-        });
-        document.addEventListener('selectstart', (e) => {
-            e.preventDefault();
-        });
+
     }, []);
 
     useEffect(() => {

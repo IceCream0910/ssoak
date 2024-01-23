@@ -33,6 +33,22 @@ export default function App({ Component, pageProps }) {
           alert("로그인 오류 : " + errorMessage);
         });
     }
+
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+    document.addEventListener('dragstart', (e) => {
+      e.preventDefault();
+    });
+
+    return () => {
+      document.removeEventListener('contextmenu', (e) => {
+        e.preventDefault();
+      });
+      document.removeEventListener('dragstart', (e) => {
+        e.preventDefault();
+      });
+    }
   }, []);
 
   async function updateUserData(user) {
