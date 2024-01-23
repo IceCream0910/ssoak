@@ -66,7 +66,6 @@ export default function Community() {
     async function edit() {
         const title = document.querySelector('input').value;
         const content = localStorage.getItem('ssoak_editor_content');
-        const category = document.querySelector('select').value || "자유";
 
         if (!title || !content) {
             toast.error('제목과 내용을 입력해주세요');
@@ -76,7 +75,6 @@ export default function Community() {
         await updateDoc(doc(firestore, 'board', id), {
             title: title,
             content: content,
-            category: category,
         });
         localStorage.removeItem('ssoak_editor_content');
         toast.success('게시글이 수정되었습니다.');

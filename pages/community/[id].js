@@ -310,7 +310,16 @@ export default function Community() {
                     </div>
 
 
-                    <div style={{ width: 'calc(100% + 40px)' }}>
+                    {!post.title && <div style={{ width: 'calc(100% + 40px)' }}>
+                        <Spacer y={10} />
+                        <div className="skeleton-loader"></div>
+                        <Spacer y={10} />
+                        <div className="skeleton-loader"></div>
+                    </div>
+                    }
+
+
+                    <div style={{ width: 'calc(100% + 40px)' }} className='post-content-wrap'>
 
                         <h3>{post.title}</h3>
 
@@ -334,8 +343,9 @@ export default function Community() {
                                 <br />
                                 <span style={{ opacity: .7 }}>투표에 {post.participants}명 참여</span>
                             </div>
-                            : <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {post.content}
+                            : <ReactMarkdown remarkPlugins={[remarkGfm]}
+                                components={{ img: ({ node, ...props }) => <img className="post-image" {...props} alt="" /> }}>
+                                {post.content && post.content.replaceAll('<br>', '&nbsp; \n')}
                             </ReactMarkdown>}
 
 
@@ -417,10 +427,21 @@ export default function Community() {
                 background-color: var(--background-blur);
                 width: calc(100% - 40px);
             }
+
+            
+.post-image {
+    width: 100%;
+    border-radius: 15px;
+    object-fit: cover;
+}
             
             @media screen and (min-width: 768px) {
                 header {
                     width: 75%;
+                }
+
+                .post-image {
+                    width: 40%;
                 }
             }
 
@@ -481,13 +502,6 @@ export default function Community() {
     opacity: 0.8;
 }
 
-.post-image {
-    width: 40%;
-    height: 120px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    object-fit: cover;
-}
 
 .post-vote .vote-choice-item {
     padding: 0 20px 10px;
