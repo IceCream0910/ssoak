@@ -65,7 +65,7 @@ export default function Community() {
 
     async function edit() {
         const title = document.querySelector('input').value;
-        const content = editorComponentRef.current.getMarkdown();
+        const content = localStorage.getItem('ssoak_editor_content');
         const category = document.querySelector('select').value || "자유";
 
         if (!title || !content) {
@@ -78,6 +78,7 @@ export default function Community() {
             content: content,
             category: category,
         });
+        localStorage.removeItem('ssoak_editor_content');
         toast.success('게시글이 수정되었습니다.');
         router.back();
     }
@@ -90,7 +91,7 @@ export default function Community() {
             <main>
                 <header>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '10px', width: '100%' }}>
-                        <IonIcon name="chevron-back" onClick={() => router.back()} style={{ fontSize: '25px', cursor: 'pointer' }} />&nbsp;게시글 수정
+                        <IonIcon name="chevron-back" onClick={() => [localStorage.removeItem('ssoak_editor_content'), router.back()]} style={{ fontSize: '25px', cursor: 'pointer' }} />&nbsp;게시글 수정
 
                         <button style={{ position: 'absolute', right: '20px' }} onClick={() => edit()}>수정</button>
                     </div>
