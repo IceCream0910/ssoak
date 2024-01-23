@@ -1,13 +1,10 @@
 import '@toast-ui/editor/dist/toastui-editor.css';
+import '@toast-ui/editor/dist/i18n/ko-kr';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Editor } from '@toast-ui/react-editor';
 
-const EditorBoxDark = forwardRef((props, ref) => {
-    useImperativeHandle(ref, () => ({
-        getMarkdown
-    }))
-
+const EditorBoxDark = (props) => {
     const editorRef = useRef();
 
     function getMarkdown() {
@@ -30,9 +27,27 @@ const EditorBoxDark = forwardRef((props, ref) => {
         }
     }, [props.content]);
 
+    let timerId;
+
+    function debounce(func, delay) {
+        return function () {
+            clearTimeout(timerId);
+            timerId = setTimeout(func, delay);
+        };
+    }
+
+    function handleChangeEditor() {
+        const content = getMarkdown();
+        localStorage.setItem('ssoak_editor_content', content);
+    }
+
+    const debouncedHandleChangeEditor = debounce(handleChangeEditor, 100);
+
+
     return (
         <div className="edit_wrap">
             <Editor
+                onChange={debouncedHandleChangeEditor}
                 initialValue={props.content}
                 ref={editorRef}
                 initialEditType="wysiwyg"
@@ -48,6 +63,5 @@ const EditorBoxDark = forwardRef((props, ref) => {
         </div>
     );
 }
-);
 
 export default EditorBoxDark;

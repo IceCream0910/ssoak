@@ -6,6 +6,8 @@ import HeadTag from '../components/common/headTag'
 import Meal from '../components/feed/meal';
 import Timetable from '../components/feed/timetable';
 import LinkCards from '../components/feed/linkCards';
+import InstallCards from '../components/feed/installCards';
+
 import Schedule from '../components/feed/schedule';
 import NewsLetter from '../components/feed/newsletter';
 import Notice from '../components/feed/notice';
@@ -16,6 +18,7 @@ import Image from 'next/image';
 
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css'
+import IonIcon from '@reacticons/ionicons';
 
 export default function Feed() {
     const router = useRouter();
@@ -26,6 +29,7 @@ export default function Feed() {
     const [grade, setGrade] = useState(1);
     const [classNum, setClassNum] = useState(1);
     const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+    const [isAppModalOpen, setIsAppModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -103,9 +107,12 @@ export default function Feed() {
             <Toaster />
 
             <main>
-                <header style={{ padding: '20px 0 10px 0' }}>
+                <header style={{ padding: '20px 0 10px 10px' }}>
                     <Image src="/icons/icon-transparent.png" width="30" height="30"
                         style={{ filter: 'grayscale(1)' }} />
+
+                    <button style={{ position: 'absolute', top: '25px', right: '35px', padding: 0, background: 'none', color: 'var(--text)', opacity: .6 }}
+                        onClick={() => setIsAppModalOpen(true)}><IonIcon name='arrow-down-circle-outline' />&nbsp;&nbsp;앱 설치</button>
                 </header>
                 <Spacer y={10} />
 
@@ -145,6 +152,17 @@ export default function Feed() {
                     </h2>
                     <Spacer y={20} />
                     <button onClick={() => saveWelcomeInfo()}>확인</button>
+                </div>
+            </BottomSheet>
+
+            <BottomSheet open={isAppModalOpen} expandOnContentDrag={true} scrollLocking={true} onDismiss={() => setIsAppModalOpen(false)}>
+                <div className="bottom-sheet">
+                    <h2>앱 설치</h2>
+                    <Spacer y={20} />
+                    <InstallCards />
+
+                    <Spacer y={10} />
+                    <button onClick={() => setIsAppModalOpen(false)}>닫기</button>
                 </div>
             </BottomSheet>
 

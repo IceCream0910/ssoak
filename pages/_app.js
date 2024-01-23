@@ -9,6 +9,8 @@ import { firestore, auth } from "../firebase/firebase"
 import { collection, getDocs, getDoc, doc, query, orderBy, limitToLast, setDoc, endBefore, where } from 'firebase/firestore';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithRedirect, signInWithCredential } from 'firebase/auth';
 
+
+
 export default function App({ Component, pageProps }) {
 
   useEffect(() => {
@@ -64,7 +66,8 @@ export default function App({ Component, pageProps }) {
   }
 
   return (
-    <><Toaster />
+    <>
+      <Toaster />
       <Component {...pageProps} />
       <Sidebar />
     </>

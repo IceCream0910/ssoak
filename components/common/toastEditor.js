@@ -4,11 +4,7 @@ import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Editor } from '@toast-ui/react-editor';
 
-const EditorBox = forwardRef((props, ref) => {
-    useImperativeHandle(ref, () => ({
-        getMarkdown
-    }))
-
+const EditorBoxDark = (props) => {
     const editorRef = useRef();
 
     function getMarkdown() {
@@ -25,15 +21,38 @@ const EditorBox = forwardRef((props, ref) => {
         [],
     ];
 
+    useEffect(() => {
+        if (props.content) {
+            editorRef.current.getInstance().setMarkdown(props.content);
+        }
+    }, [props.content]);
+
+    let timerId;
+
+    function debounce(func, delay) {
+        return function () {
+            clearTimeout(timerId);
+            timerId = setTimeout(func, delay);
+        };
+    }
+
+    function handleChangeEditor() {
+        const content = getMarkdown();
+        localStorage.setItem('ssoak_editor_content', content);
+    }
+
+    const debouncedHandleChangeEditor = debounce(handleChangeEditor, 100);
+
+
     return (
         <div className="edit_wrap">
             <Editor
-                initialValue={props.content || ''}
+                onChange={debouncedHandleChangeEditor}
+                initialValue={props.content}
                 ref={editorRef}
                 initialEditType="wysiwyg"
                 language="ko-KR"
                 hideModeSwitch={false}
-                theme={''}
                 usageStatistics={false}
                 toolbarItems={toolbarItems}
                 useCommandShortcut={true}
@@ -43,6 +62,5 @@ const EditorBox = forwardRef((props, ref) => {
         </div>
     );
 }
-);
 
-export default EditorBox;
+export default EditorBoxDark;

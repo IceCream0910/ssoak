@@ -1,4 +1,4 @@
-"use client";
+
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from "next/router";
 import toast, { Toaster } from 'react-hot-toast';
@@ -18,10 +18,11 @@ const EditorBoxDark = dynamic(() => import('../../components/common/toastEditorD
 export default function Community() {
     const router = useRouter();
     const [currentUserId, setCurrentUserId] = useState(null);
-    const editorComponentRef = useRef();
+    //const editorComponentRef = useRef();
     const [theme, setTheme] = useState('');
     const [mode, setMode] = useState(0);
     const [voteCandidates, setVoteCandidates] = useState([]);
+
 
     useEffect(() => {
         checkAuth();
@@ -46,7 +47,7 @@ export default function Community() {
     async function post() {
         if (mode == 0) {
             const title = document.querySelector('input').value;
-            const content = editorComponentRef.current.getMarkdown();
+            const content = localStorage.getItem('ssoak_editor_content');
 
             if (!title || !content) {
                 toast.error('제목과 내용을 입력해주세요');
@@ -60,6 +61,8 @@ export default function Community() {
                 createdAt: Timestamp.now(),
                 userId: currentUserId
             });
+
+            localStorage.removeItem('ssoak_editor_content');
             toast.success('게시글이 작성되었습니다');
             router.replace('/community');
         } else { //투표 올리기
@@ -111,7 +114,7 @@ export default function Community() {
             <main>
                 <header>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '10px', width: '100%' }}>
-                        <IonIcon name="chevron-back" onClick={() => router.back()} style={{ fontSize: '25px', cursor: 'pointer' }} />&nbsp;글쓰기
+                        <IonIcon name="chevron-back" onClick={() => [localStorage.removeItem('ssoak_editor_content'), router.back()]} style={{ fontSize: '25px', cursor: 'pointer' }} />&nbsp;글쓰기
 
                         {mode == 0 ?
                             <button style={{ position: 'absolute', right: '90px' }} onClick={() => setMode(1)}>투표 만들기</button>
@@ -130,8 +133,8 @@ export default function Community() {
                         <Spacer y={20} />
                         {
                             theme === 'dark' ?
-                                <EditorBoxDark ref={editorComponentRef} />
-                                : <EditorBox ref={editorComponentRef} />
+                                <EditorBoxDark />
+                                : <EditorBox />
                         }
                     </div>
 
