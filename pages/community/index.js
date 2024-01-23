@@ -84,6 +84,17 @@ export default function Community() {
     useEffect(() => {
         fetchData();
         checkAuth();
+
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+        });
     }, []);
 
 

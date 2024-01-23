@@ -33,18 +33,6 @@ export default function App({ Component, pageProps }) {
           alert("로그인 오류 : " + errorMessage);
         });
     }
-
-    if (!window.location.href.includes('/community')) {
-      document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-      });
-      document.addEventListener('dragstart', (e) => {
-        e.preventDefault();
-      });
-      document.addEventListener('selectstart', (e) => {
-        e.preventDefault();
-      });
-    }
   }, []);
 
   async function updateUserData(user) {

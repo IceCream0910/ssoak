@@ -44,6 +44,17 @@ export default function Community() {
             setGrade(savedGrade);
             setClassNum(savedClassNum);
         }
+
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+        });
     }, []);
 
     useEffect(() => {

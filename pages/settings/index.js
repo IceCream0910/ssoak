@@ -30,6 +30,17 @@ export default function Community() {
             const savedAllergyArray = savedAllergy.split(',').map(num => parseInt(num, 10));
             setAllergy(savedAllergyArray);
         }
+
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+        });
     }, []);
 
     useEffect(() => {

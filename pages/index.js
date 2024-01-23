@@ -81,6 +81,16 @@ export default function Feed() {
                 setMealCardTitle(`내일 먹게 될 급식`);
             }
         }
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+        });
     }, []);
 
     useEffect(() => {
