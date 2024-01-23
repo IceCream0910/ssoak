@@ -1,5 +1,8 @@
 import firebasedb from "./firebasedb";
-import { getDatabase, ref, set, onValue, push, remove, getFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const firestore = getFirestore(firebasedb);
-export default firestore;
+const auth = getAuth(firebasedb);
+
+export { firestore, auth };

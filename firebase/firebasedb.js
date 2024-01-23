@@ -1,12 +1,13 @@
 import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCEMZF03973g8X82BNCl-1NlH_Txenfc6s",
-    authDomain: "uniterview.firebaseapp.com",
-    projectId: "uniterview",
-    storageBucket: "uniterview.appspot.com",
-    messagingSenderId: "417418078068",
-    appId: "1:417418078068:web:cf6e921bb3ea9ca954ee21"
+    apiKey: "AIzaSyDsE3S6NdSB_BO03pHBA3VVkCo6RWn-3Tw",
+    authDomain: "ssoak-72f93.firebaseapp.com",
+    projectId: "ssoak-72f93",
+    storageBucket: "ssoak-72f93.appspot.com",
+    messagingSenderId: "998236238275",
+    appId: "1:998236238275:web:254b37e7a33448259ecd76",
+    databaseURL: "https://ssoak-72f93-default-rtdb.firebaseio.com",
 };
 
 const firebasedb = initializeApp(firebaseConfig);

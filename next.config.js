@@ -4,6 +4,9 @@ const withPWA = require("next-pwa");
 
 const config = {
   reactStrictMode: false,
+  experimental: {
+    scrollRestoration: true,
+  },
   async rewrites() {
     return [
       {

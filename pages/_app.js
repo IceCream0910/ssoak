@@ -1,44 +1,72 @@
-import { SessionProvider } from "next-auth/react";
 import '../styles/globals.css'
-import ScrollToTop from "../components/scrollToTop";
 import React, { useEffect, useState } from "react";
 import router from "next/router";
 import Image from "next/image";
+import { Sidebar } from "../components/common/sidebar";
 
+import toast, { Toaster } from 'react-hot-toast';
+import { firestore, auth } from "../firebase/firebase"
+import { collection, getDocs, getDoc, doc, query, orderBy, limitToLast, setDoc, endBefore, where } from 'firebase/firestore';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithRedirect, signInWithCredential } from 'firebase/auth';
 
 export default function App({ Component, pageProps }) {
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const startLoading = () => setLoading(true);
-    const stopLoading = () => setLoading(false);
+    window.toast = (message) => {
+      toast(message);
+    }
 
-    // Register event listeners to show/hide the loading component
-    // addEventListener : documen의 특정 요소 (id, class, tag ... ) event(클릭하면 함수를 실행하라.)
-    window.addEventListener("beforeunload", startLoading);
-    router.events.on("routeChangeStart", startLoading);
-    router.events.on("routeChangeComplete", stopLoading);
-    router.events.on("routeChangeError", stopLoading);
-
-    // Unregister event listeners during cleanup
-    // window.removeEventListener 이벤트 제거할 경우
-    return () => {
-      window.removeEventListener("beforeunload", startLoading);
-      router.events.off("routeChangeStart", startLoading);
-      router.events.off("routeChangeComplete", stopLoading);
-      router.events.off("routeChangeError", stopLoading);
-    };
+    window.pushWebviewGoogleLoginToken = (tokenFromApp) => {
+      console.log("tokenFromApp : " + tokenFromApp)
+      const credential = GoogleAuthProvider.credential(tokenFromApp);
+      signInWithCredential(auth, credential)
+        .then((result) => {
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          const user = result.user;
+          updateUserData(user);
+        }).catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          const email = error.email;
+          const credential = GoogleAuthProvider.credentialFromError(error);
+          alert("로그인 오류 : " + errorMessage);
+        });
+    }
   }, []);
 
+  async function updateUserData(user) {
+    const query = await getDoc(doc(firestore, 'users', user.uid));
+    const data = query.data();
+
+    Android.sendUserIdForFCM(user.uid);
+
+    if (!data) {
+      //새로운 유저
+      await setDoc(doc(firestore, 'users', user.uid), {
+        uid: user.uid,
+        nickname: user.displayName,
+        email: user.email,
+        profileImg: Math.floor(Math.random() * 5),
+        admin: false
+      });
+
+      setMyUser({
+        uid: user.uid,
+        nickname: user.displayName,
+        email: user.email,
+        profileImg: Math.floor(Math.random() * 5),
+        admin: false
+      });
+      console.log('새로운 유저 가입됨')
+    }
+
+  }
+
   return (
-    <SessionProvider session={pageProps.session}>
-      {loading && (
-        <div className="loading-full">
-          <Image src='/loader.gif' width={50} height={50} alt="splash-icon"></Image>
-        </div>
-      )}
+    <><Toaster />
       <Component {...pageProps} />
-      <ScrollToTop />
-    </SessionProvider>
+      <Sidebar />
+    </>
   )
 }
