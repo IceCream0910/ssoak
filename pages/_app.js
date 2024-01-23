@@ -9,8 +9,6 @@ import { firestore, auth } from "../firebase/firebase"
 import { collection, getDocs, getDoc, doc, query, orderBy, limitToLast, setDoc, endBefore, where } from 'firebase/firestore';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithRedirect, signInWithCredential } from 'firebase/auth';
 
-
-
 export default function App({ Component, pageProps }) {
 
   useEffect(() => {
@@ -35,6 +33,21 @@ export default function App({ Component, pageProps }) {
           alert("로그인 오류 : " + errorMessage);
         });
     }
+
+    // Disable right-click
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+
+    // Disable drag
+    document.addEventListener('dragstart', (e) => {
+      e.preventDefault();
+    });
+
+    // Disable selection
+    document.addEventListener('selectstart', (e) => {
+      e.preventDefault();
+    });
   }, []);
 
   async function updateUserData(user) {
