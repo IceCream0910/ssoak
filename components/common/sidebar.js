@@ -13,7 +13,7 @@ export function Sidebar() {
         <>
             <div className="navigation-sidebar sidebar-component pc">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Image src="/icons/icon-transparent.png" width="30" height="30"
+                    <Image onClick={() => router.replace('/')} src="/icons/icon-transparent.png" width="30" height="30"
                         style={{ filter: 'grayscale(1)' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', paddingTop: '20px', gap: '10px' }}>

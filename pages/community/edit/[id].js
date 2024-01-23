@@ -10,8 +10,9 @@ import { firestore } from "../../../firebase/firebase"
 import IonIcon from '@reacticons/ionicons';
 import { getDoc, doc, collection, orderBy, getDocs, Timestamp, addDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import EditorBox from '../../../components/common/toastEditor';
-import EditorBoxDark from '../../../components/common/toastEditorDark';
+import dynamic from 'next/dynamic';
+const EditorBox = dynamic(() => import('../../../components/common/toastEditor'), { ssr: false });
+const EditorBoxDark = dynamic(() => import('../../../components/common/toastEditorDark'), { ssr: false });
 
 export default function Community() {
     const router = useRouter();
