@@ -17,12 +17,11 @@ export default function Community() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [data, setData] = useState([]);
 
+    const [grade, setGrade] = useState(1);
+    const [classNum, setClassNum] = useState(1);
     const [detailItem, setDetailItem] = useState(null);
 
     async function fetchData() {
-        const grade = localStorage.getItem('sungil_grade') || 1;
-        const classNum = localStorage.getItem('sungil_classNum') || 1;
-
         const q = query(collection(firestore, `todo_${grade}_${classNum}`), orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
         let temp = [];
@@ -39,13 +38,20 @@ export default function Community() {
     }
 
     useEffect(() => {
-        fetchData();
+        const savedGrade = localStorage.getItem('sungil_grade');
+        const savedClassNum = localStorage.getItem('sungil_classNum');
+        if (savedGrade && savedClassNum) {
+            setGrade(savedGrade);
+            setClassNum(savedClassNum);
+        }
     }, []);
 
-    async function save() {
-        const grade = localStorage.getItem('sungil_grade') || 1;
-        const classNum = localStorage.getItem('sungil_classNum') || 1;
+    useEffect(() => {
+        if (!grade || !classNum) return;
+        fetchData();
+    }, [grade, classNum]);
 
+    async function save() {
         const title = document.querySelector('input[placeholder="내용"]').value;
         const date = document.querySelector('input[type="date"]').value;
         const period = document.querySelector('select').value;
@@ -98,11 +104,11 @@ export default function Community() {
                 <header>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '10px', width: '100%' }}>
                         <h2 style={{ marginLeft: '5px' }}>&nbsp;우리 반 할일</h2>
-                        <span style={{ opacity: .5 }}>for {localStorage.getItem('sungil_grade') || 1}-{localStorage.getItem('sungil_classNum') || 1}</span>
+                        <span style={{ opacity: .5 }}>for {grade}-{classNum}</span>
                     </div>
 
                 </header>
-                <Spacer y={100} />
+                <Spacer y={70} />
 
                 {!data || data.length == 0 &&
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: '20px', width: '100%' }}>
@@ -198,6 +204,7 @@ export default function Community() {
                 z-index: 99;
                 display: flex;
                 padding: 20px;
+                padding-bottom:0;
                 height: 50px;
                 align-items: center;
                 backdrop-filter: blur(15px) saturate(200%);
