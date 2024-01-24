@@ -40,10 +40,13 @@ function Notice() {
 
     return (
         <div>
-            <div className="card" onClick={() => window.open(noticeLink, '_blank')}>
-                📢
-                <div><span style={{ opacity: .7 }}>{noticeTitle} <IonIcon name="chevron-forward-outline" style={{ position: "relative", top: "2px" }} /></span></div>
-            </div>
+            {noticeTitle &&
+                <div className="card" onClick={() => router.push(noticeLink)}>
+                    📢
+                    <div><span style={{ opacity: .7 }}>{noticeTitle} <IonIcon name="chevron-forward-outline" style={{ position: "relative", top: "2px" }} /></span></div>
+                </div>
+            }
+
             <style jsx>{`
 .card {
     display: flex;

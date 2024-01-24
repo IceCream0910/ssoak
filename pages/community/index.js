@@ -34,12 +34,12 @@ export default function Community() {
         const nextQuery = lastDoc ? query(
             collection(firestore, "board"),
             orderBy("createdAt"),
-            limitToLast(4),
+            limitToLast(8),
             endBefore(lastDoc)
         ) : query(
             collection(firestore, "board"),
             orderBy("createdAt"),
-            limitToLast(4)
+            limitToLast(8)
         );
 
         const querySnapshot = await getDocs(nextQuery);
@@ -192,7 +192,7 @@ export default function Community() {
                 {data && data.map((item, index) => {
                     if (item.category == '공지') return;
                     return (
-                        <div className="post-item" onClick={() => window.open(`/community/${item.id}`, '_blank')} data-createdat={item.createdAt.toDate().getTime()}>
+                        <div className="post-item" onClick={() => router.push(`/community/${item.id}`)} data-createdat={item.createdAt.toDate().getTime()}>
                             <div>
                                 <div className="post-header">
                                     <img src={`icons/profileImg/letter${item.profileImg || 1}.png`} className="profile-img" />
@@ -231,6 +231,18 @@ export default function Community() {
                 }
 
                 {isLoading && <>
+                    <div className="post-item">
+                        <div className="skeleton-loader"></div><Spacer y={10} />
+                    </div>
+                    <Spacer y={15} />
+                    <div className="post-item">
+                        <div className="skeleton-loader"></div><Spacer y={10} />
+                    </div>
+                    <Spacer y={15} />
+                    <div className="post-item">
+                        <div className="skeleton-loader"></div><Spacer y={10} />
+                    </div>
+                    <Spacer y={15} />
                     <div className="post-item">
                         <div className="skeleton-loader"></div><Spacer y={10} />
                     </div>
