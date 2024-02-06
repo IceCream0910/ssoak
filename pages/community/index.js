@@ -49,14 +49,8 @@ export default function Community() {
             let data = doc.data();
             data.id = doc.id;
 
-            const response = await fetch(`/api/user/${data.userId}`);
-            const userData = await response.json();
-
             tempList.push({
-                ...data,
-                nickname: userData.nickname,
-                profileImg: userData.profileImg,
-                admin: userData.admin
+                ...data
             });
         }
 
@@ -194,27 +188,14 @@ export default function Community() {
                     return (
                         <div className="post-item" onClick={() => router.push(`/community/${item.id}`)} data-createdat={item.createdAt.toDate().getTime()}>
                             <div>
-                                <div className="post-header">
-                                    <img src={`icons/profileImg/letter${item.profileImg || 1}.png`} className="profile-img" />
-                                    <span id="uname">{(item.admin) ?
-                                        <span>{item.nickname}&nbsp;
-                                            <IonIcon name="checkmark-circle" style={{ position: 'relative', top: '2px', color: 'var(--button-text)' }} /></span>
-                                        : (item.nickname || '(어디론가 사라진 사용자)')}<br />
-                                        <span style={{ opacity: 0.7 }}>{moment(item.createdAt.toDate()).format('YYYY-MM-DD')}</span>
-                                    </span>
-                                </div>
-                                <h3 id="post-title">{item.title}</h3>
                                 <Spacer y={10} />
-                                <div className="post-preview">
+                                <h6 style={{ fontSize: '1rem' }} id="post-title">{item.title}</h6>
+                                <Spacer y={5} />
+                                <div style={{ opacity: .8, fontSize: '.8rem' }} className="post-preview">
                                     {item.content.length > 50 ? `${item.content.slice(0, 50)}...` : item.content.replace('?vote?', '투표를 확인하세요')}
                                 </div>
-                                <div id={`choices-list-${item.id}`} style={{ width: '100%' }}></div>
-                                {item.image && <><Spacer y={20} />
-                                    <img src={item.image[0]} className="post-image" />
-                                </>}
+                                <span style={{ opacity: .5, fontSize: '.7rem' }}>{moment(item.createdAt.toDate().getTime()).format("YYYY-MM-DD")}</span>
                                 <Spacer y={20} />
-                                <span style={{ color: 'var(--button-text)', fontSize: '15px', marginTop: '10px', opacity: .7 }}>더보기</span>
-                                <Spacer y={30} />
                             </div>
                         </div>
                     );

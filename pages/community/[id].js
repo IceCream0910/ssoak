@@ -47,6 +47,20 @@ export default function Community() {
         fetchData();
     }, [id]);
 
+    async function fetchUserData(userId) {
+        const response = await fetch(`/api/user/${userId}`);
+        const userData = await response.json();
+
+        setPost(prevPost => ({
+            ...prevPost,
+            nickname: userData.nickname,
+            profileImg: userData.profileImg,
+            admin: userData.admin,
+            fcmToken: userData.fcmToken || null
+        }));
+    }
+
+
     async function fetchData() {
         if (!id) return;
         const query = await getDoc(doc(firestore, 'board', id));
@@ -57,17 +71,8 @@ export default function Community() {
             setIsVote(true);
         }
 
-        let temp;
-        const response = await fetch(`/api/user/${data.userId}`);
-        const userData = await response.json();
-
-        temp = {
-            ...data,
-            nickname: userData.nickname,
-            profileImg: userData.profileImg,
-            admin: userData.admin,
-            fcmToken: userData.fcmToken || null
-        };
+        setPost(data);
+        fetchUserData(data.userId);
 
         //댓글 로딩
         const tempList = [];
@@ -87,10 +92,7 @@ export default function Community() {
             });
         }
 
-        tempList.reverse();
         setComments(tempList);
-        setPost(temp);
-        console.log(temp)
     }
 
     useEffect(() => {
@@ -223,7 +225,6 @@ export default function Community() {
             const boardData = boardSnapshot.data();
 
             if (boardData) {
-                // Ensure data consistency by updating based on current values
                 const updatedOptions = [...boardData.options];
                 updatedOptions[index].count -= 1;
 
@@ -258,7 +259,6 @@ export default function Community() {
             const boardData = boardSnapshot.data();
 
             if (boardData) {
-                // Ensure data consistency by updating based on current values
                 const updatedOptions = [...boardData.options];
                 updatedOptions[index].count += 1;
 
@@ -300,11 +300,11 @@ export default function Community() {
 
                 {post && <>
                     <div className="post-header">
-                        <img src={`../icons/profileImg/letter${post.profileImg || 1}.png`} className="profile-img" />
-                        <span id="uname">{(post.admin) ?
+                        <img src={`../icons/profileImg/letter${post.profileImg && post.profileImg || 1}.png`} className="profile-img" />
+                        <span id="uname">{post.admin && (post.admin) ?
                             <span>{post.nickname}&nbsp;
                                 <IonIcon name="checkmark-circle" style={{ position: 'relative', top: '2px', color: 'var(--button-text)' }} /></span>
-                            : <span>{post.nickname}</span>}<br />
+                            : <span>{post.nickname && post.nickname}</span>}<br />
                             <span style={{ opacity: 0.7 }}>{post.createdAt && moment(post.createdAt.toDate()).format('YYYY-MM-DD')}</span>
                         </span>
                     </div>
