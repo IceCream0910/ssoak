@@ -36,3 +36,6 @@ next-env.d.ts
 
 public/sw.js
 public/workbox-*.js
+
+firebase/firebasedb.js
+/firebase/firebasedb.js
