@@ -1,8 +1,9 @@
 # 쏙
-[Website](https://sungil.me) |
-[Play Store](https://play.google.com/store/apps/details?id=com.icecream.sungilmeal)
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<p>
+<img src="https://img.shields.io/badge/license-MIT-333333.svg?&style=for-the-badge"/>
+<a href="https://sungil.me" target="_blank"><img src="https://img.shields.io/badge/Website-333333.svg?&style=for-the-badge&logo=google chrome"/></a>
+<a href="https://play.google.com/store/apps/details?id=com.icecream.sungilmeal" target="_blank"><img src="https://img.shields.io/badge/Play Store-333333.svg?&style=for-the-badge&logo=google play&logoColor=6684ec"/></a>
+</p>
 
 경기 성남 성일고등학교의 급식, 시간표, 학사일정 등 정보를 한눈에 확인할 수 있는 서비스
 
