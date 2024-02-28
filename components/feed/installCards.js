@@ -5,30 +5,6 @@ import { useRouter } from 'next/router';
 
 function installCards() {
     const router = useRouter();
-    let installPrompt = null;
-
-    window.addEventListener("beforeinstallprompt", async (event) => {
-        installPrompt = event;
-    });
-
-    window.addEventListener("appinstalled", () => {
-        disableInAppInstallPrompt();
-    });
-
-    function disableInAppInstallPrompt() {
-        installPrompt = null;
-    }
-
-    async function installPWA() {
-        if (!installPrompt) {
-            toast('이미 설치되어 있거나 지원되지 않는 브라우저입니다.')
-            return;
-        }
-
-        const result = await installPrompt.prompt();
-        console.log(`Install prompt was: ${result.outcome}`);
-        disableInAppInstallPrompt();
-    }
 
     return (
         <div style={{ display: "flex", flexDirection: "row", gap: "20px", width: 'calc(100%-40px)' }}>
