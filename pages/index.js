@@ -11,6 +11,7 @@ import InstallCards from '../components/feed/installCards';
 import Schedule from '../components/feed/schedule';
 import NewsLetter from '../components/feed/newsletter';
 import Notice from '../components/feed/notice';
+import HomepageNotices from '../components/feed/homepageNotices';
 import Spacer from '../components/common/spacer';
 import { getCurrentPeriod } from '../utils/date';
 import moment from 'moment';
@@ -34,8 +35,8 @@ export default function Feed() {
 
     useEffect(() => {
         // localStroage에서 grade와 classNum 가져와서 grade와 classNum으로 설정
-        let savedGrade = localStorage.getItem('sungil_grade');
-        let savedClassNum = localStorage.getItem('sungil_classNum');
+        let savedGrade = localStorage.getItem('sungil_grade24');
+        let savedClassNum = localStorage.getItem('sungil_classNum24');
         if (!savedGrade || !savedClassNum) {
             savedGrade = 1;
             savedClassNum = 1;
@@ -86,8 +87,8 @@ export default function Feed() {
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('sungil_grade', grade);
-        localStorage.setItem('sungil_classNum', classNum);
+        localStorage.setItem('sungil_grade24', grade);
+        localStorage.setItem('sungil_classNum24', classNum);
     }, [grade, classNum]);
 
 
@@ -99,8 +100,8 @@ export default function Feed() {
         setIsWelcomeModalOpen(false);
         toast.success('환영합니다!');
 
-        localStorage.setItem('sungil_grade', grade);
-        localStorage.setItem('sungil_classNum', classNum);
+        localStorage.setItem('sungil_grade24', grade);
+        localStorage.setItem('sungil_classNum24', classNum);
     }
 
     return (
@@ -112,9 +113,6 @@ export default function Feed() {
                 <header style={{ padding: '20px 0 10px 10px' }}>
                     <Image src="/icons/icon-transparent.png" width="30" height="30"
                         style={{ filter: 'grayscale(1)' }} />
-
-                    <button style={{ position: 'absolute', top: '25px', right: '35px', padding: 0, background: 'none', color: 'var(--text)', opacity: .6 }}
-                        onClick={() => setIsAppModalOpen(true)}><IonIcon name='arrow-down-circle-outline' />&nbsp;&nbsp;앱 설치</button>
                 </header>
                 <Spacer y={10} />
 
@@ -126,6 +124,8 @@ export default function Feed() {
                 <LinkCards />
                 <Spacer y={10} />
                 <Schedule date={moment().format('YYYYMMDD')} />
+                <Spacer y={20} />
+                <HomepageNotices />
                 <Spacer y={20} />
                 <NewsLetter />
                 <Spacer y={100} />

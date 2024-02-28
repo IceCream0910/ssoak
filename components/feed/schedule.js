@@ -10,6 +10,7 @@ import { getScheduleData } from '../../utils/schedule';
 
 function Schedule({ date }) {
     const [data, setData] = useState(null);
+    const cnt = useRef(0);
 
     useEffect(() => {
         if (!date) return;
@@ -41,6 +42,7 @@ function Schedule({ date }) {
                 <Spacer y={10} />
                 {data && data.schedule && Object.entries(data.schedule).map(([key, value]) => {
                     if (value === '토요휴업일' || value.includes('방학')) return null;
+                    cnt.current++;
                     return (
                         <div className="schedule-item">
                             <span className="day-text">
@@ -51,6 +53,12 @@ function Schedule({ date }) {
                         </div>
                     );
                 })}
+
+                {cnt.current === 0 && (<>
+                    <Spacer y={5} />
+                    <span style={{ opacity: .7, fontSize: '14px' }}>이번 달에는 특별한 일정이 없네요</span>
+                </>
+                )}
 
             </div>
             <style jsx>{`

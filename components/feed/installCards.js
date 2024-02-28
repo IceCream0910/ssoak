@@ -1,8 +1,10 @@
 
 import IonIcon from '@reacticons/ionicons';
 import React from 'react';
+import { useRouter } from 'next/router';
 
 function installCards() {
+    const router = useRouter();
     let installPrompt = null;
 
     window.addEventListener("beforeinstallprompt", async (event) => {
@@ -31,7 +33,7 @@ function installCards() {
     return (
         <div style={{ display: "flex", flexDirection: "row", gap: "20px", width: 'calc(100%-40px)' }}>
             <div className="notice-card" style={{ width: "50%" }}
-                onClick={() => installPWA()}>
+                onClick={() => router.push('/settings/pwa')}>
                 <h4>웹 앱</h4>
                 <p>홈화면에 쏙 아이콘을 추가할 수 있어요 (애플 기기인 경우 권장)</p>
             </div>

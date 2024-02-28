@@ -38,8 +38,8 @@ export default function Community() {
     }
 
     useEffect(() => {
-        const savedGrade = localStorage.getItem('sungil_grade');
-        const savedClassNum = localStorage.getItem('sungil_classNum');
+        const savedGrade = localStorage.getItem('sungil_grade24');
+        const savedClassNum = localStorage.getItem('sungil_classNum24');
         if (savedGrade && savedClassNum) {
             setGrade(savedGrade);
             setClassNum(savedClassNum);

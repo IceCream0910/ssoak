@@ -26,7 +26,8 @@
     "react-pull-to-refresh": "^2.0.1",
     "react-speech-kit": "^3.0.1",
     "react-spring-bottom-sheet": "^3.4.1",
-    "remark-gfm": "^4.0.0"
+    "remark-gfm": "^4.0.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@types/react": "18.2.22",

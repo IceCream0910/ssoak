@@ -10,6 +10,8 @@ import { firestore } from "../../firebase/firebase"
 import IonIcon from '@reacticons/ionicons';
 import { getAllergyLabel } from '../../utils/meal';
 
+import InstallCards from '../../components/feed/installCards';
+
 export default function Community() {
     const router = useRouter();
     const [grade, setGrade] = useState(1);
@@ -17,8 +19,8 @@ export default function Community() {
     const [allergy, setAllergy] = useState([]);
 
     useEffect(() => {
-        const savedGrade = localStorage.getItem('sungil_grade');
-        const savedClassNum = localStorage.getItem('sungil_classNum');
+        const savedGrade = localStorage.getItem('sungil_grade24');
+        const savedClassNum = localStorage.getItem('sungil_classNum24');
         const savedAllergy = localStorage.getItem('sungil_alleList');
 
         if (savedGrade && savedClassNum) {
@@ -36,8 +38,8 @@ export default function Community() {
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('sungil_grade', grade);
-        localStorage.setItem('sungil_classNum', classNum);
+        localStorage.setItem('sungil_grade24', grade);
+        localStorage.setItem('sungil_classNum24', classNum);
     }, [grade, classNum]);
 
     useEffect(() => {
@@ -113,9 +115,14 @@ export default function Community() {
 
                 <hr style={{ opacity: .1 }} />
                 <Spacer y={20} />
+
+                <h3 style={{ opacity: .9, margin: 0 }}>앱 설치</h3>
+                <Spacer y={20} />
+                <InstallCards />
+
+                <Spacer y={20} />
                 <h3 style={{ opacity: .9, margin: 0 }}>정보</h3>
                 <Spacer y={10} />
-
                 <button style={{ background: 'none', padding: 0, color: 'var(--text)' }}
                     onClick={() => window.open("https://status.sungil.me/", '_blank')}><IonIcon name="server-outline" />&nbsp;&nbsp;서비스 상태 확인</button>
                 <Spacer />

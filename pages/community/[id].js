@@ -300,11 +300,14 @@ export default function Community() {
 
                 {post && <>
                     <div className="post-header">
-                        <img src={`../icons/profileImg/letter${post.profileImg && post.profileImg || 1}.png`} className="profile-img" />
+                        {post.profileImg ? <img src={`../icons/profileImg/letter${post.profileImg && post.profileImg || 1}.png`} className="profile-img" />
+                            : <img src='/icons/skeleton.gif' className="profile-img" />
+                        }
+
                         <span id="uname">{post.admin && (post.admin) ?
                             <span>{post.nickname}&nbsp;
                                 <IonIcon name="checkmark-circle" style={{ position: 'relative', top: '2px', color: 'var(--button-text)' }} /></span>
-                            : <span>{post.nickname && post.nickname}</span>}<br />
+                            : <span>{post.nickname ? post.nickname : '누가 썼는지 확인 중...'}</span>}<br />
                             <span style={{ opacity: 0.7 }}>{post.createdAt && moment(post.createdAt.toDate()).format('YYYY-MM-DD')}</span>
                         </span>
                     </div>
@@ -409,7 +412,7 @@ export default function Community() {
 
                 </>
                 }
-                <Spacer y={70} />
+                <Spacer y={100} />
 
 
             </main >

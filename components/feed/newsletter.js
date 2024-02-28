@@ -35,7 +35,7 @@ function NewsLetter() {
                 )}
 
                 <Spacer y={20} />
-                {data && data.articles && data.articles.map((article, index) => {
+                {data && data.articles && data.articles.slice(0, 5).map((article, index) => {
                     return (
                         <div key={index}
                             onClick={() => window.open(article.view_link, '_blank')}
