@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import IonIcon from '@reacticons/ionicons';
 import Image from 'next/image';
 import { firestore } from "../../firebase/firebase"
-import { collection, addDoc, doc, getDoc, updateDoc, update } from "@firebase/firestore";
+import { collection, addDoc, doc, getDoc, updateDoc, update, setDoc } from "@firebase/firestore";
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css'
 import { getMealData, getMonthMealData, getMenuImage } from '../../utils/meal';
@@ -46,11 +46,10 @@ function Meal({ date, title }) {
 
     async function addLikeCnt() {
         // meal/{date} document가 {like: 0, dislike: 0}으로 생성하고, 존재하면 like를 1 증가시킴
-        setLike(like + 1);
         const mealRef = doc(firestore, 'meal', date);
         const mealDoc = await getDoc(mealRef);
         if (!mealDoc.exists()) {
-            await addDoc(collection(firestore, 'meal'), {
+            await setDoc(doc(firestore, 'meal', date), {
                 like: 1,
                 dislike: 0
             });
@@ -59,15 +58,16 @@ function Meal({ date, title }) {
                 like: mealDoc.data().like + 1
             });
         }
+
+        setLike(like + 1);
     }
 
     async function addDislikeCnt() {
         // meal/{date} document가 {like: 0, dislike: 0}으로 생성하고, 존재하면 dislike를 1 증가시킴
-        setDislike(dislike + 1);
         const mealRef = doc(firestore, 'meal', date);
         const mealDoc = await getDoc(mealRef);
         if (!mealDoc.exists()) {
-            await addDoc(collection(firestore, 'meal'), {
+            await setDoc(doc(firestore, 'meal', date), {
                 like: 0,
                 dislike: 1
             });
@@ -76,6 +76,8 @@ function Meal({ date, title }) {
                 dislike: mealDoc.data().dislike + 1
             });
         }
+
+        setDislike(dislike + 1);
     }
 
 
