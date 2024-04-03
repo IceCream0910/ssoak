@@ -71,7 +71,7 @@ async function getData(date) {
     // localStorage에서 저장된 key 확인
     const cachedKey = localStorage.getItem('mealCachedKey');
 
-    if (cachedKey && cachedKey === date.substring(0, 6)) {
+    if (cachedKey && cachedKey === date.substring(0, 6)+'_') {
         const cachedData = localStorage.getItem('mealCachedData');
         return JSON.parse(cachedData);
     }
@@ -81,7 +81,7 @@ async function getData(date) {
     const data = await res.json();
 
     // mealCachedKey와 mealCachedData 업데이트
-    localStorage.setItem('mealCachedKey', date.substring(0, 6));
+    localStorage.setItem('mealCachedKey', date.substring(0, 6)+'_');
     localStorage.setItem('mealCachedData', JSON.stringify(data));
 
     return data;
