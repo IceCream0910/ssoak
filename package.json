@@ -16,7 +16,7 @@
     "html-to-text": "^9.0.5",
     "jspdf": "^2.5.1",
     "moment": "^2.29.4",
-    "next": "13.4.16",
+    "next": "14.2.35",
     "pdfjs-dist": "^3.10.111",
     "react": "18.2.0",
     "react-cropper": "^2.3.3",
