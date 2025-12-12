@@ -14,7 +14,7 @@
     "@toast-ui/react-editor": "^3.2.3",
     "firebase": "^10.1.0",
     "html-to-text": "^9.0.5",
-    "jspdf": "^2.5.1",
+    "jspdf": "^3.0.2",
     "moment": "^2.29.4",
     "next": "13.4.16",
     "pdfjs-dist": "^3.10.111",
